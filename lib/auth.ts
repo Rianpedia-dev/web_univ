@@ -1,19 +1,21 @@
 import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { db } from "@/db"; // your drizzle instance
-import { account, session, user, verification } from "@/db/schema/auth";
 
+// Konfigurasi auth dasar tanpa database untuk menghindari edge runtime error
 export const auth = betterAuth({
-    database: drizzleAdapter(db, {
-        provider: "pg", // or "mysql", "sqlite"
-        schema: {
-            user: user,
-            account: account,
-            session: session,
-            verification: verification,
-        }
-    }),
+    // Tidak menggunakan database untuk menghindari error edge runtime
     emailAndPassword: {
         enabled: true,
     },
+    web3: {
+        enabled: false,
+    },
+    user: {
+        // Tambahkan role ke dalam model user
+        properties: {
+            role: {
+                type: "string",
+                default: "public"
+            }
+        }
+    }
 });

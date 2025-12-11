@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
 import { Geist, Geist_Mono, Parkinsans } from "next/font/google";
-import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
+import type { Metadata } from "next";
+import { AppThemeProvider } from "@/components/app-theme-provider";
+import { BackToTopWrapper } from "@/components/back-to-top-wrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,11 +20,12 @@ const parkinsans = Parkinsans({
 });
 
 export const metadata: Metadata = {
-  title: "Codeguide Starter Fullstack",
+  title: "University - Kampus Unggulan Masa Depan",
   description:
-    "A modern Next.js starter with TypeScript, TailwindCSS, shadcn/ui, Better Auth, and Drizzle ORM",
+    "Universitas unggulan dengan pendidikan berkualitas, fasilitas modern, dan lingkungan akademik yang mendukung kemajuan",
 };
 
+// Root layout menyertakan tag html dan body dengan font variables
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -34,14 +36,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${parkinsans.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        <AppThemeProvider>
+          <BackToTopWrapper>
+            {children}
+          </BackToTopWrapper>
+        </AppThemeProvider>
       </body>
     </html>
   );
