@@ -156,15 +156,18 @@ const messages = {
   }
 };
 
+// Tipe untuk struktur pesan
+type MessageValue = string | Record<string, unknown>;
+
 // Fungsi helper untuk mendapatkan pesan berdasarkan locale
 export function getTranslations(locale: string = 'id') {
   return (keyPath: string): string => {
     const keys = keyPath.split('.');
-    let result: any = messages[locale as keyof typeof messages] || messages['id'];
+    let result: MessageValue = messages[locale as keyof typeof messages] || messages['id'];
 
     for (const key of keys) {
       if (result && typeof result === 'object') {
-        result = result[key];
+        result = result[key] as MessageValue;
       } else {
         result = keyPath; // Kembalikan key asli jika tidak ditemukan
         break;

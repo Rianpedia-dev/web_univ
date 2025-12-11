@@ -32,7 +32,7 @@ export async function generateMetadata({
   const locale = awaitedParams.locale;
 
   // Pastikan locale valid
-  if (!validLocales.includes(locale as any)) {
+  if (!validLocales.includes(locale as 'id' | 'en')) {
     notFound();
   }
 
@@ -41,7 +41,6 @@ export async function generateMetadata({
   return {
     title: t?.heroTitle || "University - Leading Campus of The Future",
     description: t?.heroSubtitle || "A leading university with quality education, modern facilities, and an academic environment that supports advancement",
-    language: locale,
   };
 }
 
@@ -56,7 +55,7 @@ export default async function LocaleLayout({
   const locale = awaitedParams.locale;
 
   // Pastikan locale valid
-  if (!validLocales.includes(locale as any)) {
+  if (!validLocales.includes(locale as 'id' | 'en')) {
     notFound();
   }
 

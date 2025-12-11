@@ -15,9 +15,7 @@ import { motion } from "framer-motion";
 import { useTranslations } from '@/lib/i18n-helper';
 import { getCurrentUser, isAdmin, ROLES } from "@/lib/auth/role";
 
-export default async function DashboardPage() {
-  const t = useTranslations('Navigation.submenus');
-  
+export default function DashboardPage() {
   // Dalam aplikasi nyata, Anda akan mengambil data pengguna dari server component
   // Untuk saat ini, saya akan menunjukkan contoh tampilan dashboard
   

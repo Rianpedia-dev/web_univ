@@ -196,7 +196,7 @@ export default function Home() {
             >
               <div className="absolute inset-0 bg-gradient-to-r from-cyber-blue/5 to-electric-purple/5 rounded-2xl -z-10"></div>
               <p className="text-foreground/70 text-lg italic mb-6 relative z-10">
-                "{t('rectorQuote')}"
+                {"\""}{t('rectorQuote')}{"\""}
               </p>
               <p className="text-foreground font-semibold relative z-10">{t('rectorName')}</p>
               <p className="text-foreground/60 relative z-10">{t('rectorTitle')}</p>
@@ -328,7 +328,7 @@ export default function Home() {
                       <Star key={i} className="w-5 h-5 fill-current" />
                     ))}
                   </div>
-                  <p className="text-foreground/70 italic mb-6 relative z-10">"{testimonial.content}"</p>
+                  <p className="text-foreground/70 italic mb-6 relative z-10">{"\""}{testimonial.content}{"\""}</p>
                   <div className="flex items-center gap-4 relative z-10 mt-4">
                     <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-cyber-blue shadow-md flex-shrink-0">
                       <img src={testimonial.image} alt={testimonial.name} className="w-full h-full object-cover" />

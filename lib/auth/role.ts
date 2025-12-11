@@ -1,14 +1,20 @@
-import { authClient, getSession } from "@/lib/auth-client";
+import { auth } from "@/lib/auth";
 import { cookies } from "next/headers";
 
 // Fungsi untuk mendapatkan session pengguna
 export async function getCurrentUser() {
   try {
-    const session = await getSession({
+    // Dapatkan cookie dari server component
+    const cookieStore = cookies();
+    const cookieString = cookieStore.toString();
+
+    // Gunakan API auth langsung untuk mendapatkan session
+    const session = await auth.api.getSession({
       headers: {
-        cookie: cookies().toString(),
+        cookie: cookieString,
       },
     });
+
     return session?.user || null;
   } catch (error) {
     console.error("Error getting current user:", error);

@@ -423,7 +423,7 @@ export default function PrestasiMahasiswaPage() {
 
                 <div className="mb-4">
                   <span className="text-sm text-muted-foreground block mb-1">Tips & Motivasi</span>
-                  <p className="italic text-muted-foreground">"{profil.tips}"</p>
+                  <p className="italic text-muted-foreground">{"\""}{profil.tips}{"\""}</p>
                 </div>
 
                 <div className="flex justify-between items-center">

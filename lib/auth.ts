@@ -11,7 +11,7 @@ export const auth = betterAuth({
     },
     user: {
         // Tambahkan role ke dalam model user
-        properties: {
+        additionalFields: {
             role: {
                 type: "string",
                 default: "public"

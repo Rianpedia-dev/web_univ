@@ -99,7 +99,7 @@ export default function ProfilBerandaPage() {
               >
                 <div className="text-center">
                   <p className="text-2xl italic font-semibold text-foreground/80 max-w-4xl mx-auto">
-                    "Mencerdaskan Kehidupan Bangsa dan Membangun Karakter Digital untuk Masa Depan"
+                    {"\""}Mencerdaskan Kehidupan Bangsa dan Membangun Karakter Digital untuk Masa Depan{"\""}
                   </p>
                 </div>
               </motion.div>
@@ -219,9 +219,8 @@ export default function ProfilBerandaPage() {
             className="glass-card p-8 rounded-2xl border"
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.8, duration: 0.8 }}
+            transition={{ delay: 0.8, duration: 0.8, type: "spring", stiffness: 200 }}
             whileHover={{ boxShadow: "0 0 30px rgba(0,240,255,0.2)" }}
-            transition={{ type: "spring", stiffness: 200 }}
           >
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 rounded-full bg-gradient-to-r from-cyber-blue to-electric-purple flex items-center justify-center">
@@ -230,9 +229,9 @@ export default function ProfilBerandaPage() {
               <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-cyber">Visi</h2>
             </div>
             <p className="text-foreground/70 text-lg leading-relaxed italic border-l-4 border-cyber-blue pl-4 ml-2">
-              "Menjadi universitas riset unggulan bertaraf internasional yang menghasilkan sumber daya manusia
+              {"\""}Menjadi universitas riset unggulan bertaraf internasional yang menghasilkan sumber daya manusia
               yang berdaya saing global, berjiwa kewirausahaan, serta berwawasan lingkungan dan kebangsaan,
-              dengan integrasi teknologi mutakhir dalam setiap aspek pendidikan."
+              dengan integrasi teknologi mutakhir dalam setiap aspek pendidikan.{"\""}
             </p>
           </motion.div>
 
@@ -240,9 +239,8 @@ export default function ProfilBerandaPage() {
             className="glass-card p-8 rounded-2xl border"
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 1, duration: 0.8 }}
+            transition={{ delay: 1, duration: 0.8, type: "spring", stiffness: 200 }}
             whileHover={{ boxShadow: "0 0 30px rgba(179,118,255,0.2)" }}
-            transition={{ type: "spring", stiffness: 200 }}
           >
             <div className="flex items-center gap-4 mb-6">
               <div className="w-12 h-12 rounded-full bg-gradient-to-r from-electric-purple to-neon-green flex items-center justify-center">
