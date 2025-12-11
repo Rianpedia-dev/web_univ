@@ -1,21 +1,17 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  // Konfigurasi untuk production build static
-  // Untuk development, gunakan mode server default
-  experimental: {
-    output: 'export', // Gunakan ini untuk build static
-  },
-  trailingSlash: true,
-  images: {
-    unoptimized: true, // Diperlukan untuk export statis
-  },
-};
+const nextConfig = {};
 
-// Jika NODE_ENV bukan production, jangan gunakan output export
-if (process.env.NODE_ENV !== 'production') {
-  delete nextConfig.experimental?.output;
-  delete nextConfig.trailingSlash;
-  delete nextConfig.images;
+// Hanya aktifkan static export di production
+if (process.env.NODE_ENV === 'production') {
+  Object.assign(nextConfig, {
+    output: 'export', // ✅ resmi, bukan experimental
+    trailingSlash: true,
+    images: {
+      unoptimized: true, // wajib untuk static export
+    },
+    // Opsional: agar asset (CSS/JS) pakai path relatif
+    assetPrefix: './',
+  });
 }
 
 module.exports = nextConfig;
