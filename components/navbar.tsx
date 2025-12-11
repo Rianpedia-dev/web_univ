@@ -47,6 +47,7 @@ export function Navbar({ locale }: { locale: string }) {
         { title: locale === 'id' ? "Program Studi" : "Study Programs", href: `/${locale}/akademik/program-studi` },
         { title: locale === 'id' ? "Fakultas" : "Faculties", href: `/${locale}/akademik/fakultas` },
         { title: locale === 'id' ? "Kalender Akademik" : "Academic Calendar", href: `/${locale}/akademik/kalender-akademik` },
+        { title: locale === 'id' ? "Fasilitas kampus" : "Fasilitas kampus", href: `/${locale}/akademik/fasilitas-kampus` },
       ]
     },
     {

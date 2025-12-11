@@ -35,55 +35,43 @@ export default function GaleriPage() {
       kategori: "Wisuda",
       tanggal: "15 Juli 2024",
       deskripsi: "Prosesi wisuda sarjana dan magister tahun 2024 dengan jumlah wisudawan terbanyak",
-      jumlahFoto: 45,
-      jumlahDilihat: 1200,
-      jumlahDisukai: 240,
-      thumbnail: "wisuda-2024-thumb.jpg",
+      image: "/images/galeri.png",
       folder: "Wisuda 2024",
-      tahun: 2024,
+      tahun: 2025,
       lokasi: "Gedung Serba Guna"
     },
     {
       id: 2,
-      judul: "Seminar Teknologi Informasi",
-      kategori: "Akademik",
-      tanggal: "10 Juni 2024",
-      deskripsi: "Seminar nasional tentang perkembangan teknologi informasi terkini",
-      jumlahFoto: 32,
-      jumlahDilihat: 890,
-      jumlahDisukai: 180,
-      thumbnail: "seminar-ti-thumb.jpg",
-      folder: "Seminar 2024",
-      tahun: 2024,
-      lokasi: "Aula Utama"
+      judul: "Wisuda Angkatan 2024",
+      kategori: "Wisuda",
+      tanggal: "15 Juli 2024",
+      deskripsi: "Prosesi wisuda sarjana dan magister tahun 2024 dengan jumlah wisudawan terbanyak",
+      image: "/images/galeri.png",
+      folder: "Wisuda 2024",
+      tahun: 2025,
+      lokasi: "Gedung Serba Guna"
     },
     {
       id: 3,
-      judul: "Pekan Olahraga Mahasiswa",
-      kategori: "Olahraga",
-      tanggal: "5 Agustus 2024",
-      deskripsi: "Pertandingan antar fakultas dalam rangka memperingati hari kemerdekaan",
-      jumlahFoto: 28,
-      jumlahDilihat: 1100,
-      jumlahDisukai: 310,
-      thumbnail: "pom-2024-thumb.jpg",
-      folder: "Olahraga 2024",
-      tahun: 2024,
-      lokasi: "Lapangan Olahraga"
+      judul: "Wisuda Angkatan 2024",
+      kategori: "Wisuda",
+      tanggal: "15 Juli 2024",
+      deskripsi: "Prosesi wisuda sarjana dan magister tahun 2024 dengan jumlah wisudawan terbanyak",
+      image: "/images/galeri.png",
+      folder: "Wisuda 2024",
+      tahun: 2025,
+      lokasi: "Gedung Serba Guna"
     },
     {
       id: 4,
-      judul: "Festival Seni Kampus",
-      kategori: "Budaya",
-      tanggal: "20 September 2024",
-      deskripsi: "Pertunjukan seni dari berbagai UKM seni kampus",
-      jumlahFoto: 36,
-      jumlahDilihat: 750,
-      jumlahDisukai: 220,
-      thumbnail: "festival-seni-thumb.jpg",
-      folder: "Seni 2024",
-      tahun: 2024,
-      lokasi: "Amphitheater"
+      judul: "Wisuda Angkatan 2024",
+      kategori: "Wisuda",
+      tanggal: "15 Juli 2024",
+      deskripsi: "Prosesi wisuda sarjana dan magister tahun 2024 dengan jumlah wisudawan terbanyak",
+      image: "/images/galeri.png",
+      folder: "Wisuda 2024",
+      tahun: 2025,
+      lokasi: "Gedung Serba Guna"
     }
   ];
 
@@ -243,24 +231,12 @@ export default function GaleriPage() {
                 transition={{ delay: 0.1 * index }}
               >
                 <div className="relative">
-                  <div className="aspect-video bg-gradient-to-br from-cyber-blue/20 to-electric-purple/20 flex items-center justify-center">
-                    <Image className="w-16 h-16 text-cyber-blue/50" />
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
-                    <div className="flex gap-4 text-foreground">
-                      <div className="flex items-center gap-1">
-                        <Eye className="w-4 h-4" />
-                        <span>{foto.jumlahDilihat}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Heart className="w-4 h-4" />
-                        <span>{foto.jumlahDisukai}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Image className="w-4 h-4" />
-                        <span>{foto.jumlahFoto}</span>
-                      </div>
-                    </div>
+                  <div className="aspect-video bg-gradient-to-br from-cyber-blue/20 to-electric-purple/20 flex items-center justify-center overflow-hidden">
+                    <img
+                      src={foto.image}
+                      alt={foto.judul}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
                 <div className="p-4">
@@ -324,8 +300,12 @@ export default function GaleriPage() {
                 transition={{ delay: 0.1 * (index + 4) }}
               >
                 <div className="relative">
-                  <div className="aspect-video bg-gradient-to-br from-electric-purple/20 to-neon-pink/20 flex items-center justify-center">
-                    <Video className="w-16 h-16 text-electric-purple/50" />
+                  <div className="aspect-video bg-gradient-to-br from-electric-purple/20 to-neon-pink/20 flex items-center justify-center overflow-hidden">
+                    <img
+                      src={video.thumbnail}
+                      alt={video.judul}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <div className="w-16 h-16 bg-cyber-blue/20 backdrop-blur-sm rounded-full flex items-center justify-center">
