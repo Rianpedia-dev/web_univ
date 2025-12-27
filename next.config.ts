@@ -1,8 +1,40 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Konfigurasi untuk development dan production
-  // Jangan gunakan output: 'export' untuk mode development
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cloudflare-ipfs.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
 };
+
+// Hanya aktifkan static export di production jika diinginkan
+if (process.env.NODE_ENV === 'production') {
+  Object.assign(nextConfig, {
+    output: 'export',
+    trailingSlash: true,
+    images: {
+      ...nextConfig.images,
+      unoptimized: true, // Wajib untuk static export
+    },
+  });
+}
 
 export default nextConfig;

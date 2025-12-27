@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 
-export default function KemahasiswaanPage({ params }: { params: { locale: string } }) {
+export default async function KemahasiswaanPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
   // Redirect to the first submenu item: kemahasiswaan/layanan-mahasiswa
-  redirect(`/${params.locale}/kemahasiswaan/layanan-mahasiswa`);
+  redirect(`/${locale}/kemahasiswaan/layanan-mahasiswa`);
 }

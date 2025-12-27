@@ -523,7 +523,7 @@ code, .monospace {
   * Permissions:
 
     * Melihat semua konten publik
-    * Tidak perlu login
+    * Tidak perlu login dan buat Akun
     * Akses halaman informasi
     * Download materi publik
 
@@ -534,10 +534,9 @@ code, .monospace {
 
     * Login dengan kredensial
     * CRUD semua konten
-    * Kelola user
     * Akses dashboard admin
     * Upload media
-    * Moderasi komentar
+    * Moderasi komentar 
 
 #### Authentication Flow
 ```
@@ -555,9 +554,6 @@ graph LR
 
 ## 🏠 HOME
 
-### Sub-Menu:
-
-#### 1. Beranda
 **Isi yang tampil:**
 - Slider utama
 - Kata sambutan Rektor
@@ -567,20 +563,30 @@ graph LR
 - Testimoni alumni/mahasiswa
 - Partner logo (carousel)
 
-#### 2. Profil
+---
+
+## 📚 PROFIL
+
+### Sub-Menu:
+#### 1. Profil Universitas
 **Isi yang tampil:**
 - Logo Universitas
 - Statistik kampus (counter)
 - Sejarah kampus
 - Visi, Misi, dan Tujuan
 - Nilai-nilai universitas
-- Struktur organisasi
 
-#### 3. Akreditasi & Penghargaan
+#### 2. Akreditasi
 **Isi yang tampil:**
 - Akreditasi Universitas (sertifikat)
 - Akreditasi tiap prodi
 - Penghargaan nasional/internasional
+
+#### 3. Struktur Organisasi
+**Isi yang tampil:**
+- Susunan pimpinan universitas
+- Bagan struktur organisasi
+- Tugas dan fungsi unit kerja
 
 #### 4. Kontak & Lokasi
 **Isi yang tampil:**
@@ -622,6 +628,15 @@ graph LR
 - Kalender interaktif
 - Jadwal penting (UTS, UAS, Wisuda)
 - Event akademik
+
+#### 4. Fasilitas Kampus
+**Isi yang tampil:**
+- Laboratorium
+- Perpustakaan
+- Ruang kelas
+- Fasilitas olahraga
+- Asrama mahasiswa
+- Klinik kesehatan
 
 ---
 
@@ -679,7 +694,7 @@ graph LR
 - Lampiran file download
 - Status pengumuman (urgent/penting)
 
-#### 3. Agenda/Event
+#### 3. Events
 **Isi yang tampil:**
 - Kalender event kampus
 - List event
@@ -695,54 +710,11 @@ graph LR
   - Biaya pendaftaran (jika ada)
   - Status kegiatan (akan datang, sedang berlangsung, selesai)
 
-#### Sub-Menu Agenda/Event:
-**Struktur halaman submenu:**
-- **Event Terbaru**: Menampilkan event-event yang akan datang
-- **Arsip Event**: Menyimpan event-event sebelumnya
-- **Kategori Event**:
-  - Akademik
-  - Kemahasiswaan
-  - Penelitian
-  - Pengabdian Masyarakat
-  - Budaya & Seni
-  - Olahraga
-- **Event Favorit**: Event yang disimpan oleh pengguna
-- **Pendaftaran Event**: Form pendaftaran online
-- **Kalender Interaktif**: Tampilan kalender yang bisa disaring
-
 #### 4. Galeri
 **Isi yang tampil:**
 - Foto kegiatan
 - Video kampus
 - Dokumentasi event
-
-#### Sub-Menu Galeri:
-**Struktur halaman submenu:**
-- **Foto Kegiatan**:
-  - Kegiatan akademik (kuliah umum, workshop, seminar)
-  - Kegiatan kemahasiswaan (perlombaan, organisasi, UKM)
-  - Kegiatan penelitian & pengabdian masyarakat
-  - Wisuda & perpisahan
-  - Kegiatan budaya & seni
-  - Kegiatan olahraga
-- **Video Kampus**:
-  - Profil universitas
-  - Video dokumentasi kegiatan
-  - Pengenalan fakultas & prodi
-  - Testimoni mahasiswa & alumni
-- **Album Kegiatan**:
-  - Album berdasarkan tahun
-  - Album berdasarkan kategori
-  - Album berdasarkan fakultas
-- **Galeri Virtual**:
-  - Tur virtual kampus
-  - Fasilitas kampus (laboratorium, perpustakaan, dll)
-- **Galeri Karya Mahasiswa**:
-  - Karya seni
-  - Produk inovasi
-  - Penelitian
-- **Favorit**:
-  - Koleksi galeri yang disimpan pengguna
 
 ---
 
@@ -756,93 +728,11 @@ graph LR
 - Bimbingan konseling
 - Layanan karir
 
-#### Sub-Menu Layanan Mahasiswa:
-**Struktur halaman submenu:**
-- **Layanan Administrasi**:
-  - Pengajuan KRS (Kartu Rencana Studi)
-  - Pengajuan cuti akademik
-  - Permohonan pindah prodi
-  - Permohonan keringanan UKT
-  - Pembuatan surat keterangan aktif kuliah
-  - Pengajuan wisuda
-  - Cetak kartu mahasiswa digital
-  - Permohonan transkrip sementara
-  - Pengajuan legalisir ijazah
-- **Bimbingan Konseling**:
-  - Profil konselor
-  - Jadwal konseling
-  - Form permohonan konseling
-  - Materi bimbingan
-  - Konseling karir
-  - Konseling akademik
-  - Konseling pribadi
-- **Layanan Karir**:
-  - Informasi lowongan kerja
-  - Pelatihan soft skills
-  - Pelatihan interview
-  - Pembuatan CV & portofolio
-  - Job fair virtual
-  - Hubungan industri
-  - Alumni network
-- **Layanan Digital**:
-  - Portal mahasiswa
-  - E-learning
-  - Perpustakaan digital
-  - Layanan pengaduan
-- **Kepuasan Mahasiswa**:
-  - Survey kepuasan
-  - Pengaduan & saran
-  - Umpan balik layanan
-
 #### 2. UKM & Organisasi
 **Isi yang tampil:**
 - Daftar UKM
 - Organisasi kemahasiswaan
 - Kegiatan dan program
-
-#### Sub-Menu UKM & Organisasi:
-**Struktur halaman submenu:**
-- **Daftar UKM**:
-  - UKM Akademik:
-    - Keluarga Mahasiswa Teknik (KMT)
-    - Keluarga Mahasiswa Ekonomi (KME)
-    - Keluarga Mahasiswa Hukum (KMH)
-    - Keluarga Mahasiswa Kedokteran (KMK)
-    - dll
-  - UKM Non-Akademik:
-    - Unit Kegiatan Olahraga (UKO)
-    - Unit Kegiatan Seni & Budaya (UKSB)
-    - Unit Kegiatan Keagamaan
-    - Unit Kegiatan Jurnalistik
-    - Unit Kegiatan Bahasa
-    - Unit Kegiatan Wirausaha
-- **Daftar Organisasi**:
-  - Badan Eksekutif Mahasiswa (BEM)
-  - Dewan Perwakilan Mahasiswa (DPM)
-  - Himpunan Mahasiswa Jurusan/Prodi (HMJ)
-- **Kegiatan dan Program**:
-  - Program kerja tahunan
-  - Event besar UKM
-  - Kompetisi dan perlombaan
-  - Pelatihan dan workshop
-  - Pengabdian masyarakat
-  - Bakti sosial
-- **Pendaftaran Anggota**:
-  - Jadwal pendaftaran
-  - Syarat dan ketentuan
-  - Form pendaftaran
-- **Struktur Kepengurusan**:
-  - Susunan pengurus UKM/Organisasi
-  - Masa jabatan
-  - Visi dan misi
-- **Prestasi UKM**:
-  - Penghargaan dan prestasi
-  - Perlombaan yang diikuti
-  - Prestasi tahunan
-- **Berita & Update**:
-  - Berita terkini UKM
-  - Agenda kegiatan
-  - Pengumuman penting
 
 #### 3. Prestasi Mahasiswa
 **Isi yang tampil:**
@@ -863,50 +753,13 @@ graph LR
 - Kerja sama industri
 - Kerja sama institusi
 
-#### Sub-Menu Partnership:
-**Struktur halaman submenu:**
-- **Daftar Partner**:
-  - Partner domestik (dalam negeri)
-  - Partner internasional (luar negeri)
-  - Klasifikasi partner berdasarkan bidang:
-    - Teknologi & Informatika
-    - Bisnis & Ekonomi
-    - Kesehatan & Kedokteran
-    - Pendidikan & Riset
-    - Industri & Manufaktur
-    - Pemerintahan & BUMN
-- **Jenis Kerja Sama**:
-  - Joint Research (Penelitian Bersama)
-  - Student Exchange (Pertukaran Mahasiswa)
-  - Faculty Exchange (Pertukaran Dosen)
-  - Academic Collaboration (Kolaborasi Akademik)
-  - Internship Program (Program Magang)
-  - Employment Partnership (Kemitraan Penyaluran Kerja)
-  - Technology Transfer (Alih Teknologi)
-- **MOU & MOA**:
-  - Dokumen kerja sama yang aktif
-  - Dokumen kerja sama yang telah habis
-  - Status implementasi kerja sama
-  - Tanggal penandatanganan
-  - Masa berlaku
-- **Profil Partner**:
-  - Biodata singkat institusi/mitra
-  - Bidang keahlian utama
-  - Capaian dan reputasi
-  - Fasilitas yang tersedia
-  - Kontak person
-- **Kegiatan Kerja Sama**:
-  - Program yang sedang berjalan
-  - Event kolaborasi
-  - Publikasi bersama
-  - Proyek riil bersama
-- **Laporan & Evaluasi**:
-  - Laporan implementasi kerja sama
-  - Evaluasi efektivitas kerja sama
-  - Rekomendasi pengembangan
-- **Permohonan Kerja Sama**:
-  - Form permohonan kerja sama
-  - Prosedur dan persyaratan
-  - Kontak untuk kolaborasi
-
 ---
+
+## 📊 DASHBOARD (ADMIN)
+
+**Fitur khusus admin:**
+- Statistik kunjungan
+- Manajemen konten
+- Manajemen berita
+- Manajemen pengguna
+- Laporan aktivitas

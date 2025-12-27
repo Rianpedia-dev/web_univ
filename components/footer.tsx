@@ -141,6 +141,9 @@ export function Footer({ locale = 'id' }: { locale?: string }) {
               <Link href={`/${locale}/sitemap`} className="hover:text-cyber-blue transition-colors">
                 Peta Situs
               </Link>
+              <Link href="/sign-in" className="hover:text-cyber-blue transition-colors font-medium">
+                Admin Login
+              </Link>
             </div>
           </div>
         </div>

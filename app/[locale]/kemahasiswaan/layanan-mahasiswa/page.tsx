@@ -1,5 +1,3 @@
-"use client";
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,153 +23,25 @@ import {
   Globe,
   Lightbulb
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { MotionDiv } from "@/components/motion-wrapper";
 import { Badge } from "@/components/ui/badge";
+import { getPublishedStudentServices } from '@/lib/db';
 
-export default function LayananMahasiswaPage() {
-  // Data layanan administrasi
-  const layananAdministrasi = [
-    {
-      id: 1,
-      nama: "Pengajuan KRS",
-      kategori: "Administrasi",
-      deskripsi: "Pengajuan Kartu Rencana Studi untuk semester berjalan",
-      status: "aktif",
-      waktuPengajuan: "1-15 Agustus 2024",
-      dokumen: ["Form KRS", "KHS Semester Sebelumnya"],
-      biaya: "Gratis",
-      prioritas: "tinggi",
-      icon: FileText
-    },
-    {
-      id: 2,
-      nama: "Cuti Akademik",
-      kategori: "Administrasi",
-      deskripsi: "Permohonan cuti kuliah sementara waktu",
-      status: "aktif",
-      waktuPengajuan: "Kapan saja (sebelum semester berjalan)",
-      dokumen: ["Surat Permohonan", "Surat Keterangan Orang Tua"],
-      biaya: "Rp 100.000",
-      prioritas: "sedang",
-      icon: Calendar
-    },
-    {
-      id: 3,
-      nama: "Pindah Prodi",
-      kategori: "Administrasi",
-      deskripsi: "Permohonan perpindahan program studi",
-      status: "aktif",
-      waktuPengajuan: "1-30 Juni & 1-30 Desember",
-      dokumen: ["Form Pindah Prodi", "Transkrip Sementara", "Surat Rekomendasi"],
-      biaya: "Rp 250.000",
-      prioritas: "rendah",
-      icon: GraduationCap
-    },
-    {
-      id: 4,
-      nama: "Wisuda",
-      kategori: "Administrasi",
-      deskripsi: "Pengajuan wisuda dan pengambilan ijazah",
-      status: "aktif",
-      waktuPengajuan: "1-31 Maret & 1-30 September",
-      dokumen: ["Form Pengajuan Wisuda", "Legalitas Ijazah", "Bukti Lulus TOEFL"],
-      biaya: "Rp 3.500.000",
-      prioritas: "tinggi",
-      icon: Award
-    },
-    {
-      id: 5,
-      nama: "Keringanan UKT",
-      kategori: "Administrasi",
-      deskripsi: "Permohonan keringanan biaya UKT",
-      status: "aktif",
-      waktuPengajuan: "1-31 Agustus",
-      dokumen: ["Form Permohonan", "Surat Keterangan Tidak Mampu", "KK & KTP Orang Tua"],
-      biaya: "Gratis",
-      prioritas: "sedang",
-      icon: BookOpen
-    }
-  ];
+export default async function LayananMahasiswaPage() {
+  // Ambil data dari database
+  const allServices = await getPublishedStudentServices();
 
-  // Data layanan konseling
-  const layananKonseling = [
-    {
-      id: 1,
-      nama: "Bimbingan Karir",
-      kategori: "Konseling",
-      deskripsi: "Konseling untuk membantu mahasiswa dalam memilih karir yang sesuai",
-      status: "aktif",
-      jadwal: "Senin & Rabu, 08:00-15:00",
-      konselor: "Dr. Siti Nurhaliza, M.Psi",
-      kuota: 15,
-      durasi: "45-60 menit",
-      icon: Briefcase
-    },
-    {
-      id: 2,
-      nama: "Konseling Akademik",
-      kategori: "Konseling",
-      deskripsi: "Bimbingan akademik terkait studi dan kendala perkuliahan",
-      status: "aktif",
-      jadwal: "Selasa & Kamis, 08:00-16:00",
-      konselor: "Dr. Budi Santoso, M.Si",
-      kuota: 20,
-      durasi: "30-45 menit",
-      icon: GraduationCap
-    },
-    {
-      id: 3,
-      nama: "Konseling Pribadi",
-      kategori: "Konseling",
-      deskripsi: "Konseling untuk masalah pribadi dan sosial mahasiswa",
-      status: "aktif",
-      jadwal: "Setiap hari, 09:00-17:00",
-      konselor: "Dr. Ratna Dewi, M.Psi",
-      kuota: 10,
-      durasi: "60-90 menit",
-      icon: User
-    }
-  ];
-
-  // Data layanan karir
-  const layananKarir = [
-    {
-      id: 1,
-      nama: "Job Matching",
-      kategori: "Karir",
-      deskripsi: "Pencocokan lowongan kerja dengan profil mahasiswa",
-      status: "aktif",
-      jumlahLowongan: 45,
-      terisi: 12,
-      icon: Briefcase
-    },
-    {
-      id: 2,
-      nama: "Pelatihan Soft Skills",
-      kategori: "Karir",
-      deskripsi: "Pelatihan keterampilan lunak untuk dunia kerja",
-      status: "aktif",
-      jadwal: "Sabtu, 09:00-15:00",
-      kuota: 50,
-      icon: Star
-    },
-    {
-      id: 3,
-      nama: "Job Fair",
-      kategori: "Karir",
-      deskripsi: "Pameran lowongan kerja dari berbagai perusahaan",
-      status: "akanDatang",
-      tanggal: "15-17 November 2024",
-      jumlahPerusahaan: 25,
-      icon: Building2
-    }
-  ];
+  // Kelompokkan layanan berdasarkan type dari database
+  const layananAdministrasi = allServices.filter(s => s.type === 'administrative');
+  const layananKonseling = allServices.filter(s => s.type === 'counseling');
+  const layananKarir = allServices.filter(s => s.type === 'career');
+  const layananDigital = allServices.filter(s => s.type === 'digital');
 
   const kategoriLayanan = [
-    { id: 'administrasi', name: 'Administrasi', icon: FileText, count: 5 },
-    { id: 'konseling', name: 'Konseling', icon: Heart, count: 3 },
-    { id: 'karir', name: 'Karir', icon: Briefcase, count: 3 },
-    { id: 'digital', name: 'Digital', icon: FileInput, count: 4 }
+    { id: 'administrasi', name: 'Administrasi', icon: FileText, count: layananAdministrasi.length },
+    { id: 'konseling', name: 'Konseling', icon: Heart, count: layananKonseling.length },
+    { id: 'karir', name: 'Karir', icon: Briefcase, count: layananKarir.length },
+    { id: 'digital', name: 'Digital', icon: FileInput, count: layananDigital.length }
   ];
 
   return (
@@ -212,10 +82,11 @@ export default function LayananMahasiswaPage() {
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
 
         {/* Filter Kategori */}
-        <motion.div
+        <MotionDiv
           className="mb-8"
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.3 }}
         >
           <div className="flex items-center justify-between mb-6">
@@ -233,13 +104,14 @@ export default function LayananMahasiswaPage() {
             })}
             <Button variant="outline" className="border-cyber-blue text-cyber-blue hover:bg-cyber-blue/10">Lihat Semua</Button>
           </div>
-        </motion.div>
+        </MotionDiv>
 
         {/* Layanan Administrasi */}
-        <motion.div
+        <MotionDiv
           className="mb-16"
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
           <div className="flex items-center justify-between mb-8">
@@ -247,147 +119,144 @@ export default function LayananMahasiswaPage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {layananAdministrasi.map((layanan, index) => {
-              const IconComponent = layanan.icon;
-              return (
-                <motion.div
-                  key={layanan.id}
-                  className="glass-card rounded-2xl border overflow-hidden hover:shadow-[0_0_30px_rgba(0,240,255,0.1)] transition-all duration-300"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * index }}
-                >
-                  <div className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-gradient-cyber rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.3)]">
-                          <IconComponent className="w-6 h-6 text-foreground/90" />
+            {layananAdministrasi.length > 0 ? (
+              layananAdministrasi.map((layanan, index) => {
+                return (
+                  <MotionDiv
+                    key={layanan.id}
+                    className="glass-card rounded-2xl border overflow-hidden hover:shadow-[0_0_30px_rgba(0,240,255,0.1)] transition-all duration-300"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.1 * index }}
+                  >
+                    <div className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 bg-gradient-cyber rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.3)]">
+                            <FileText className="w-6 h-6 text-foreground/90" />
+                          </div>
+                          <div>
+                            <h3 className="text-xl font-bold text-foreground mb-1">{layanan.name}</h3>
+                            <Badge className="bg-green-500 hover:bg-green-600">Aktif</Badge>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="text-xl font-bold text-foreground mb-1">{layanan.nama}</h3>
-                          <Badge className={`${layanan.status === 'aktif' ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'}`}>
-                            {layanan.status === 'aktif' ? 'Aktif' : 'Tidak Aktif'}
+                      </div>
+
+                      <p className="text-foreground/70 mb-4">{layanan.description || 'Layanan administrasi bagi mahasiswa'}</p>
+
+                      <div className="space-y-3 mb-4">
+                        <div className="flex justify-between">
+                          <span className="text-sm text-foreground/60">Waktu Proses</span>
+                          <span className="font-semibold text-foreground">{layanan.processingTime || '-'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-foreground/60">Biaya</span>
+                          <span className="font-semibold text-foreground">
+                            {layanan.fee && Number(layanan.fee) > 0 ? `Rp ${Number(layanan.fee).toLocaleString('id-ID')}` : 'Gratis'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-foreground/60">Sistem</span>
+                          <Badge variant={layanan.isOnline ? 'default' : 'outline'} className={layanan.isOnline ? 'bg-cyber-blue text-background' : ''}>
+                            {layanan.isOnline ? 'Online' : 'Offline'}
                           </Badge>
                         </div>
                       </div>
-                    </div>
 
-                    <p className="text-foreground/70 mb-4">{layanan.deskripsi}</p>
+                      {layanan.requirements && (
+                        <div className="mb-4">
+                          <span className="text-sm text-muted-foreground block mb-2">Persyaratan:</span>
+                          <p className="text-xs text-muted-foreground line-clamp-2">{layanan.requirements}</p>
+                        </div>
+                      )}
 
-                    <div className="space-y-3 mb-4">
-                      <div className="flex justify-between">
-                        <span className="text-sm text-foreground/60">Waktu Pengajuan</span>
-                        <span className="font-semibold text-foreground">{layanan.waktuPengajuan}</span>
+                      <div className="flex gap-2">
+                        <Button className="flex-1 bg-gradient-cyber hover:shadow-[0_0_20px_rgba(0,240,255,0.5)]">
+                          <FileText className="w-4 h-4 mr-2" />
+                          Ajukan
+                        </Button>
+                        <Button variant="outline" className="flex-1 border-cyber-blue text-cyber-blue hover:bg-cyber-blue/10">
+                          <Download className="w-4 h-4 mr-2" />
+                          Panduan
+                        </Button>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-foreground/60">Biaya</span>
-                        <span className="font-semibold text-foreground">{layanan.biaya}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-foreground/60">Prioritas</span>
-                        <Badge variant={layanan.prioritas === 'tinggi' ? 'default' : layanan.prioritas === 'sedang' ? 'secondary' : 'outline'}>
-                          {layanan.prioritas}
-                        </Badge>
-                      </div>
                     </div>
-
-                    <div className="mb-4">
-                      <span className="text-sm text-muted-foreground block mb-2">Dokumen yang Dibutuhkan:</span>
-                      <ul className="space-y-1">
-                        {layanan.dokumen.map((doc, idx) => (
-                          <li key={idx} className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <div className="w-1 h-1 bg-cyber-blue rounded-full"></div>
-                            {doc}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Button className="flex-1 bg-gradient-cyber hover:shadow-[0_0_20px_rgba(0,240,255,0.5)]">
-                        <FileText className="w-4 h-4 mr-2" />
-                        Ajukan
-                      </Button>
-                      <Button variant="outline" className="flex-1 border-cyber-blue text-cyber-blue hover:bg-cyber-blue/10">
-                        <Download className="w-4 h-4 mr-2" />
-                        Panduan
-                      </Button>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
+                  </MotionDiv>
+                );
+              })
+            ) : (
+              <p className="text-muted-foreground italic">Belum ada layanan administrasi tersedia.</p>
+            )}
           </div>
-        </motion.div>
+        </MotionDiv>
 
         {/* Layanan Konseling */}
-        <motion.div
+        <MotionDiv
           className="mb-16"
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.5 }}
         >
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold text-foreground">Layanan Konseling</h2>
+            <h2 className="text-3xl font-bold text-foreground">Layanan Konseling & Kesejahteraan</h2>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {layananKonseling.map((layanan, index) => {
-              const IconComponent = layanan.icon;
-              return (
-                <motion.div
-                  key={layanan.id}
-                  className="glass-card rounded-2xl border p-6 hover:shadow-[0_0_30px_rgba(192,132,252,0.1)] transition-all duration-300"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * (index + 5) }}
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-rose-600 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(219,39,119,0.3)]">
-                      <IconComponent className="w-6 h-6 text-foreground" />
+            {layananKonseling.length > 0 ? (
+              layananKonseling.map((layanan, index) => {
+                return (
+                  <MotionDiv
+                    key={layanan.id}
+                    className="glass-card rounded-2xl border p-6 hover:shadow-[0_0_30px_rgba(192,132,252,0.1)] transition-all duration-300"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.1 * index }}
+                  >
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-rose-600 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(219,39,119,0.3)]">
+                        <Heart className="w-6 h-6 text-foreground" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-foreground">{layanan.name}</h3>
+                        <Badge variant="secondary" className="bg-electric-purple/20 text-electric-purple border-electric-purple/30">Konseling</Badge>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-foreground">{layanan.nama}</h3>
-                      <Badge variant="secondary" className="bg-electric-purple/20 text-electric-purple border-electric-purple/30">{layanan.kategori}</Badge>
-                    </div>
-                  </div>
 
-                  <p className="text-muted-foreground mb-4">{layanan.deskripsi}</p>
+                    <p className="text-muted-foreground mb-4 line-clamp-3">{layanan.description || 'Layanan konseling bagi mahasiswa'}</p>
 
-                  <div className="space-y-2 mb-4">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-muted-foreground">Konselor</span>
-                      <span className="font-semibold text-foreground">{layanan.konselor}</span>
+                    <div className="space-y-2 mb-4">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Waktu Proses</span>
+                        <span className="font-semibold text-foreground text-xs">{layanan.processingTime || '-'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Sistem</span>
+                        <span className="font-semibold text-foreground text-xs">{layanan.isOnline ? 'Konseling Online' : 'Tatap Muka'}</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-muted-foreground">Jadwal</span>
-                      <span className="font-semibold text-foreground">{layanan.jadwal}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-muted-foreground">Kuota Harian</span>
-                      <span className="font-semibold text-foreground">{layanan.kuota} Orang</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-muted-foreground">Durasi</span>
-                      <span className="font-semibold text-foreground">{layanan.durasi}</span>
-                    </div>
-                  </div>
 
-                  <Button className="w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:shadow-[0_0_20px_rgba(219,39,119,0.3)]">
-                    <Heart className="w-4 h-4 mr-2" />
-                    Jadwalkan Konseling
-                  </Button>
-                </motion.div>
-              );
-            })}
+                    <Button className="w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:shadow-[0_0_20px_rgba(219,39,119,0.3)]">
+                      <Heart className="w-4 h-4 mr-2" />
+                      Jadwalkan Konseling
+                    </Button>
+                  </MotionDiv>
+                );
+              })
+            ) : (
+              <p className="text-muted-foreground italic col-span-3">Belum ada layanan konseling tersedia.</p>
+            )}
           </div>
-        </motion.div>
+        </MotionDiv>
 
         {/* Kontak Layanan */}
-        <motion.div
+        <MotionDiv
           className="glass-card rounded-3xl p-8 md:p-12 border"
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.7 }}
         >
           <h2 className="text-3xl font-bold text-center text-foreground mb-8">Kontak Layanan Mahasiswa</h2>
@@ -417,7 +286,7 @@ export default function LayananMahasiswaPage() {
               <p className="text-sm text-muted-foreground">Kampus Utama</p>
             </div>
           </div>
-        </motion.div>
+        </MotionDiv>
       </div>
     </div>
   );

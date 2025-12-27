@@ -1,21 +1,42 @@
 import { betterAuth } from "better-auth";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { db } from "@/db";
+import { user, session, account, verification } from "@/db/schema/auth";
 
-// Konfigurasi auth dasar tanpa database untuk menghindari edge runtime error
 export const auth = betterAuth({
-    // Tidak menggunakan database untuk menghindari error edge runtime
+    secret: process.env.BETTER_AUTH_SECRET,
+    database: drizzleAdapter(db, {
+        provider: "pg",
+        schema: {
+            user,
+            session,
+            account,
+            verification,
+        },
+    }),
     emailAndPassword: {
         enabled: true,
+        // Disable sign up - admin akun dibuat melalui script
+        // Public user tidak perlu membuat akun
+        autoSignIn: false,
     },
-    web3: {
-        enabled: false,
+    session: {
+        expiresIn: 60 * 60 * 24 * 7, // 7 days
+        updateAge: 60 * 60 * 24, // 1 day (update session every day)
+        cookieCache: {
+            enabled: true,
+            maxAge: 5 * 60, // 5 minutes
+        },
     },
     user: {
-        // Tambahkan role ke dalam model user
         additionalFields: {
             role: {
                 type: "string",
                 default: "public"
             }
         }
-    }
+    },
+    trustedOrigins: [
+        process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000",
+    ],
 });

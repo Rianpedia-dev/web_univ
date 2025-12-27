@@ -1,60 +1,89 @@
-"use client";
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Calendar,
+  Clock,
+  BookOpen,
+  GraduationCap,
   Users,
   FileText,
-  Download
+  Download,
+  ChevronRight,
+  AlertCircle,
+  Zap,
+  Shield,
+  TrendingUp,
+  Globe,
+  Lightbulb
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { MotionDiv } from "@/components/motion-wrapper";
 import { Badge } from "@/components/ui/badge";
+import { getPublishedAcademicCalendar } from '@/lib/db';
 
-export default function KalenderAkademikPage() {
-  // Data kalender akademik
-  const kalenderAkademik = [
-    {
-      id: 1,
-      nama: "Semester Ganjil 2024/2025",
-      periode: "September 2024 - Februari 2025",
-      kegiatan: [
-        { nama: "Registrasi Ulang", tanggal: "2-5 September 2024", keterangan: "Khusus mahasiswa lama" },
-        { nama: "Perwalian", tanggal: "3-6 September 2024", keterangan: "Konsultasi dengan dosen PA" },
-        { nama: "Perkuliahan Dimulai", tanggal: "9 September 2024", keterangan: "Hari pertama perkuliahan" },
-        { nama: "UTS", tanggal: "21-28 Oktober 2024", keterangan: "Ujian Tengah Semester" },
-        { nama: "Libur Idul Adha", tanggal: "16-17 Juni 2024", keterangan: "Libur nasional" },
-        { nama: "UTS Remedial", tanggal: "29-30 Oktober 2024", keterangan: "Bagi mahasiswa yang perlu remedial" },
-        { nama: "Libur Semester", tanggal: "23-28 Desember 2024", keterangan: "Libur Natal dan Tahun Baru" },
-        { nama: "UAS", tanggal: "6-14 Januari 2025", keterangan: "Ujian Akhir Semester" },
-        { nama: "Wisuda", tanggal: "15 Februari 2025", keterangan: "Wisuda Periode Ganjil" }
-      ]
-    },
-    {
-      id: 2,
-      nama: "Semester Genap 2024/2025",
-      periode: "Februari 2025 - Juli 2025",
-      kegiatan: [
-        { nama: "Registrasi Ulang", tanggal: "3-6 Februari 2025", keterangan: "Khusus mahasiswa lama" },
-        { nama: "Perwalian", tanggal: "4-7 Februari 2025", keterangan: "Konsultasi dengan dosen PA" },
-        { nama: "Perkuliahan Dimulai", tanggal: "10 Februari 2025", keterangan: "Hari pertama perkuliahan" },
-        { nama: "UTS", tanggal: "31 Maret - 6 April 2025", keterangan: "Ujian Tengah Semester" },
-        { nama: "Libur Isra Mikraj", tanggal: "24 April 2025", keterangan: "Libur nasional" },
-        { nama: "UTS Remedial", tanggal: "7-8 April 2025", keterangan: "Bagi mahasiswa yang perlu remedial" },
-        { nama: "Libur Semester", tanggal: "30 April - 4 Mei 2025", keterangan: "Libur Hari Buruh dan Kenaikan Isa Almasih" },
-        { nama: "UAS", tanggal: "2-10 Juni 2025", keterangan: "Ujian Akhir Semester" },
-        { nama: "Wisuda", tanggal: "10 Juli 2025", keterangan: "Wisuda Periode Genap" }
-      ]
+export default async function KalenderAkademikPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  // Ambil data dari database
+  const calendarData = await getPublishedAcademicCalendar();
+
+  // Kelompokkan berdasarkan tahun akademik dan semester
+  const groupedCalendar = calendarData.reduce((acc, item) => {
+    const key = `${item.academicYear || 'Umum'}-${item.semester || 'Umum'}`;
+    if (!acc[key]) {
+      acc[key] = {
+        academicYear: item.academicYear || 'Umum',
+        semester: item.semester || 'Umum',
+        events: []
+      };
     }
-  ];
+    acc[key].events.push(item);
+    return acc;
+  }, {} as Record<string, { academicYear: string; semester: string; events: typeof calendarData }>);
 
-  // Data penting lainnya
-  const dataPenting = [
-    { judul: "Jadwal KRS", deskripsi: "Pengisian Kartu Rencana Studi", tanggal: "3-6 September 2024", status: "aktif" },
-    { judul: "Batas Akhir Pembayaran UKT", deskripsi: "Pembayaran semester ganjil", tanggal: "10 September 2024", status: "penting" },
-    { judul: "Pelatihan Soft Skills", deskripsi: "Bagi mahasiswa baru", tanggal: "12-13 September 2024", status: "opsional" },
-    { judul: "Seminar Nasional Teknologi", deskripsi: "Menghadirkan pembicara dari industri", tanggal: "15 September 2024", status: "wajib" }
-  ];
+  const semesters = Object.values(groupedCalendar);
+
+  // Fungsi untuk format tanggal
+  const formatDate = (date: Date | null) => {
+    if (!date) return 'Tanggal belum ditentukan';
+    return new Date(date).toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  };
+
+  // Fungsi untuk format range tanggal
+  const formatDateRange = (startDate: Date | null, endDate: Date | null) => {
+    if (!startDate) return 'Tanggal belum ditentukan';
+    if (!endDate || startDate === endDate) return formatDate(startDate);
+    return `${formatDate(startDate)} - ${formatDate(endDate)}`;
+  };
+
+  // Fungsi untuk warna badge berdasarkan tipe event
+  const getEventTypeColor = (eventType: string | null) => {
+    switch (eventType?.toLowerCase()) {
+      case 'pendaftaran':
+      case 'registrasi':
+        return 'bg-green-500 hover:bg-green-600';
+      case 'perkuliahan':
+      case 'kuliah':
+        return 'bg-cyber-blue hover:bg-cyber-blue/80';
+      case 'ujian':
+      case 'uts':
+      case 'uas':
+        return 'bg-red-500 hover:bg-red-600';
+      case 'libur':
+      case 'cuti':
+        return 'bg-yellow-500 hover:bg-yellow-600';
+      case 'wisuda':
+        return 'bg-purple-500 hover:bg-purple-600';
+      default:
+        return 'bg-gray-500 hover:bg-gray-600';
+    }
+  };
+
+  // Hitung statistik
+  const totalEvents = calendarData.length;
+  const upcomingEvents = calendarData.filter(e => e.startDate && new Date(e.startDate) > new Date()).length;
 
   return (
     <div className="min-h-screen bg-background overflow-hidden relative">
@@ -65,15 +94,15 @@ export default function KalenderAkademikPage() {
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyber-blue/10 rounded-full blur-3xl animate-pulse" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-electric-purple/10 rounded-full blur-3xl animate-pulse delay-1000" />
 
-      <div className="container mx-auto px-4 py-16 relative z-10">
-        {/* Header */}
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight transform transition-all duration-300 hover:scale-105" style={{
+      {/* Full width background image section for header */}
+      <div
+        className="relative bg-[url('/images/backround_akademik.png')] bg-cover bg-center bg-no-repeat -mx-4 sm:-mx-6 lg:-mx-8 xl:-mx-0 border-2 border-cyber-blue/50 rounded-3xl overflow-hidden mb-16"
+      >
+        <div className="absolute inset-0 bg-black/30"></div>
+        <div className="relative z-10 py-44 px-4 sm:px-6">
+          <div className="container mx-auto max-w-6xl">
+            <div className="text-center">
+              <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight transform transition-all duration-300 hover:scale-105" style={{
                 background: 'linear-gradient(to right, #10b981, #34d399)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -81,119 +110,171 @@ export default function KalenderAkademikPage() {
                 WebkitTextStroke: '1px black',
                 textShadow: '0 0 5px rgba(16, 185, 129, 0.5), 0 0 10px rgba(52, 211, 153, 0.5), 0 0 20px rgba(16, 185, 129, 0.3)'
               }}>
-            Kalender <span style={{
-                background: 'linear-gradient(to right, #10b981, #34d399)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                WebkitTextStroke: '1px black',
-                textShadow: '0 0 5px rgba(16, 185, 129, 0.5), 0 0 10px rgba(52, 211, 153, 0.5), 0 0 20px rgba(16, 185, 129, 0.3)'
-              }}>Akademik</span>
-          </h1>
-          <p className="text-lg md:text-xl text-foreground max-w-3xl mx-auto font-medium">
-            Jadwal penting dan kegiatan akademik sepanjang tahun ajaran untuk mahasiswa dan dosen
-          </p>
-        </motion.div>
+                Kalender Akademik
+              </h1>
+              <p className="text-lg md:text-xl text-foreground max-w-2xl mx-auto font-medium">
+                Jadwal kegiatan akademik sepanjang tahun ajaran
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        {/* Kalender Semester */}
-        <motion.div
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
+
+        {/* Statistik */}
+        <MotionDiv
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(0,240,255,0.1)] transition-all duration-300">
+            <div className="w-12 h-12 bg-gradient-cyber rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(0,240,255,0.3)]">
+              <Calendar className="w-6 h-6 text-foreground" />
+            </div>
+            <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-cyber mb-2">
+              {totalEvents}
+            </div>
+            <div className="text-muted-foreground text-sm">Total Kegiatan</div>
+          </div>
+
+          <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(179,118,255,0.1)] transition-all duration-300">
+            <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
+              <Clock className="w-6 h-6 text-foreground" />
+            </div>
+            <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-emerald-600 mb-2">
+              {upcomingEvents}
+            </div>
+            <div className="text-muted-foreground text-sm">Kegiatan Mendatang</div>
+          </div>
+
+          <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(179,118,255,0.1)] transition-all duration-300">
+            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(192,132,252,0.3)]">
+              <BookOpen className="w-6 h-6 text-foreground" />
+            </div>
+            <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-600 mb-2">
+              {semesters.length}
+            </div>
+            <div className="text-muted-foreground text-sm">Periode Akademik</div>
+          </div>
+
+          <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(179,118,255,0.1)] transition-all duration-300">
+            <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+              <GraduationCap className="w-6 h-6 text-foreground" />
+            </div>
+            <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-blue-600 mb-2">
+              2
+            </div>
+            <div className="text-muted-foreground text-sm">Semester/Tahun</div>
+          </div>
+        </MotionDiv>
+
+        {/* Kalender Akademik */}
+        <MotionDiv
           className="mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          {kalenderAkademik.map((semester, index) => (
-            <motion.div
-              key={semester.id}
-              className="mb-8"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 * index }}
-            >
-              <div className="glass-card rounded-2xl border border-white/20 overflow-hidden hover:shadow-[0_0_30px_rgba(0,240,255,0.1)] transition-all duration-300">
-                <div className="p-8">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl font-bold text-white">{semester.nama}</h2>
-                    <Badge variant="outline" className="text-lg py-2 px-4 border-cyber-blue text-cyber-blue bg-cyber-blue/10">
-                      {semester.periode}
-                    </Badge>
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold text-foreground">Jadwal Kegiatan Akademik</h2>
+            <Button variant="outline" className="border-cyber-blue text-cyber-blue hover:bg-cyber-blue/10">
+              <Download className="w-4 h-4 mr-2" />
+              Download Kalender
+            </Button>
+          </div>
+
+          {semesters.length > 0 ? (
+            <div className="space-y-8">
+              {semesters.map((semester, index) => (
+                <MotionDiv
+                  key={`${semester.academicYear}-${semester.semester}`}
+                  className="glass-card rounded-2xl border overflow-hidden"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * index }}
+                >
+                  <div className="p-6 bg-gradient-to-r from-cyber-blue/20 to-electric-purple/20 border-b">
+                    <h3 className="text-xl font-bold text-foreground">
+                      {semester.semester !== 'Umum' ? `Semester ${semester.semester}` : 'Kegiatan Umum'} - {semester.academicYear}
+                    </h3>
                   </div>
-
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-foreground/10">
-                        <tr>
-                          <th className="p-4 text-left text-foreground">Kegiatan</th>
-                          <th className="p-4 text-left text-foreground">Tanggal</th>
-                          <th className="p-4 text-left text-foreground">Keterangan</th>
-
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {semester.kegiatan.map((kegiatan, idx) => (
-                          <tr key={idx} className={`border-t border-foreground/10 ${idx % 2 === 0 ? 'bg-foreground/5' : 'bg-foreground/10'}`}>
-                            <td className="p-4 font-medium text-foreground">{kegiatan.nama}</td>
-                            <td className="p-4 text-foreground/70">{kegiatan.tanggal}</td>
-                            <td className="p-4 text-foreground/70">{kegiatan.keterangan}</td>
-
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                  <div className="p-6">
+                    <div className="space-y-4">
+                      {semester.events.map((event, eventIndex) => (
+                        <div
+                          key={event.id}
+                          className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-muted/50 rounded-lg border hover:border-cyber-blue/50 transition-all duration-300"
+                        >
+                          <div className="flex items-start gap-4 mb-3 md:mb-0">
+                            <div className="w-10 h-10 bg-gradient-cyber rounded-lg flex items-center justify-center flex-shrink-0 shadow-[0_0_10px_rgba(0,240,255,0.3)]">
+                              <Calendar className="w-5 h-5 text-foreground" />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-foreground">{event.title}</h4>
+                              {event.description && (
+                                <p className="text-sm text-muted-foreground mt-1">{event.description}</p>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex flex-col md:flex-row items-start md:items-center gap-3">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <Clock className="w-4 h-4 text-electric-purple" />
+                              <span>{formatDateRange(event.startDate, event.endDate)}</span>
+                            </div>
+                            {event.eventType && (
+                              <Badge className={getEventTypeColor(event.eventType)}>
+                                {event.eventType}
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
+                </MotionDiv>
+              ))}
+            </div>
+          ) : (
+            <div className="glass-card rounded-2xl border p-12 text-center">
+              <Calendar className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-foreground mb-2">Belum Ada Jadwal</h3>
+              <p className="text-muted-foreground">Kalender akademik akan segera ditambahkan</p>
+            </div>
+          )}
+        </MotionDiv>
 
-                  <div className="mt-6 flex gap-4">
-                    <Button className="bg-gradient-cyber hover:shadow-[0_0_20px_rgba(0,240,255,0.5)]">
-                      <FileText className="w-4 h-4 mr-2" />
-                      Unduh Kalender
-                    </Button>
-                    <Button variant="outline" className="border-cyber-blue text-cyber-blue hover:bg-cyber-blue/10">
-                      <Download className="w-4 h-4 mr-2" />
-                      Versi PDF
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Panduan Kalender */}
-        <motion.div
-          className="glass-card rounded-2xl p-8 border border-white/20"
+        {/* Catatan Penting */}
+        <MotionDiv
+          className="glass-card rounded-2xl p-8 border mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
         >
-          <h2 className="text-2xl font-bold text-center text-foreground mb-8">Panduan Penggunaan Kalender</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                judul: "Cek Jadwal Rutin",
-                deskripsi: "Periksa kalender setiap awal minggu untuk mengetahui kegiatan akademik",
-                icon: Calendar
-              },
-              {
-                judul: "Persetujuan Jadwal",
-                deskripsi: "Pastikan untuk mengkonfirmasi tanggal-tanggal penting dengan fakultas",
-                icon: FileText
-              },
-              {
-                judul: "Pemberitahuan Resmi",
-                deskripsi: "Ikuti informasi resmi dari kampus untuk update jadwal terbaru",
-                icon: Users
-              }
-            ].map((panduan, index) => (
-              <div key={index} className="glass-card text-center p-6 rounded-xl border border-foreground/10">
-                <div className="w-12 h-12 bg-gradient-cyber rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(0,240,255,0.3)]">
-                  <panduan.icon className="w-6 h-6 text-foreground/90" />
-                </div>
-                <h3 className="font-bold text-lg text-foreground mb-2">{panduan.judul}</h3>
-                <p className="text-foreground/70">{panduan.deskripsi}</p>
-              </div>
-            ))}
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-[0_0_15px_rgba(234,179,8,0.3)]">
+              <AlertCircle className="w-6 h-6 text-foreground" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-foreground mb-3">Catatan Penting</h3>
+              <ul className="space-y-2 text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <ChevronRight className="w-4 h-4 text-cyber-blue mt-1 flex-shrink-0" />
+                  <span>Jadwal dapat berubah sewaktu-waktu, silakan cek secara berkala</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <ChevronRight className="w-4 h-4 text-cyber-blue mt-1 flex-shrink-0" />
+                  <span>Untuk informasi lebih lanjut, hubungi bagian akademik</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <ChevronRight className="w-4 h-4 text-cyber-blue mt-1 flex-shrink-0" />
+                  <span>Pastikan untuk memperhatikan batas waktu pendaftaran dan pembayaran</span>
+                </li>
+              </ul>
+            </div>
           </div>
-        </motion.div>
+        </MotionDiv>
       </div>
     </div>
   );

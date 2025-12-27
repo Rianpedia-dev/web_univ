@@ -2,14 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { signIn } from "@/lib/auth-client";
-import { Loader2 } from "lucide-react";
+import { Loader2, GraduationCap, ShieldCheck } from "lucide-react";
 
 export default function SignInPage() {
     const [email, setEmail] = useState("");
@@ -32,7 +31,7 @@ export default function SignInPage() {
             if (result.error) {
                 setError(result.error.message || "Sign in failed");
             } else {
-                router.push("/dashboard");
+                router.push("/dashboardAdmin");
             }
         } catch (err) {
             setError("An unexpected error occurred");
@@ -42,13 +41,18 @@ export default function SignInPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-background px-4">
-            <Card className="w-full max-w-md">
-                <CardHeader className="text-center">
-                    <CardTitle className="text-2xl font-bold">Sign In</CardTitle>
-                    <CardDescription>
-                        Enter your email and password to access your account
-                    </CardDescription>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4">
+            <Card className="w-full max-w-md shadow-xl border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+                <CardHeader className="text-center space-y-4">
+                    <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+                        <GraduationCap className="w-10 h-10 text-white" />
+                    </div>
+                    <div>
+                        <CardTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">Admin Login</CardTitle>
+                        <CardDescription className="mt-2">
+                            Masukkan kredensial admin untuk mengakses dashboard
+                        </CardDescription>
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
@@ -62,11 +66,12 @@ export default function SignInPage() {
                             <Input
                                 id="email"
                                 type="email"
-                                placeholder="Enter your email"
+                                placeholder="Masukkan email admin"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
                                 disabled={isLoading}
+                                className="border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
                         <div className="space-y-2">
@@ -74,33 +79,42 @@ export default function SignInPage() {
                             <Input
                                 id="password"
                                 type="password"
-                                placeholder="Enter your password"
+                                placeholder="Masukkan password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                                 disabled={isLoading}
+                                className="border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-blue-500"
                             />
                         </div>
-                        <Button type="submit" className="w-full" disabled={isLoading}>
+                        <Button
+                            type="submit"
+                            className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                            disabled={isLoading}
+                        >
                             {isLoading ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                     Signing in...
                                 </>
                             ) : (
-                                "Sign In"
+                                <>
+                                    <ShieldCheck className="mr-2 h-4 w-4" />
+                                    Sign In
+                                </>
                             )}
                         </Button>
                     </form>
+
+                    <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                        <p className="text-sm text-center text-muted-foreground">
+                            Halaman ini khusus untuk administrator.
+                        </p>
+                        <p className="text-xs text-center text-muted-foreground mt-2">
+                            Hubungi IT Support jika Anda memerlukan bantuan.
+                        </p>
+                    </div>
                 </CardContent>
-                <CardFooter className="text-center">
-                    <p className="text-sm text-muted-foreground">
-                        Don&apos;t have an account?{" "}
-                        <Link href="/sign-up" className="font-medium text-primary hover:underline">
-                            Sign up
-                        </Link>
-                    </p>
-                </CardFooter>
             </Card>
         </div>
     );

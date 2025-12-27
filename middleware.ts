@@ -11,8 +11,8 @@ export default createMiddleware({
 
 export const config = {
   // Matcher untuk menentukan path mana yang akan dihandle oleh middleware
+  // Tidak menangani API routes, static files, auth routes, dashboard, atau next files
   matcher: [
-    // Tidak menangani API routes, static files, atau next files
-    '/((?!api|_next/static|_next/image|images|favicon.ico|manifest.webmanifest|sw.js).*)',
+    '/((?!api|_next/static|_next/image|images|favicon.ico|manifest.webmanifest|sw.js|sign-in|dashboardAdmin).*)',
   ],
 };

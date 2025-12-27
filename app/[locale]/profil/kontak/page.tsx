@@ -1,5 +1,3 @@
-"use client";
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,52 +18,49 @@ import {
   TrendingUp,
   Lightbulb
 } from "lucide-react";
-import { motion } from "framer-motion";
-import { useTranslations } from '@/lib/i18n-helper';
+import { MotionDiv, MotionH1, MotionP } from "@/components/motion-wrapper";
+import { getPublishedContactInformation, getPublishedCampusAccessibilities, getPublishedSocialMediaLinks } from '@/lib/db';
+import * as LucideIcons from "lucide-react";
 
-export default function ProfilKontakPage() {
-  const t = useTranslations('Navigation.submenus');
+export default async function ProfilKontakPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
 
-  // Data kontak universitas
-  const kontak = {
-    alamat: "Jl. Pendidikan No. 1, Kota Pendidikan, Indonesia",
-    telepon: "(021) 12345678",
+  // Ambil data dari database
+  const [contactInfoArr, dbAksesKampus, dbMediaSosial] = await Promise.all([
+    getPublishedContactInformation(),
+    getPublishedCampusAccessibilities(),
+    getPublishedSocialMediaLinks()
+  ]);
+
+  // Ambil kontak utama (Kantor Pusat/Rektorat)
+  const mainContact = contactInfoArr.find(c => c.type === 'main_campus' || c.type === 'administrative_office') || contactInfoArr[0] || {
+    name: "Universitas",
+    address: "Jl. Pendidikan No. 1",
+    city: "Kota Pendidikan",
+    province: "Indonesia",
+    postalCode: "-",
+    phone: "(021) 12345678",
     email: "info@university.ac.id",
     website: "www.university.ac.id",
-    jamOperasional: "Senin - Jumat: 08:00 - 16:00",
-    fax: "(021) 12345679"
+    operatingHours: "Senin - Jumat: 08:00 - 16:00",
+    mapUrl: ""
   };
 
-  // Data unit di kampus
-  const unitKampus = [
-    {
-      nama: "Rektorat",
-      telepon: "(021) 12345680",
-      email: "rektorat@university.ac.id",
-      jam: "08:00 - 16:00"
-    },
-    {
-      nama: "Akademik",
-      telepon: "(021) 12345681",
-      email: "akademik@university.ac.id",
-      jam: "08:00 - 16:00"
-    },
-    {
-      nama: "Administrasi Umum",
-      telepon: "(021) 12345682",
-      email: "umum@university.ac.id",
-      jam: "08:00 - 16:00"
-    },
-    {
-      nama: "Kemahasiswaan",
-      telepon: "(021) 12345683",
-      email: "kemahasiswaan@university.ac.id",
-      jam: "08:00 - 16:00"
-    }
-  ];
+  // Unit kampus dari database
+  const unitKampus = contactInfoArr.filter(c => c.id !== mainContact.id);
 
-  // Data akses ke kampus
-  const aksesKampus = [
+  // Helper untuk mendapatkan ikon Lucide
+  const getIcon = (iconName: string) => {
+    const IconComponent = (LucideIcons as any)[iconName] || LucideIcons.HelpCircle;
+    return IconComponent;
+  };
+
+  // Data akses ke kampus (dinamis)
+  const aksesKampus = dbAksesKampus.length > 0 ? dbAksesKampus.map(item => ({
+    nama: item.name,
+    icon: getIcon(item.icon),
+    deskripsi: item.description
+  })) : [
     {
       nama: "Transportasi Umum",
       icon: Bus,
@@ -74,7 +69,7 @@ export default function ProfilKontakPage() {
     {
       nama: "Stasiun Terdekat",
       icon: Train,
-      deskripsi: "Stasiun Pendidikan berjarak 1 km dari kampus"
+      deskripsi: "Stasiun Kota berjarak 1 km dari kampus"
     },
     {
       nama: "Bandara Terdekat",
@@ -83,8 +78,13 @@ export default function ProfilKontakPage() {
     }
   ];
 
-  // Data media sosial
-  const mediaSosial = [
+  // Data media sosial (dinamis)
+  const mediaSosial = dbMediaSosial.length > 0 ? dbMediaSosial.map(item => ({
+    nama: item.platform,
+    icon: getIcon(item.icon),
+    url: item.url,
+    username: item.username
+  })) : [
     {
       nama: "Facebook",
       icon: Facebook,
@@ -101,13 +101,13 @@ export default function ProfilKontakPage() {
       nama: "Twitter",
       icon: Twitter,
       url: "#",
-      username: "@university"
+      username: "@university_id"
     },
     {
-      nama: "YouTube",
+      nama: "Youtube",
       icon: Youtube,
       url: "#",
-      username: "Universitas"
+      username: "University Official Channel"
     }
   ];
 
@@ -120,220 +120,205 @@ export default function ProfilKontakPage() {
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyber-blue/10 rounded-full blur-3xl animate-pulse" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-electric-purple/10 rounded-full blur-3xl animate-pulse delay-1000" />
 
-      <div className="container mx-auto px-4 sm:px-6 max-w-6xl py-16 relative z-10">
-        <div className="text-center mb-12">
-          <motion.h1
-            className="text-4xl md:text-6xl font-bold mb-4 leading-tight transform transition-all duration-300 hover:scale-105"
-            style={{
+      {/* Full width background image section for header */}
+      <div
+        className="relative bg-[url('/images/backround_profil.png')] bg-cover bg-center bg-no-repeat -mx-4 sm:-mx-6 lg:-mx-8 xl:-mx-0 border-2 border-cyber-blue/50 rounded-3xl overflow-hidden mb-16"
+      >
+        <div className="absolute inset-0 bg-black/0"></div>
+        <div className="relative z-10 py-44 px-4 sm:px-6">
+          <div className="container mx-auto max-w-6xl">
+            {/* Header Section */}
+            <MotionDiv
+              className="text-center"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight transform transition-all duration-300 hover:scale-105" style={{
                 background: 'linear-gradient(to right, #10b981, #34d399)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
                 WebkitTextStroke: '1px black',
                 textShadow: '0 0 5px rgba(16, 185, 129, 0.5), 0 0 10px rgba(52, 211, 153, 0.5), 0 0 20px rgba(16, 185, 129, 0.3)'
-              }}
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            {t('contact')}
-          </motion.h1>
-          <motion.p
-            className="text-lg md:text-xl text-foreground max-w-2xl mx-auto font-medium"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-          >
-            Informasi Kontak dan Lokasi Kampus
-          </motion.p>
-        </div>
+              }}>
+                Hubungi Kami
+              </h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-          {/* Informasi Kontak */}
-          <motion.div
+            </MotionDiv>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
+          {/* Main Contact Card */}
+          <MotionDiv
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
+            transition={{ duration: 0.8 }}
           >
-            <div className="glass-card p-6 rounded-2xl border border-white/20 h-full">
-              <h2 className="text-xl font-bold mb-6 text-center text-cyber-blue">Kontak Kami</h2>
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5">
+            <div className="glass-card rounded-3xl p-8 md:p-12 border border-white/20 h-full relative overflow-hidden group hover:shadow-[0_0_50px_rgba(0,240,255,0.2)] transition-all duration-500">
+              <h2 className="text-2xl font-bold text-foreground mb-8 flex items-center">
+                <div className="w-10 h-10 bg-gradient-cyber rounded-xl flex items-center justify-center mr-4 shadow-lg group-hover:rotate-6 transition-transform">
+                  <Globe className="w-5 h-5 text-foreground" />
+                </div>
+                Kontak Utama
+              </h2>
+
+              <div className="space-y-8">
+                <div className="flex items-start">
+                  <div className="w-10 h-10 rounded-full bg-cyber-blue/10 flex items-center justify-center mr-6 flex-shrink-0 group-hover:scale-110 transition-transform">
                     <MapPin className="w-5 h-5 text-cyber-blue" />
                   </div>
                   <div>
-                    <p className="font-semibold text-foreground">Alamat</p>
-                    <p className="text-sm text-foreground/70">{kontak.alamat}</p>
+                    <h3 className="font-semibold text-foreground mb-1">Alamat Kampus</h3>
+                    <p className="text-muted-foreground">{mainContact.address}</p>
+                    <p className="text-muted-foreground">{mainContact.city}, {mainContact.province} {mainContact.postalCode}</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5">
+
+                <div className="flex items-start">
+                  <div className="w-10 h-10 rounded-full bg-electric-purple/10 flex items-center justify-center mr-6 flex-shrink-0 group-hover:scale-110 transition-transform">
                     <Phone className="w-5 h-5 text-electric-purple" />
                   </div>
                   <div>
-                    <p className="font-semibold text-foreground">Telepon</p>
-                    <p className="text-sm text-foreground/70">{kontak.telepon}</p>
+                    <h3 className="font-semibold text-foreground mb-1">Telepon & Fax</h3>
+                    <p className="text-muted-foreground">{mainContact.phone}</p>
+                    {mainContact.fax && <p className="text-muted-foreground">Fax: {mainContact.fax}</p>}
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5">
-                    <Mail className="w-5 h-5 text-neon-green" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-foreground">Email</p>
-                    <p className="text-sm text-foreground/70">{kontak.email}</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5">
-                    <Globe className="w-5 h-5 text-accent-pink" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-foreground">Website</p>
-                    <p className="text-sm text-foreground/70">{kontak.website}</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5">
-                    <Clock className="w-5 h-5 text-cyan-400" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-foreground">Jam Operasional</p>
-                    <p className="text-sm text-foreground/70">{kontak.jamOperasional}</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5">
-                    <Phone className="w-5 h-5 text-cyber-blue" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-foreground">Fax</p>
-                    <p className="text-sm text-foreground/70">{kontak.fax}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </motion.div>
 
-          {/* Peta Lokasi */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.5 }}
-            className="lg:col-span-2"
-          >
-            <div className="glass-card p-6 rounded-2xl border border-white/20 h-full">
-              <h2 className="text-xl font-bold mb-6 text-center text-cyber-blue">Lokasi Kampus</h2>
-              <div className="aspect-video bg-gradient-to-br from-cyber-blue/10 to-electric-purple/10 rounded-xl flex items-center justify-center border border-foreground/10">
-                <div className="text-center">
-                  <MapPin className="w-16 h-16 text-cyber-blue mx-auto mb-4" />
-                  <p className="text-lg font-semibold text-foreground">Lokasi Kampus</p>
-                  <p className="text-foreground/70">Peta Lokasi Kampus Akan Ditampilkan Di Sini</p>
-                  <Button className="mt-4 bg-gradient-cyber hover:shadow-[0_0_20px_rgba(0,240,255,0.5)]">
-                    Lihat Rute
-                  </Button>
+                <div className="flex items-start">
+                  <div className="w-10 h-10 rounded-full bg-neon-green/10 flex items-center justify-center mr-6 flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <Mail className="w-5 h-5 text-foreground" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-1">Email Resmi</h3>
+                    <p className="text-muted-foreground">{mainContact.email}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start">
+                  <div className="w-10 h-10 rounded-full bg-cyber-blue/10 flex items-center justify-center mr-6 flex-shrink-0 group-hover:scale-110 transition-transform">
+                    <Clock className="w-5 h-5 text-cyber-blue" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground mb-1">Jam Operasional</h3>
+                    <p className="text-muted-foreground">{mainContact.operatingHours}</p>
+                  </div>
                 </div>
               </div>
+
+              <div className="mt-12 flex gap-4">
+                {mediaSosial.map((social, index) => (
+                  <a
+                    key={index}
+                    href={social.url}
+                    className="w-12 h-12 glass-card rounded-xl flex items-center justify-center border border-white/10 hover:border-cyber-blue hover:text-cyber-blue transition-all"
+                    aria-label={social.nama}
+                  >
+                    <social.icon className="w-5 h-5" />
+                  </a>
+                ))}
+              </div>
             </div>
-          </motion.div>
+          </MotionDiv>
+
+          {/* Map Section */}
+          <MotionDiv
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="glass-card rounded-3xl border border-white/20 h-full min-h-[450px] overflow-hidden relative group shadow-2xl">
+              {mainContact.mapUrl ? (
+                <div className="absolute inset-0 w-full h-full">
+                  {mainContact.mapUrl.includes('<iframe') ? (
+                    (() => {
+                      const srcMatch = mainContact.mapUrl.match(/src="([^"]+)"/);
+                      const mapSrc = srcMatch ? srcMatch[1] : "";
+                      return (
+                        <iframe
+                          src={mapSrc}
+                          width="100%"
+                          height="100%"
+                          style={{ border: 0 }}
+                          allowFullScreen
+                          loading="lazy"
+                          referrerPolicy="no-referrer-when-downgrade"
+                          className="grayscale group-hover:grayscale-0 transition-all duration-700 opacity-60 group-hover:opacity-100"
+                        ></iframe>
+                      );
+                    })()
+                  ) : (
+                    <iframe
+                      src={mainContact.mapUrl}
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0 }}
+                      allowFullScreen
+                      loading="lazy"
+                      className="grayscale group-hover:grayscale-0 transition-all duration-700 opacity-60 group-hover:opacity-100"
+                    ></iframe>
+                  )}
+                </div>
+              ) : (
+                <div className="absolute inset-0 bg-white/5 flex flex-col items-center justify-center space-y-4">
+                  <div className="w-16 h-16 rounded-full bg-cyber-blue/10 flex items-center justify-center">
+                    <MapPin className="w-8 h-8 text-cyber-blue" />
+                  </div>
+                  <p className="text-sm text-muted-foreground">Peta belum tersedia</p>
+                </div>
+              )}
+
+              {/* Overlay Gradient to blend with background */}
+              <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-background/80 via-transparent to-transparent opacity-60" />
+
+              <div className="absolute bottom-8 left-8 right-8 p-6 glass-card rounded-2xl border border-white/10 pointer-events-none group-hover:translate-y-20 transition-transform duration-500">
+                <h3 className="font-bold text-foreground mb-2 flex items-center">
+                  <MapPin className="w-4 h-4 mr-2 text-cyber-blue" />
+                  Lokasi Kampus
+                </h3>
+                <p className="text-sm text-muted-foreground truncate">{mainContact.address}</p>
+                <p className="text-[10px] text-muted-foreground/60 mt-1 italic">Klik peta untuk berinteraksi</p>
+              </div>
+            </div>
+          </MotionDiv>
         </div>
 
-        {/* Unit di Kampus */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
-          className="mb-12"
-        >
-          <h2 className="text-2xl font-bold mb-6 text-center bg-clip-text text-transparent bg-gradient-cyber">
-            Unit di Kampus
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {unitKampus.map((unit, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 + index * 0.1, duration: 0.5 }}
-              >
-                <div className="glass-card p-6 rounded-2xl border border-white/20 hover:shadow-[0_0_30px_rgba(0,240,255,0.1)] transition-all duration-300">
-                  <h3 className="font-bold text-lg mb-3 text-foreground">{unit.nama}</h3>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Phone className="w-4 h-4 text-cyber-blue" />
-                      <span className="text-sm text-foreground/70">{unit.telepon}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Mail className="w-4 h-4 text-electric-purple" />
-                      <span className="text-sm text-foreground/70">{unit.email}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-neon-green" />
-                      <span className="text-sm text-foreground/70">Jam: {unit.jam}</span>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
 
-        {/* Akses ke Kampus */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.5 }}
-          className="mb-12"
-        >
-          <h2 className="text-2xl font-bold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
-            Akses ke Kampus
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        {/* Access Info */}
+        <div className="mb-16">
+          <MotionDiv
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <h2 className="text-3xl font-bold text-foreground mb-4">Aksesibilitas Kampus</h2>
+            <p className="text-muted-foreground">Pilihan sarana transportasi untuk menuju ke lokasi kampus kami</p>
+          </MotionDiv>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {aksesKampus.map((akses, index) => (
-              <motion.div
+              <MotionDiv
                 key={index}
+                className="glass-card p-8 rounded-3xl border border-white/10 text-center hover:bg-white/5 transition-colors group"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 + index * 0.1, duration: 0.5 }}
+                transition={{ delay: index * 0.1 }}
               >
-                <div className="glass-card p-6 text-center rounded-2xl border border-white/20 hover:shadow-[0_0_30px_rgba(192,132,252,0.1)] transition-all duration-300">
-                  <akses.icon className="w-10 h-10 text-electric-purple mx-auto mb-3" />
-                  <h3 className="font-semibold mb-2 text-foreground">{akses.nama}</h3>
-                  <p className="text-sm text-foreground/70">{akses.deskripsi}</p>
+                <div className="w-16 h-16 bg-gradient-cyber rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg group-hover:scale-110 transition-transform">
+                  <akses.icon className="w-8 h-8 text-foreground" />
                 </div>
-              </motion.div>
+                <h3 className="font-bold text-xl text-foreground mb-3">{akses.nama}</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">{akses.deskripsi}</p>
+              </MotionDiv>
             ))}
           </div>
-        </motion.div>
-
-        {/* Media Sosial */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9, duration: 0.5 }}
-          className="glass-card rounded-2xl p-8 border border-white/20"
-        >
-          <h2 className="text-2xl font-bold mb-6 text-center text-foreground">Media Sosial Kampus</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {mediaSosial.map((sosial, index) => (
-              <motion.a
-                key={index}
-                href={sosial.url}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.0 + index * 0.1, duration: 0.5 }}
-                className="block"
-              >
-                <div className="glass-card p-4 text-center rounded-xl border border-white/20 cursor-pointer hover:shadow-[0_0_30px_rgba(0,240,255,0.1)] transition-all duration-300">
-                  <sosial.icon className="w-8 h-8 text-cyber-blue mx-auto mb-2" />
-                  <h3 className="font-semibold text-sm text-foreground">{sosial.nama}</h3>
-                  <p className="text-xs text-foreground/70">{sosial.username}</p>
-                </div>
-              </motion.a>
-            ))}
-          </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

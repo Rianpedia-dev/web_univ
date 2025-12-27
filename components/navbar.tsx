@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageToggle } from "@/components/language-toggle";
 import { Button } from "@/components/ui/button";
 import { Menu, X, GraduationCap, BookOpen, Users, Newspaper, Award, Handshake } from "lucide-react";
+import { AuthButtons } from "@/components/auth-buttons";
 
 export function Navbar({ locale }: { locale: string }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -93,11 +94,10 @@ export function Navbar({ locale }: { locale: string }) {
   ];
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      scrolled
-        ? "bg-white/10 dark:bg-gray-900/30 backdrop-blur-xl border-b border-white/20 dark:border-gray-800/50 shadow-lg py-2"
-        : "bg-transparent py-4"
-    }`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
+      ? "bg-white/10 dark:bg-gray-900/30 backdrop-blur-xl border-b border-white/20 dark:border-gray-800/50 shadow-lg py-2"
+      : "bg-transparent py-4"
+      }`}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -116,11 +116,10 @@ export function Navbar({ locale }: { locale: string }) {
               <div key={item.href} className="relative group">
                 <Link
                   href={item.href}
-                  className={`px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2 ${
-                    pathname === item.href || pathname.startsWith(item.href + "/")
-                      ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-blue-700 dark:text-blue-300 shadow-[0_0_10px_rgba(99,102,241,0.2)]"
-                      : "hover:bg-white/10 dark:hover:bg-gray-800/50 hover:text-blue-600 dark:hover:text-blue-400"
-                  }`}
+                  className={`px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2 ${pathname === item.href || pathname.startsWith(item.href + "/")
+                    ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-blue-700 dark:text-blue-300 shadow-[0_0_10px_rgba(99,102,241,0.2)]"
+                    : "hover:bg-white/10 dark:hover:bg-gray-800/50 hover:text-blue-600 dark:hover:text-blue-400"
+                    }`}
                 >
                   <item.icon className="w-4 h-4" />
                   <span>{item.title}</span>
@@ -134,9 +133,8 @@ export function Navbar({ locale }: { locale: string }) {
                         <Link
                           key={subItem.href}
                           href={subItem.href}
-                          className={`block px-4 py-3 text-sm hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-purple-600/10 hover:pl-6 transition-all duration-200 ${
-                            pathname === subItem.href ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-blue-700 dark:text-blue-300 border-l-4 border-blue-500" : "hover:text-blue-600 dark:hover:text-blue-300"
-                          }`}
+                          className={`block px-4 py-3 text-sm hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-purple-600/10 hover:pl-6 transition-all duration-200 ${pathname === subItem.href ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-blue-700 dark:text-blue-300 border-l-4 border-blue-500" : "hover:text-blue-600 dark:hover:text-blue-300"
+                            }`}
                         >
                           <div className="flex items-center gap-2">
                             <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
@@ -157,6 +155,7 @@ export function Navbar({ locale }: { locale: string }) {
             <div className="hidden sm:flex items-center gap-2">
               <ThemeToggle />
               <LanguageToggle />
+              <AuthButtons />
             </div>
 
             {/* Mobile controls - including Theme and Language toggles alongside menu button */}
@@ -184,11 +183,10 @@ export function Navbar({ locale }: { locale: string }) {
                 <div key={item.href}>
                   <Link
                     href={item.href}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                      pathname === item.href || pathname.startsWith(item.href + "/")
-                        ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-blue-700 dark:text-blue-300"
-                        : "hover:bg-white/10 dark:hover:bg-gray-800/50"
-                    }`}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${pathname === item.href || pathname.startsWith(item.href + "/")
+                      ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-blue-700 dark:text-blue-300"
+                      : "hover:bg-white/10 dark:hover:bg-gray-800/50"
+                      }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <item.icon className="w-5 h-5" />
@@ -202,11 +200,10 @@ export function Navbar({ locale }: { locale: string }) {
                         <Link
                           key={subItem.href}
                           href={subItem.href}
-                          className={`block px-4 py-2 text-sm rounded-lg transition-all ${
-                            pathname === subItem.href
-                              ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-blue-700 dark:text-blue-300"
-                              : "hover:bg-white/10 dark:hover:bg-gray-800/50 hover:pl-6"
-                          }`}
+                          className={`block px-4 py-2 text-sm rounded-lg transition-all ${pathname === subItem.href
+                            ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-blue-700 dark:text-blue-300"
+                            : "hover:bg-white/10 dark:hover:bg-gray-800/50 hover:pl-6"
+                            }`}
                           onClick={() => setIsMenuOpen(false)}
                         >
                           {subItem.title}
@@ -216,6 +213,11 @@ export function Navbar({ locale }: { locale: string }) {
                   )}
                 </div>
               ))}
+
+              {/* Sign In Button for Mobile */}
+              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-center">
+                <AuthButtons />
+              </div>
             </nav>
           </div>
         )}

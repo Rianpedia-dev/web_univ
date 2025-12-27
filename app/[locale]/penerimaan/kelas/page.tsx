@@ -1,5 +1,3 @@
-"use client";
-
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,106 +16,21 @@ import {
   Globe,
   Lightbulb
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { MotionDiv, MotionH1, MotionP } from "@/components/motion-wrapper";
 import { Badge } from "@/components/ui/badge";
+import { getPublishedAdmissionClasses } from '@/lib/db';
 
-export default function KelasPage() {
-  // Data kelas yang tersedia
-  const kelas = [
-    {
-      id: 1,
-      nama: "Kelas Reguler",
-      deskripsi: "Kelas konvensional dengan jadwal tetap di kampus",
-      jadwal: "Senin - Jumat, 08:00 - 16:00",
-      durasi: "4 tahun",
-      target: "Lulusan SMA/SMK/MA",
-      persyaratan: [
-        "Lulusan SMA/SMK/MA atau sederajat",
-        "Nilai rapor rata-rata minimal 7.0",
-        "Lulus seleksi masuk universitas"
-      ],
-      fasilitas: [
-        "Kuliah di kampus utama",
-        "Akses ke semua fasilitas kampus",
-        "Laboratorium lengkap",
-        "Perpustakaan digital"
-      ],
-      kuota: 1800,
-      biaya: "UKT sesuai golongan",
-      sertifikat: "Sarjana (S1) Reguler"
-    },
-    {
-      id: 2,
-      nama: "Kelas Karyawan",
-      deskripsi: "Kelas untuk pegawai/pekerja yang ingin melanjutkan pendidikan",
-      jadwal: "Sabtu - Minggu, 08:00 - 16:00",
-      durasi: "5 tahun",
-      target: "Pegawai, wiraswasta, atau ASN",
-      persyaratan: [
-        "Pegawai aktif/minimal 2 tahun pengalaman kerja",
-        "Lulusan SMA/SMK/MA atau sederajat",
-        "Surat keterangan bekerja dari instansi",
-        "Lulus seleksi masuk universitas"
-      ],
-      fasilitas: [
-        "Jadwal fleksibel di akhir pekan",
-        "Sistem blended learning",
-        "Akses e-learning",
-        "Tugas terstruktur"
-      ],
-      kuota: 400,
-      biaya: "Rp 7.500.000/tahun",
-      sertifikat: "Sarjana (S1) Karyawan"
-    },
-    {
-      id: 3,
-      nama: "Kelas Internasional",
-      deskripsi: "Kelas dengan kurikulum internasional dan pengantar bahasa Inggris",
-      jadwal: "Senin - Jumat, 08:00 - 16:00",
-      durasi: "4 tahun",
-      target: "Lulusan SMA/SMK/MA dengan minat internasional",
-      persyaratan: [
-        "Lulusan SMA/SMK/MA atau sederajat",
-        "Nilai rapor rata-rata minimal 8.0",
-        "TOEFL minimal 500 atau IELTS 6.0",
-        "Lulus seleksi masuk universitas"
-      ],
-      fasilitas: [
-        "Kurikulum internasional",
-        "Dosen asing dan lokal",
-        "Kesempatan pertukaran pelajar",
-        "Sertifikasi internasional"
-      ],
-      kuota: 200,
-      biaya: "Rp 35.000.000/tahun",
-      sertifikat: "Sarjana (S1) Internasional"
-    },
-    {
-      id: 4,
-      nama: "Kelas Paralel",
-      deskripsi: "Kelas untuk mahasiswa yang ingin mengambil studi ganda",
-      jadwal: "Senin - Jumat, 17:00 - 20:00",
-      durasi: "5 tahun",
-      target: "Mahasiswa aktif universitas lain atau lulusan S1",
-      persyaratan: [
-        "Lulusan S1 dari perguruan tinggi terakreditasi",
-        "IPK minimal 3.0",
-        "Lulus seleksi masuk universitas",
-        "Rekomendasi dari kampus asal (jika masih aktif)"
-      ],
-      fasilitas: [
-        "Jadwal sore/malam",
-        "Modul khusus",
-        "Konseling akademik intensif",
-        "Akses perpustakaan penuh"
-      ],
-      kuota: 150,
-      biaya: "Rp 12.000.000/tahun",
-      sertifikat: "Sarjana (S1) Paralel"
-    }
-  ];
+export default async function KelasPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  // Ambil data dari database
+  const classesData = await getPublishedAdmissionClasses();
 
-  // Data tahapan seleksi
+  // Hitung statistik
+  const totalClasses = classesData.length;
+  const totalQuota = classesData.reduce((acc, c) => acc + (c.quota || 0), 0);
+  const classTypes = [...new Set(classesData.map(c => c.type || 'Reguler'))];
+
+  // Data tahapan seleksi (static karena umum)
   const tahapanSeleksi = [
     {
       nama: "Pendaftaran Online",
@@ -150,15 +63,21 @@ export default function KelasPage() {
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyber-blue/10 rounded-full blur-3xl animate-pulse" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-electric-purple/10 rounded-full blur-3xl animate-pulse delay-1000" />
 
-      <div className="container mx-auto px-4 py-16 relative z-10">
-        {/* Header */}
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight transform transition-all duration-300 hover:scale-105" style={{
+      {/* Full width background image section for header */}
+      <div
+        className="relative bg-[url('/images/backround_kelas.png')] bg-cover bg-center bg-no-repeat -mx-4 sm:-mx-6 lg:-mx-8 xl:-mx-0 border-2 border-cyber-blue/50 rounded-3xl overflow-hidden mb-16"
+      >
+        <div className="absolute inset-0 bg-black/0"></div>
+        <div className="relative z-10 py-44 px-4 sm:px-6">
+          <div className="container mx-auto max-w-6xl">
+            {/* Header */}
+            <MotionDiv
+              className="text-center"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight transform transition-all duration-300 hover:scale-105" style={{
                 background: 'linear-gradient(to right, #10b981, #34d399)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -166,22 +85,20 @@ export default function KelasPage() {
                 WebkitTextStroke: '1px black',
                 textShadow: '0 0 5px rgba(16, 185, 129, 0.5), 0 0 10px rgba(52, 211, 153, 0.5), 0 0 20px rgba(16, 185, 129, 0.3)'
               }}>
-            Program <span style={{
-                background: 'linear-gradient(to right, #10b981, #34d399)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                WebkitTextStroke: '1px black',
-                textShadow: '0 0 5px rgba(16, 185, 129, 0.5), 0 0 10px rgba(52, 211, 153, 0.5), 0 0 20px rgba(16, 185, 129, 0.3)'
-              }}>Kelas</span>
-          </h1>
-          <p className="text-lg md:text-xl text-foreground max-w-3xl mx-auto font-medium">
-            Pilihan program kelas yang sesuai dengan kebutuhan dan kondisi Anda
-          </p>
-        </motion.div>
+                Program Kelas
+              </h1>
+              <p className="text-lg md:text-xl text-foreground max-w-2xl mx-auto font-medium">
+                Pilihan program kelas yang sesuai dengan kebutuhan dan kondisi Anda
+              </p>
+            </MotionDiv>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 relative z-10">
 
         {/* Statistik Kelas */}
-        <motion.div
+        <MotionDiv
           className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -192,7 +109,7 @@ export default function KelasPage() {
               <Building2 className="w-6 h-6 text-foreground" />
             </div>
             <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-cyber mb-2">
-              4
+              {totalClasses}
             </div>
             <div className="text-muted-foreground text-sm">Jenis Kelas</div>
           </div>
@@ -202,7 +119,7 @@ export default function KelasPage() {
               <Users className="w-6 h-6 text-foreground" />
             </div>
             <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-emerald-600 mb-2">
-              2.550
+              {totalQuota.toLocaleString('id-ID')}
             </div>
             <div className="text-muted-foreground text-sm">Kuota Total</div>
           </div>
@@ -212,9 +129,9 @@ export default function KelasPage() {
               <Clock className="w-6 h-6 text-foreground" />
             </div>
             <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-600 mb-2">
-              3-5
+              {classTypes.length}
             </div>
-            <div className="text-muted-foreground text-sm">Tahun Studi</div>
+            <div className="text-muted-foreground text-sm">Tipe Kelas</div>
           </div>
 
           <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(179,118,255,0.1)] transition-all duration-300">
@@ -226,10 +143,10 @@ export default function KelasPage() {
             </div>
             <div className="text-muted-foreground text-sm">Akreditasi</div>
           </div>
-        </motion.div>
+        </MotionDiv>
 
         {/* Daftar Kelas */}
-        <motion.div
+        <MotionDiv
           className="mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -237,79 +154,71 @@ export default function KelasPage() {
         >
           <h2 className="text-3xl font-bold text-center text-foreground mb-12">Pilihan Program Kelas</h2>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {kelas.map((kelasItem, index) => (
-              <motion.div
-                key={kelasItem.id}
-                className="glass-card rounded-2xl border overflow-hidden hover:shadow-[0_0_30px_rgba(0,240,255,0.1)] transition-all duration-300"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * index }}
-              >
-                <div className="p-8">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-2xl font-bold text-foreground">{kelasItem.nama}</h3>
-                    <Badge className="bg-gradient-cyber text-lg py-1 px-3">
-                      {kelasItem.kuota} Kuota
-                    </Badge>
-                  </div>
-
-                  <p className="text-muted-foreground mb-6">{kelasItem.deskripsi}</p>
-
-                  <div className="grid grid-cols-2 gap-4 mb-6">
-                    <div>
-                      <span className="text-sm text-muted-foreground">Jadwal</span>
-                      <p className="font-semibold text-foreground">{kelasItem.jadwal}</p>
+          {classesData.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {classesData.map((kelasItem, index) => (
+                <MotionDiv
+                  key={kelasItem.id}
+                  className="glass-card rounded-2xl border overflow-hidden hover:shadow-[0_0_30px_rgba(0,240,255,0.1)] transition-all duration-300"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * index }}
+                >
+                  <div className="p-8">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-2xl font-bold text-foreground">{kelasItem.name}</h3>
+                      <Badge className="bg-gradient-cyber text-lg py-1 px-3">
+                        {kelasItem.quota ? `${kelasItem.quota} Kuota` : 'Terbatas'}
+                      </Badge>
                     </div>
-                    <div>
-                      <span className="text-sm text-muted-foreground">Durasi</span>
-                      <p className="font-semibold text-foreground">{kelasItem.durasi}</p>
-                    </div>
-                    <div>
-                      <span className="text-sm text-muted-foreground">Target</span>
-                      <p className="font-semibold text-foreground">{kelasItem.target}</p>
-                    </div>
-                    <div>
-                      <span className="text-sm text-muted-foreground">Biaya</span>
-                      <p className="font-semibold text-foreground">{kelasItem.biaya}</p>
-                    </div>
-                  </div>
 
-                  <div className="mb-6">
-                    <h4 className="font-semibold text-foreground mb-3">Persyaratan:</h4>
-                    <ul className="space-y-2">
-                      {kelasItem.persyaratan.map((syarat, idx) => (
-                        <li key={idx} className="flex items-start">
-                          <CheckCircle className="w-4 h-4 text-cyber-blue mt-0.5 mr-2 flex-shrink-0" />
-                          <span className="text-sm text-muted-foreground">{syarat}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                    <p className="text-muted-foreground mb-6">
+                      {kelasItem.description || 'Program kelas yang dirancang untuk kebutuhan pembelajaran yang optimal.'}
+                    </p>
 
-                  <div className="mb-6">
-                    <h4 className="font-semibold text-foreground mb-3">Fasilitas:</h4>
-                    <ul className="space-y-2">
-                      {kelasItem.fasilitas.map((fasilitas, idx) => (
-                        <li key={idx} className="flex items-start">
-                          <Award className="w-4 h-4 text-electric-purple mt-0.5 mr-2 flex-shrink-0" />
-                          <span className="text-sm text-muted-foreground">{fasilitas}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      <div>
+                        <span className="text-sm text-muted-foreground">Tipe</span>
+                        <p className="font-semibold text-foreground">{kelasItem.type || 'Reguler'}</p>
+                      </div>
+                      <div>
+                        <span className="text-sm text-muted-foreground">Jadwal</span>
+                        <p className="font-semibold text-foreground">{kelasItem.schedule || 'Senin - Jumat'}</p>
+                      </div>
+                    </div>
 
-                  <Button className="w-full bg-gradient-cyber hover:shadow-[0_0_20px_rgba(0,240,255,0.5)]">
-                    Daftar Kelas Ini
-                  </Button>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+                    {kelasItem.requirements && (
+                      <div className="mb-6">
+                        <h4 className="font-semibold text-foreground mb-3">Persyaratan:</h4>
+                        <ul className="space-y-2">
+                          {kelasItem.requirements.split('\n').map((syarat, idx) => (
+                            <li key={idx} className="flex items-start">
+                              <CheckCircle className="w-4 h-4 text-cyber-blue mt-0.5 mr-2 flex-shrink-0" />
+                              <span className="text-sm text-muted-foreground">{syarat}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    <Button className="w-full bg-gradient-cyber hover:shadow-[0_0_20px_rgba(0,240,255,0.5)]">
+                      Daftar Kelas Ini
+                    </Button>
+                  </div>
+                </MotionDiv>
+              ))}
+            </div>
+          ) : (
+            <div className="glass-card rounded-2xl border p-12 text-center">
+              <Building2 className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-foreground mb-2">Belum Ada Data Kelas</h3>
+              <p className="text-muted-foreground">Data program kelas akan segera ditambahkan</p>
+            </div>
+          )}
+        </MotionDiv>
 
         {/* Tahapan Seleksi */}
-        <motion.div
+        <MotionDiv
           className="mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -319,7 +228,7 @@ export default function KelasPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {tahapanSeleksi.map((tahap, index) => (
-              <motion.div
+              <MotionDiv
                 key={index}
                 className="glass-card p-6 rounded-2xl border"
                 initial={{ opacity: 0, y: 20 }}
@@ -339,13 +248,13 @@ export default function KelasPage() {
                     </li>
                   ))}
                 </ul>
-              </motion.div>
+              </MotionDiv>
             ))}
           </div>
-        </motion.div>
+        </MotionDiv>
 
         {/* Jadwal Kuliah */}
-        <motion.div
+        <MotionDiv
           className="glass-card rounded-3xl p-8 md:p-12 mb-16 border"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -356,7 +265,7 @@ export default function KelasPage() {
             <div>
               <h3 className="font-bold text-lg mb-4 flex items-center text-foreground">
                 <Calendar className="w-5 h-5 mr-2 text-cyber-blue" />
-                Kelas Reguler & Internasional
+                Kelas Reguler
               </h3>
               <div className="space-y-3">
                 {[
@@ -397,10 +306,10 @@ export default function KelasPage() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </MotionDiv>
 
         {/* Panduan Pemilihan Kelas */}
-        <motion.div
+        <MotionDiv
           className="glass-card rounded-2xl p-8 border"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -434,7 +343,7 @@ export default function KelasPage() {
               </div>
             ))}
           </div>
-        </motion.div>
+        </MotionDiv>
       </div>
     </div>
   );

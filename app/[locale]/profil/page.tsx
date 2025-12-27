@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 
-export default function ProfilPage({ params }: { params: { locale: string } }) {
+export default async function ProfilPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
   // Redirect to the first submenu item: profil/struktur-organisasi
-  redirect(`/${params.locale}/profil/struktur-organisasi`);
+  redirect(`/${locale}/profil/struktur-organisasi`);
 }

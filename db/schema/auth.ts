@@ -16,7 +16,6 @@ export const user = pgTable("user", {
         .$defaultFn(() => /* @__PURE__ */ new Date())
         .notNull(),
 });
-
 export const session = pgTable("session", {
     id: text("id").primaryKey(),
     expiresAt: timestamp("expires_at").notNull(),
@@ -27,7 +26,7 @@ export const session = pgTable("session", {
     userAgent: text("user_agent"),
     userId: text("user_id")
         .notNull()
-        .references(() => user.id, { onDelete: "cascade" }),
+        .references(() => user.id),
 });
 
 export const account = pgTable("account", {
@@ -36,7 +35,7 @@ export const account = pgTable("account", {
     providerId: text("provider_id").notNull(),
     userId: text("user_id")
         .notNull()
-        .references(() => user.id, { onDelete: "cascade" }),
+        .references(() => user.id),
     accessToken: text("access_token"),
     refreshToken: text("refresh_token"),
     idToken: text("id_token"),
@@ -53,10 +52,6 @@ export const verification = pgTable("verification", {
     identifier: text("identifier").notNull(),
     value: text("value").notNull(),
     expiresAt: timestamp("expires_at").notNull(),
-    createdAt: timestamp("created_at").$defaultFn(
-        () => /* @__PURE__ */ new Date(),
-    ),
-    updatedAt: timestamp("updated_at").$defaultFn(
-        () => /* @__PURE__ */ new Date(),
-    ),
+    createdAt: timestamp("created_at"),
+    updatedAt: timestamp("updated_at"),
 });
