@@ -1,7 +1,5 @@
 import { db } from '@/db';
 import {
-  announcements,
-  announcementCategories,
   news,
   newsCategories,
   events,
@@ -13,11 +11,11 @@ import {
   campusStatistics,
   campusFacilities,
   academicCalendar,
-  galleryAlbums,
+  galleryMedia,
+  galleryCategories,
   studentServices,
   educationCosts,
   scholarships,
-  partnerships,
   partners,
   universityProfiles,
   admissionClasses,
@@ -35,46 +33,12 @@ import {
   user,
   campusAccessibilities,
   socialMediaLinks,
-  careerProspects
+  careerProspects,
+  studentServiceContacts
 } from '@/db/schema';
 import { eq, and, or, sql } from 'drizzle-orm';
 
-/**
- * Fungsi untuk mengambil pengumuman yang dipublikasikan dengan detail kategori
- */
-export async function getPublishedAnnouncements(limit: number = 10) {
-  try {
-    const result = await db
-      .select({
-        id: announcements.id,
-        title: announcements.title,
-        slug: announcements.slug,
-        content: announcements.content,
-        excerpt: announcements.excerpt,
-        featuredImage: announcements.featuredImage,
-        priority: announcements.priority,
-        isPublished: announcements.isPublished,
-        publishedAt: announcements.publishedAt,
-        expiresAt: announcements.expiresAt,
-        authorName: announcements.authorName, // Updated from authorId
-        categoryId: announcements.categoryId,
-        categoryName: announcementCategories.name,
-        categorySlug: announcementCategories.slug,
-        createdAt: announcements.createdAt,
-        updatedAt: announcements.updatedAt
-      })
-      .from(announcements)
-      .leftJoin(announcementCategories, eq(announcements.categoryId, announcementCategories.id))
-      .where(eq(announcements.isPublished, true))
-      .orderBy(sql`${announcements.publishedAt} DESC`)
-      .limit(limit);
 
-    return result;
-  } catch (error) {
-    console.error('Error fetching published announcements:', error);
-    throw new Error('Failed to fetch announcements');
-  }
-}
 
 /**
  * Fungsi untuk mengambil beasiswa yang dipublikasikan
@@ -94,33 +58,7 @@ export async function getPublishedScholarships() {
   }
 }
 
-/**
- * Fungsi untuk mengambil pengumuman berdasarkan kategori
- */
-export async function getPublishedAnnouncementsByCategory(categorySlug: string, limit: number = 10) {
-  try {
-    const result = await db
-      .select({
-        announcement: announcements,
-        category: announcementCategories
-      })
-      .from(announcements)
-      .leftJoin(announcementCategories, eq(announcements.categoryId, announcementCategories.id))
-      .where(
-        and(
-          eq(announcements.isPublished, true),
-          eq(announcementCategories.slug, categorySlug)
-        )
-      )
-      .orderBy(sql`${announcements.publishedAt} DESC`)
-      .limit(limit);
 
-    return result;
-  } catch (error) {
-    console.error('Error fetching published announcements by category:', error);
-    throw new Error('Failed to fetch announcements by category');
-  }
-}
 
 /**
  * Fungsi untuk mengambil berita yang dipublikasikan
@@ -308,7 +246,7 @@ export async function getPublishedStudentAchievements() {
         eventName: studentAchievements.eventName,
         eventDate: studentAchievements.eventDate,
         organizer: studentAchievements.organizer,
-        certificateUrl: studentAchievements.certificateUrl,
+        image: studentAchievements.image,
         supportingDocuments: studentAchievements.supportingDocuments,
         isPublished: studentAchievements.isPublished,
         createdAt: studentAchievements.createdAt,
@@ -432,6 +370,7 @@ export async function getUpcomingEventsWithCategory(limit: number = 5) {
         registrationUrl: events.registrationUrl,
         registrationFee: events.registrationFee,
         speaker: events.speaker,
+        targetAudience: events.targetAudience,
         status: events.status,
         isFeatured: events.isFeatured,
         isPublished: events.isPublished,
@@ -444,10 +383,7 @@ export async function getUpcomingEventsWithCategory(limit: number = 5) {
       .from(events)
       .leftJoin(eventCategories, eq(events.categoryId, eventCategories.id))
       .where(
-        and(
-          eq(events.isPublished, true),
-          eq(events.status, 'upcoming')
-        )
+        eq(events.isPublished, true)
       )
       .orderBy(sql`${events.startDate} ASC`)
       .limit(limit);
@@ -632,23 +568,41 @@ export async function getPublishedStudentServices() {
 }
 
 /**
- * Fungsi untuk mengambil album galeri yang dipublikasikan (publik)
+ * Fungsi untuk mengambil media galeri yang dipublikasikan (publik)
  */
-export async function getPublishedGalleryAlbums(limit: number = 10) {
+export async function getPublishedGalleryMedia(limit: number = 30) {
   try {
     const result = await db
-      .select()
-      .from(galleryAlbums)
-      .where(eq(galleryAlbums.isPublic, true))
-      .orderBy(sql`${galleryAlbums.createdAt} DESC`)
+      .select({
+        id: galleryMedia.id,
+        title: galleryMedia.title,
+        description: galleryMedia.description,
+        filePath: galleryMedia.filePath,
+        thumbnailPath: galleryMedia.thumbnailPath,
+        mediaType: galleryMedia.mediaType,
+        isPublic: galleryMedia.isPublic,
+        isFeatured: galleryMedia.isFeatured,
+        categoryId: galleryMedia.categoryId,
+        categoryName: galleryCategories.name,
+        categorySlug: galleryCategories.slug,
+        createdAt: galleryMedia.createdAt,
+        updatedAt: galleryMedia.updatedAt
+      })
+      .from(galleryMedia)
+      .leftJoin(galleryCategories, eq(galleryMedia.categoryId, galleryCategories.id))
+      .where(eq(galleryMedia.isPublic, true))
+      .orderBy(sql`${galleryMedia.createdAt} DESC`)
       .limit(limit);
 
     return result;
   } catch (error) {
-    console.error('Error fetching published gallery albums:', error);
-    throw new Error('Failed to fetch gallery albums');
+    console.error('Error fetching published gallery media:', error);
+    throw new Error('Failed to fetch gallery media');
   }
 }
+
+// Backward compatibility alias
+export const getPublishedGalleryAlbums = getPublishedGalleryMedia;
 
 /**
  * Fungsi untuk mengambil biaya pendidikan yang dipublikasikan
@@ -688,39 +642,41 @@ export async function getPublishedEducationCosts() {
 
 
 /**
- * Fungsi untuk mengambil kerjasama yang dipublikasikan
+ * Fungsi untuk mengambil kerjasama (mitra) yang dipublikasikan
  */
 export async function getPublishedPartnerships() {
   try {
     const result = await db
       .select({
-        id: partnerships.id,
-        title: partnerships.title,
-        slug: partnerships.slug,
-        description: partnerships.description,
-        partnerId: partnerships.partnerId,
+        id: partners.id,
         partnerName: partners.name,
+        slug: partners.slug,
+        description: partners.description,
         partnerLogo: partners.logo,
-        partnershipTypeId: partnerships.partnershipTypeId,
-        startDate: partnerships.startDate,
-        endDate: partnerships.endDate,
-        isActive: partnerships.isActive,
-        agreementNumber: partnerships.agreementNumber,
-        agreementDate: partnerships.agreementDate,
-        agreementFile: partnerships.agreementFile,
-        objectives: partnerships.objectives,
-        activities: partnerships.activities,
-        benefits: partnerships.benefits,
-        coordinator: partnerships.coordinator,
-        status: partnerships.status,
-        isPublished: partnerships.isPublished,
-        createdAt: partnerships.createdAt,
-        updatedAt: partnerships.updatedAt
+        type: partners.type,
+        category: partners.category,
+        country: partners.country,
+        city: partners.city,
+        address: partners.address,
+        contactPerson: partners.contactPerson,
+        contactEmail: partners.contactEmail,
+        contactPhone: partners.contactPhone,
+        website: partners.website,
+        startDate: partners.startDate,
+        endDate: partners.endDate,
+        isActive: partners.isActive,
+        agreementNumber: partners.agreementNumber,
+        agreementFile: partners.agreementFile,
+        objectives: partners.objectives,
+        coordinator: partners.coordinator,
+        status: partners.partnershipStatus,
+        isPublished: partners.isPublished,
+        createdAt: partners.createdAt,
+        updatedAt: partners.updatedAt
       })
-      .from(partnerships)
-      .leftJoin(partners, eq(partnerships.partnerId, partners.id))
-      .where(eq(partnerships.isPublished, true))
-      .orderBy(sql`${partnerships.startDate} DESC`);
+      .from(partners)
+      .where(eq(partners.isPublished, true))
+      .orderBy(sql`${partners.createdAt} DESC`);
 
     return result;
   } catch (error) {
@@ -1065,5 +1021,40 @@ export async function getPublishedCareerProspects() {
   } catch (error) {
     console.error('Error fetching career prospects:', error);
     return [];
+  }
+}
+
+/**
+ * Fungsi untuk mengambil semua kontak layanan mahasiswa yang dipublikasikan
+ */
+export async function getPublishedStudentServiceContacts() {
+  try {
+    const result = await db
+      .select()
+      .from(studentServiceContacts)
+      .where(eq(studentServiceContacts.isPublished, true))
+      .orderBy(sql`${studentServiceContacts.order} ASC`);
+
+    return result;
+  } catch (error) {
+    console.error('Error fetching student service contacts:', error);
+    return [];
+  }
+}
+/**
+ * Fungsi untuk mengambil profil universitas utama
+ */
+export async function getUniversityProfile() {
+  try {
+    const result = await db
+      .select()
+      .from(universityProfiles)
+      .where(eq(universityProfiles.isPublished, true))
+      .limit(1);
+
+    return result[0] || null;
+  } catch (error) {
+    console.error('Error fetching university profile:', error);
+    return null;
   }
 }

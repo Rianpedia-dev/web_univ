@@ -1,6 +1,5 @@
 export * from './auth';
 export * from './news';
-export * from './announcements';
 export * from './events';
 export * from './galleries';
 export * from './academic';

@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { BackToTop } from "@/components/back-to-top";
+import { getPublishedUniversityProfile } from '@/lib/db';
 import type { Metadata } from "next";
 
 // Valid locales
@@ -44,6 +45,7 @@ export async function generateMetadata({
   };
 }
 
+// Main layout for localized routes
 export default async function LocaleLayout({
   children,
   params,
@@ -59,9 +61,13 @@ export default async function LocaleLayout({
     notFound();
   }
 
+  // Ambil data profil untuk Navbar
+  const profiles = await getPublishedUniversityProfile();
+  const profile = profiles.length > 0 ? profiles[0] : null;
+
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar locale={locale} />
+      <Navbar locale={locale} profile={profile} />
       <main className="flex-grow pt-16">
         {children}
       </main>

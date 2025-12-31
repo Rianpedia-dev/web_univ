@@ -90,7 +90,6 @@ export { db, pool };
 // Ekspor schema terpisah
 export * from './schema/auth';
 export * from './schema/news';
-export * from './schema/announcements';
 export * from './schema/events';
 export * from './schema/galleries';
 export * from './schema/academic';

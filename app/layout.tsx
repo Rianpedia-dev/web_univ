@@ -1,3 +1,4 @@
+import 'modern-normalize/modern-normalize.css';
 import { Geist, Geist_Mono, Parkinsans } from "next/font/google";
 import "./globals.css";
 import type { Metadata } from "next";

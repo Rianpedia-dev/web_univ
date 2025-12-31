@@ -5,19 +5,13 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'picsum.photos',
+        hostname: '**', // Izinkan semua hostname untuk development
         port: '',
         pathname: '/**',
       },
       {
-        protocol: 'https',
-        hostname: 'cloudflare-ipfs.com',
-        port: '',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'avatars.githubusercontent.com',
+        protocol: 'http',
+        hostname: '**', // Izinkan juga HTTP
         port: '',
         pathname: '/**',
       },

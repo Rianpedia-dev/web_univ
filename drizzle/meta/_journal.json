@@ -8,6 +8,13 @@
       "when": 1766725470012,
       "tag": "0000_round_proudstar",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1766847495837,
+      "tag": "0001_sloppy_the_hood",
+      "breakpoints": true
     }
   ]
 }

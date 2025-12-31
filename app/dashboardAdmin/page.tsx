@@ -369,78 +369,6 @@ const tableConfigurations = {
           { key: "publishedAt", label: "Tanggal Publikasi", type: "datetime" },
         ],
       },
-      newsTags: {
-        label: "Tag Berita",
-        description: "Tag untuk berita",
-        fields: [
-          { key: "name", label: "Nama", type: "text", required: true },
-          { key: "slug", label: "Slug", type: "text", required: true },
-        ],
-      },
-      newsComments: {
-        label: "Komentar Berita",
-        description: "Daftar komentar pada berita",
-        fields: [
-          { key: "newsId", label: "Berita", type: "select", referenceTable: "news", referenceLabel: "title", required: true },
-          { key: "authorName", label: "Nama Pengirim", type: "text", required: true },
-          { key: "content", label: "Isi Komentar", type: "textarea", required: true },
-          { key: "isApproved", label: "Disetujui", type: "boolean" },
-        ],
-      },
-      newsTagsRel: {
-        label: "Relasi Berita-Tag",
-        description: "Hubungan antara berita dan tag",
-        fields: [
-          { key: "newsId", label: "Berita", type: "select", referenceTable: "news", referenceLabel: "title", required: true },
-          { key: "tagId", label: "Tag", type: "select", referenceTable: "newsTags", referenceLabel: "name", required: true },
-        ],
-      },
-    },
-  },
-
-  // Announcements Module  
-  announcements: {
-    label: "Pengumuman",
-    icon: Megaphone,
-    color: "text-orange-500",
-    tables: {
-      announcementCategories: {
-        label: "Kategori Pengumuman",
-        description: "Kategori untuk pengumuman",
-        fields: [
-          { key: "name", label: "Nama", type: "text", required: true },
-          { key: "slug", label: "Slug", type: "text", required: true },
-          { key: "description", label: "Deskripsi", type: "textarea" },
-        ],
-      },
-      announcements: {
-        label: "Pengumuman",
-        description: "Daftar pengumuman",
-        fields: [
-          { key: "categoryId", label: "Kategori", type: "select", referenceTable: "announcementCategories", referenceLabel: "name", required: true },
-          { key: "title", label: "Judul", type: "text", required: true },
-          { key: "slug", label: "Slug", type: "text", required: true },
-          { key: "content", label: "Konten", type: "textarea", required: true },
-          { key: "excerpt", label: "Ringkasan", type: "textarea" },
-          { key: "featuredImage", label: "Gambar Utama", type: "text" },
-          { key: "priority", label: "Prioritas", type: "number" },
-          { key: "authorName", label: "Nama Penulis", type: "text" },
-          { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
-          { key: "publishedAt", label: "Tanggal Publikasi", type: "datetime" },
-          { key: "expiresAt", label: "Tanggal Kadaluarsa", type: "datetime" },
-        ],
-      },
-      announcementAttachments: {
-        label: "Lampiran Pengumuman",
-        description: "Dokumen lampiran pengumuman",
-        fields: [
-          { key: "announcementId", label: "Pengumuman", type: "select", referenceTable: "announcements", referenceLabel: "title", required: true },
-          { key: "fileName", label: "Nama File", type: "text", required: true },
-          { key: "filePath", label: "Path File", type: "text", required: true },
-          { key: "mimeType", label: "Tipe MIME", type: "text" },
-          { key: "downloadCount", label: "Jumlah Unduh", type: "number" },
-        ],
-      },
     },
   },
 
@@ -465,7 +393,6 @@ const tableConfigurations = {
         fields: [
           { key: "categoryId", label: "Kategori", type: "select", referenceTable: "eventCategories", referenceLabel: "name", required: true },
           { key: "title", label: "Judul", type: "text", required: true },
-          { key: "slug", label: "Slug", type: "text", required: true },
           { key: "description", label: "Deskripsi", type: "text", required: true },
           { key: "content", label: "Konten", type: "textarea" },
           { key: "poster", label: "Poster URL", type: "text" },
@@ -473,37 +400,16 @@ const tableConfigurations = {
           { key: "endDate", label: "Tanggal Selesai", type: "datetime" },
           { key: "location", label: "Lokasi", type: "text", required: true },
           { key: "organizer", label: "Penyelenggara", type: "text", required: true },
-          { key: "speaker", label: "Pembicara", type: "text" },
+          { key: "targetAudience", label: "Target Peserta", type: "text" },
+          { key: "maxParticipants", label: "Jumlah Maksimal Peserta", type: "number" },
+          { key: "registrationUrl", label: "Link Pendaftaran", type: "text" },
+          { key: "registrationFee", label: "Biaya Registrasi", type: "text" },
           { key: "status", label: "Status", type: "select", options: ["upcoming", "ongoing", "completed", "cancelled"] },
-          { key: "authorName", label: "Nama Penulis", type: "text" },
           { key: "isFeatured", label: "Unggulan", type: "boolean" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
         ],
       },
-      eventRegistrants: {
-        label: "Pendaftar Event",
-        description: "Daftar peserta event",
-        fields: [
-          { key: "name", label: "Nama", type: "text", required: true },
-          { key: "email", label: "Email", type: "email", required: true },
-          { key: "phone", label: "Telepon", type: "text" },
-          { key: "institution", label: "Instansi", type: "text" },
-          { key: "status", label: "Status", type: "select", options: ["registered", "confirmed", "attended", "cancelled"] },
-          { key: "ticketNumber", label: "Nomor Tiket", type: "text" },
-          { key: "checkedIn", label: "Check-in", type: "boolean" },
-        ],
-      },
-      eventDocuments: {
-        label: "Dokumen Event",
-        description: "Materi atau laporan event",
-        fields: [
-          { key: "eventId", label: "Event", type: "select", referenceTable: "events", referenceLabel: "title", required: true },
-          { key: "title", label: "Judul Dokumen", type: "text", required: true },
-          { key: "fileName", label: "Nama File", type: "text", required: true },
-          { key: "filePath", label: "Path File", type: "text", required: true },
-          { key: "documentType", label: "Jenis", type: "select", options: ["proposal", "report", "certificate", "material", "other"], required: true },
-        ],
-      },
+
     },
   },
 
@@ -522,43 +428,17 @@ const tableConfigurations = {
           { key: "description", label: "Deskripsi", type: "textarea" },
         ],
       },
-      galleryAlbums: {
-        label: "Album Galeri",
-        description: "Album foto dan video",
-        fields: [
-          { key: "categoryId", label: "Kategori", type: "select", referenceTable: "galleryCategories", referenceLabel: "name", required: true },
-          { key: "title", label: "Judul", type: "text", required: true },
-          { key: "slug", label: "Slug", type: "text", required: true },
-          { key: "description", label: "Deskripsi", type: "textarea" },
-          { key: "coverImage", label: "Gambar Sampul", type: "text" },
-          { key: "authorName", label: "Nama Penulis", type: "text" },
-          { key: "isPublic", label: "Publik", type: "boolean" },
-          { key: "isFeatured", label: "Unggulan", type: "boolean" },
-        ],
-      },
       galleryMedia: {
         label: "Media Galeri",
         description: "Foto dan video dalam galeri",
         fields: [
-          { key: "albumId", label: "Album", type: "select", referenceTable: "galleryAlbums", referenceLabel: "title" },
+          { key: "categoryId", label: "Kategori", type: "select", referenceTable: "galleryCategories", referenceLabel: "name" },
           { key: "title", label: "Judul", type: "text", required: true },
           { key: "description", label: "Deskripsi", type: "textarea" },
-          { key: "fileName", label: "Nama File", type: "text", required: true },
-          { key: "filePath", label: "Path File", type: "text", required: true },
-          { key: "mimeType", label: "Tipe MIME", type: "text", required: true },
+          { key: "filePath", label: "Url Image/vidio", type: "text", required: true },
           { key: "mediaType", label: "Tipe Media", type: "select", options: ["image", "video"], required: true },
-          { key: "authorName", label: "Nama Pengunggah", type: "text" },
           { key: "isPublic", label: "Publik", type: "boolean" },
           { key: "isFeatured", label: "Unggulan", type: "boolean" },
-        ],
-      },
-      galleryAlbumMediaRel: {
-        label: "Relasi Album-Media",
-        description: "Urutan media dalam album",
-        fields: [
-          { key: "albumId", label: "Album", type: "select", referenceTable: "galleryAlbums", referenceLabel: "title", required: true },
-          { key: "mediaId", label: "Media", type: "select", referenceTable: "galleryMedia", referenceLabel: "title", required: true },
-          { key: "sortOrder", label: "Urutan", type: "number" },
         ],
       },
     },
@@ -574,10 +454,10 @@ const tableConfigurations = {
         label: "Mitra",
         description: "Daftar mitra kerjasama",
         fields: [
-          { key: "name", label: "Nama", type: "text", required: true },
+          { key: "name", label: "Nama Mitra", type: "text", required: true },
           { key: "slug", label: "Slug", type: "text", required: true },
           { key: "description", label: "Deskripsi", type: "textarea" },
-          { key: "type", label: "Jenis", type: "select", options: ["domestic", "international"], required: true },
+          { key: "type", label: "Jenis Mitra", type: "select", options: ["domestic", "international"], required: true },
           { key: "category", label: "Kategori", type: "select", options: ["technology", "business", "health", "education", "industry", "government", "other"], required: true },
           { key: "country", label: "Negara", type: "text" },
           { key: "city", label: "Kota", type: "text" },
@@ -585,53 +465,16 @@ const tableConfigurations = {
           { key: "contactEmail", label: "Email", type: "email" },
           { key: "website", label: "Website", type: "text" },
           { key: "logo", label: "Logo URL", type: "text" },
-          { key: "partnershipStatus", label: "Status", type: "select", options: ["active", "inactive", "expired", "pending"] },
-          { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
-        ],
-      },
-      partnershipTypes: {
-        label: "Jenis Kerjasama",
-        description: "Jenis-jenis kerjasama",
-        fields: [
-          { key: "name", label: "Nama", type: "text", required: true },
-          { key: "slug", label: "Slug", type: "text", required: true },
-          { key: "description", label: "Deskripsi", type: "textarea" },
-          { key: "type", label: "Tipe", type: "select", options: ["joint_research", "student_exchange", "faculty_exchange", "academic_collaboration", "internship", "employment", "technology_transfer", "other"], required: true },
-          { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
-        ],
-      },
-      partnerships: {
-        label: "Kerjasama",
-        description: "Daftar kerjasama aktif",
-        fields: [
-          { key: "title", label: "Judul", type: "text", required: true },
-          { key: "slug", label: "Slug", type: "text", required: true },
-          { key: "description", label: "Deskripsi", type: "textarea" },
-          { key: "startDate", label: "Tanggal Mulai", type: "datetime", required: true },
-          { key: "endDate", label: "Tanggal Selesai", type: "datetime" },
-          { key: "isActive", label: "Aktif", type: "boolean" },
-          { key: "agreementNumber", label: "Nomor MOU", type: "text" },
-          { key: "objectives", label: "Tujuan", type: "textarea" },
-          { key: "activities", label: "Kegiatan", type: "textarea" },
-          { key: "coordinator", label: "Koordinator", type: "text" },
-          { key: "status", label: "Status", type: "select", options: ["draft", "proposed", "approved", "active", "completed", "terminated"] },
-          { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
-        ],
-      },
 
-      partnershipActivities: {
-        label: "Kegiatan Kerjasama",
-        description: "Kegiatan dalam kerjasama",
-        fields: [
-          { key: "partnershipId", label: "Kerjasama", type: "select", referenceTable: "partnerships", referenceLabel: "title", required: true },
-          { key: "title", label: "Judul", type: "text", required: true },
-          { key: "description", label: "Deskripsi", type: "textarea" },
+          { key: "agreementNumber", label: "Nomor MOU/MOA", type: "text" },
+          { key: "agreementFile", label: "File MOU (URL)", type: "text" },
           { key: "startDate", label: "Tanggal Mulai", type: "datetime" },
           { key: "endDate", label: "Tanggal Selesai", type: "datetime" },
-          { key: "status", label: "Status", type: "select", options: ["planning", "ongoing", "completed", "cancelled"] },
-          { key: "budget", label: "Anggaran", type: "number" },
-          { key: "outcome", label: "Hasil", type: "textarea" },
-          { key: "reportFile", label: "File Laporan", type: "text" },
+          { key: "isActive", label: "Aktif", type: "boolean" },
+          { key: "objectives", label: "Tujuan", type: "textarea" },
+          { key: "coordinator", label: "Koordinator", type: "text" },
+
+          { key: "partnershipStatus", label: "Status", type: "select", options: ["active", "inactive", "expired", "pending"] },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
         ],
       },
@@ -639,7 +482,7 @@ const tableConfigurations = {
         label: "Dokumen Kerjasama",
         description: "Dokumen-dokumen kerjasama",
         fields: [
-          { key: "partnershipId", label: "Kerjasama", type: "select", referenceTable: "partnerships", referenceLabel: "title", required: true },
+          { key: "partnerId", label: "Mitra", type: "select", referenceTable: "partners", referenceLabel: "name", required: true },
           { key: "title", label: "Judul", type: "text", required: true },
           { key: "documentType", label: "Jenis Dokumen", type: "select", options: ["agreement", "report", "certificate", "proposal", "other"], required: true },
           { key: "fileName", label: "Nama File", type: "text", required: true },
@@ -647,7 +490,6 @@ const tableConfigurations = {
           { key: "mimeType", label: "Tipe MIME", type: "text" },
         ],
       },
-
     },
   },
 
@@ -664,13 +506,11 @@ const tableConfigurations = {
           { key: "name", label: "Nama", type: "text", required: true },
           { key: "slug", label: "Slug", type: "text", required: true },
           { key: "shortName", label: "Nama Singkat", type: "text" },
-          { key: "description", label: "Deskripsi", type: "textarea" },
           { key: "vision", label: "Visi", type: "textarea" },
           { key: "mission", label: "Misi", type: "textarea" },
           { key: "values", label: "Nilai", type: "textarea" },
           { key: "history", label: "Sejarah", type: "textarea" },
           { key: "logo", label: "Logo URL", type: "image" },
-          { key: "banner", label: "Banner URL", type: "image" },
           { key: "establishedYear", label: "Tahun Berdiri", type: "number" },
           { key: "motto", label: "Moto", type: "text" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
@@ -829,21 +669,8 @@ const tableConfigurations = {
           { key: "fee", label: "Biaya", type: "number" },
           { key: "isOnline", label: "Online", type: "boolean" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
-        ],
-      },
-      counselors: {
-        label: "Konselor",
-        description: "Daftar konselor",
-        fields: [
-          { key: "name", label: "Nama", type: "text", required: true },
-          { key: "nip", label: "NIP", type: "text" },
-          { key: "email", label: "Email", type: "email", required: true },
-          { key: "phone", label: "Telepon", type: "text" },
-          { key: "specialization", label: "Spesialisasi", type: "text" },
-          { key: "qualifications", label: "Kualifikasi", type: "textarea" },
-          { key: "photo", label: "Foto URL", type: "text" },
-          { key: "isAvailable", label: "Tersedia", type: "boolean" },
-          { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
+          { key: "contactName", label: "Kontak Person", type: "text" },
+          { key: "contactEmail", label: "Email Kontak", type: "email" },
         ],
       },
       studentOrganizations: {
@@ -851,13 +678,15 @@ const tableConfigurations = {
         description: "Daftar organisasi mahasiswa",
         fields: [
           { key: "name", label: "Nama", type: "text", required: true },
-          { key: "slug", label: "Slug", type: "text", required: true },
           { key: "description", label: "Deskripsi", type: "textarea" },
-          { key: "type", label: "Tipe", type: "select", options: ["academic", "non_academic", "religious", "journalism", "language", "entrepreneurship"], required: true },
-          { key: "category", label: "Kategori", type: "select", options: ["bem", "dpm", "hmj", "uko", "uksb", "other"], required: true },
-          { key: "vision", label: "Visi", type: "textarea" },
-          { key: "mission", label: "Misi", type: "textarea" },
-          { key: "logo", label: "Logo URL", type: "text" },
+          { key: "objectives", label: "Tujuan Organisasi", type: "textarea" },
+          { key: "leader", label: "Ketua Organisasi", type: "text" },
+          { key: "memberCount", label: "Jumlah Anggota", type: "text" },
+          { key: "contactEmail", label: "Email Kontak", type: "email" },
+          { key: "contactPhone", label: "WhatsApp/Telepon", type: "text" },
+          { key: "registrationLink", label: "Link Bergabung", type: "text" },
+          { key: "isRegistrationOpen", label: "Status Pendaftaran Terbuka", type: "boolean" },
+          { key: "logo", label: "Logo URL", type: "image" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
         ],
       },
@@ -867,44 +696,32 @@ const tableConfigurations = {
         fields: [
           { key: "studentName", label: "Nama Mahasiswa", type: "text", required: true },
           { key: "studentId", label: "NIM", type: "text", required: true },
+          { key: "studyProgramId", label: "Program Studi", type: "select", referenceTable: "studyPrograms", referenceLabel: "name", required: true },
           { key: "title", label: "Judul Prestasi", type: "text", required: true },
           { key: "description", label: "Deskripsi", type: "textarea" },
-          { key: "achievementType", label: "Jenis", type: "select", options: ["academic", "non_academic", "competition", "research", "community_service", "other"], required: true },
+          { key: "achievementType", label: "Jenis", type: "select", options: ["non_academic", "competition", "community_service", "other"], required: true },
+          { key: "image", label: "Foto Prestasi (URL)", type: "text" },
           { key: "achievementLevel", label: "Tingkat", type: "select", options: ["local", "regional", "national", "international"], required: true },
           { key: "achievementCategory", label: "Kategori", type: "select", options: ["first", "second", "third", "champion", "participation", "other"], required: true },
           { key: "eventName", label: "Nama Kegiatan", type: "text", required: true },
           { key: "eventDate", label: "Tanggal Kegiatan", type: "datetime", required: true },
           { key: "organizer", label: "Penyelenggara", type: "text", required: true },
-          { key: "certificateUrl", label: "URL Sertifikat", type: "text" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
         ],
       },
-      studentServiceRequests: {
-        label: "Pengajuan Layanan",
-        description: "Daftar pengajuan layanan mahasiswa",
+      studentServiceContacts: {
+        label: "Kontak Layanan",
+        description: "Kelola kontak layanan mahasiswa (Telepon, Email, Lokasi)",
         fields: [
-          { key: "serviceId", label: "Layanan", type: "select", referenceTable: "studentServices", referenceLabel: "name", required: true },
-          { key: "studentName", label: "Nama Mahasiswa", type: "text", required: true },
-          { key: "studentId", label: "NIM", type: "text", required: true },
-          { key: "email", label: "Email", type: "email", required: true },
-          { key: "phone", label: "Telepon", type: "text" },
-          { key: "status", label: "Status", type: "select", options: ["pending", "processing", "completed", "rejected"] },
-          { key: "notes", label: "Catatan", type: "textarea" },
-          { key: "isUrgent", label: "Mendesak", type: "boolean" },
+          { key: "type", label: "Tipe", type: "select", options: ["phone", "email", "location"], required: true },
+          { key: "icon", label: "Ikon Lucide (misal: Phone, Mail, MapPin)", type: "text", required: true },
+          { key: "title", label: "Judul", type: "text", required: true },
+          { key: "value", label: "Nilai Utama", type: "text", required: true },
+          { key: "description", label: "Keterangan Tambahan", type: "text" },
+          { key: "order", label: "Urutan", type: "number" },
+          { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
         ],
       },
-      studentServiceDocuments: {
-        label: "Dokumen Layanan",
-        description: "Dokumen pendukung pengajuan layanan",
-        fields: [
-          { key: "requestId", label: "Pengajuan (Nama)", type: "select", referenceTable: "studentServiceRequests", referenceLabel: "studentName", required: true },
-          { key: "documentType", label: "Jenis Dokumen", type: "text", required: true },
-          { key: "fileName", label: "Nama File", type: "text", required: true },
-          { key: "filePath", label: "Path File", type: "text", required: true },
-          { key: "isVerified", label: "Terverifikasi", type: "boolean" },
-        ],
-      },
-
     },
   },
 };
@@ -1201,8 +1018,11 @@ function DataTableView({
     )
   })
 
-  // Get display columns (first 5 fields + actions)
-  const displayFields = tableConfig.fields.slice(0, 5)
+  // Get display columns: Filter out long/technical fields for a cleaner table view
+  const displayFields = tableConfig.fields
+    .filter(f => !["content", "slug", "description", "requirements", "procedure", "vision", "mission", "history"].includes(f.key))
+    .filter(f => f.type !== "textarea")
+    .slice(0, 5)
 
   if (loading) {
     return (
@@ -1313,7 +1133,7 @@ function DataTableView({
                         ) : field.type === "datetime" && item[field.key] ? (
                           new Date(item[field.key]).toLocaleDateString("id-ID")
                         ) : (
-                          <span className="max-w-[200px] truncate block">
+                          <span className="max-w-[150px] truncate block text-xs">
                             {String(item[field.key] || "-")}
                           </span>
                         )}

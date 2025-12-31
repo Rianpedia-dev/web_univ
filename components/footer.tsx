@@ -8,7 +8,6 @@ export function Footer({ locale = 'id' }: { locale?: string }) {
     { title: "Akademik", href: `/${locale}/akademik` },
     { title: "Penerimaan", href: `/${locale}/penerimaan` },
     { title: "Berita", href: `/${locale}/berita-media/berita` },
-    { title: "Pengumuman", href: `/${locale}/berita-media/pengumuman` },
   ];
 
   const contactInfo = [

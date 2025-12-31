@@ -39,13 +39,11 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
   const profile = profiles.length > 0 ? profiles[0] : {
     name: "Universitas Masa Depan",
     shortName: "UMD",
-    description: "Lembaga pendidikan tinggi terkemuka yang berdedikasi untuk mencetak generasi pemimpin masa depan.",
     vision: "Menjadi universitas kelas dunia yang unggul dalam teknologi dan kewirausahaan.",
     mission: "Menyelenggarakan pendidikan berkualitas, riset inovatif, dan pengabdian masyarakat.",
     values: "Integritas, Inovasi, Inklusivitas",
     history: "Didirikan pada tahun 1990...",
     logo: "/images/logo_univ.png",
-    banner: "/images/kampus_profil.png",
     motto: "Building Excellence with Integrity",
     establishedYear: 1990,
     accreditation: "Unggul"
@@ -128,9 +126,6 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
               }}>
                 {profile.name}
               </h1>
-              <p className="text-lg md:text-xl text-foreground max-w-3xl mx-auto font-medium">
-                {profile.motto}
-              </p>
             </MotionDiv>
           </div>
         </div>
@@ -140,16 +135,6 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
         {/* Statistik Kampus */}
         {campusStats && (
           <div className="mb-24">
-            <MotionDiv
-              className="text-center mb-16"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <h2 className="text-3xl font-bold text-foreground mb-4">Statistik Kampus</h2>
-              <div className="w-24 h-1 bg-gradient-cyber mx-auto rounded-full mb-4"></div>
-              <p className="text-muted-foreground">Data statistik perkembangan universitas tahun {campusStats.year}</p>
-            </MotionDiv>
-
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
               {[
                 {
@@ -224,36 +209,58 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
           </div>
         )}
 
+
+
         {/* Moto Universitas */}
         <div className="space-y-12 mb-24 px-4 sm:px-0">
           <MotionDiv
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="glass-card p-12 md:p-16 rounded-[4rem] border border-white/10 relative overflow-hidden group shadow-[0_0_80px_rgba(0,240,255,0.1)]"
+            className="relative p-[2px] rounded-[2rem] overflow-hidden group mx-auto"
           >
-            {/* Ambient background glows */}
-            <div className="absolute -top-32 -left-32 w-96 h-96 bg-cyber-blue/10 rounded-full blur-[120px] -z-10 animate-pulse"></div>
-            <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-electric-purple/10 rounded-full blur-[120px] -z-10 animate-pulse transition-delay-1000"></div>
+            {/* High Contrast Gradient Border */}
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-500 opacity-100 animate-gradient-xy"></div>
 
-            <div className="relative z-10 space-y-10 max-w-5xl mx-auto text-center">
-              <div className="flex justify-center mb-6">
-                <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center border border-white/10 backdrop-blur-md shadow-inner group-hover:scale-110 transition-transform duration-500">
-                  <Quote className="w-8 h-8 text-cyber-blue" />
+            <div className="relative bg-background/95 dark:bg-black/90 backdrop-blur-xl p-4 md:px-16 md:py-6 rounded-[calc(2rem-2px)] overflow-hidden">
+              {/* Minimal decorative elements */}
+              <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(16,185,129,0.05),transparent_50%)]"></div>
+
+              <div className="relative z-10 space-y-4 max-w-5xl mx-auto text-center">
+                <div className="flex justify-center">
+                  <div className="relative">
+                    <div className="absolute -inset-4 bg-emerald-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="w-12 h-12 bg-white/10 dark:bg-white/5 rounded-xl flex items-center justify-center border border-white/20 backdrop-blur-md shadow-xl transform group-hover:rotate-[360deg] transition-transform duration-1000">
+                      <Quote className="w-6 h-6 text-emerald-400" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <h2 className="text-xs md:text-sm font-black text-emerald-500 dark:text-emerald-400 tracking-[0.6em] uppercase flex items-center justify-center gap-4">
+                    <span className="h-px w-8 bg-emerald-500/30 hidden sm:block"></span>
+                    Moto Universitas
+                    <span className="h-px w-8 bg-emerald-500/30 hidden sm:block"></span>
+                  </h2>
+                  <div className="w-32 h-0.5 bg-gradient-to-r from-transparent via-emerald-500 to-transparent mx-auto"></div>
+                </div>
+
+                <div className="relative px-4 md:px-12">
+                  <Quote className="absolute -top-4 -left-2 w-8 h-8 text-emerald-500/10 dark:text-emerald-500/5 rotate-180" />
+                  <p className="text-xl md:text-2xl font-bold leading-tight tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-foreground via-foreground to-emerald-500 dark:from-white dark:via-white dark:to-emerald-400 transition-all duration-300">
+                    {profile.motto}
+                  </p>
+                  <Quote className="absolute -bottom-4 -right-2 w-8 h-8 text-emerald-500/10 dark:text-emerald-500/5" />
+                </div>
+
+                {/* Cyberpunk accent lines */}
+                <div className="flex justify-center items-center gap-2 pt-2 opacity-50">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></div>
+                  <div className="w-1 h-1 rounded-full bg-cyan-500"></div>
+                  <div className="w-1 h-1 rounded-full bg-blue-500"></div>
                 </div>
               </div>
-
-              <div className="space-y-2">
-                <h2 className="text-xl md:text-2xl font-bold text-foreground/60 tracking-[0.4em] uppercase">Moto Universitas</h2>
-                <div className="w-24 h-1 bg-gradient-to-r from-transparent via-cyber-blue to-transparent mx-auto"></div>
-              </div>
-
-              <p className="text-lg md:text-xl font-medium text-foreground dark:text-white/90 leading-relaxed italic px-4 md:px-20 relative">
-                <span className="absolute -top-4 -left-2 text-cyber-blue/20 text-6xl font-serif">&quot;</span>
-                {profile.description}
-                <span className="absolute -bottom-8 -right-2 text-cyber-blue/20 text-6xl font-serif">&quot;</span>
-              </p>
             </div>
           </MotionDiv>
 
@@ -272,8 +279,11 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
             <div className="relative z-10">
               <div className="flex flex-col md:flex-row gap-10 md:gap-16 items-center md:items-start text-center md:text-left">
                 <div className="flex-shrink-0">
-                  <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-cyber-blue via-blue-600 to-electric-purple flex items-center justify-center shadow-xl shadow-cyber-blue/20 transform group-hover:rotate-6 group-hover:scale-110 transition-all duration-500 border border-white/20">
-                    <History className="w-12 h-12 text-white" />
+                  <div className="relative group/icon">
+                    <div className="absolute -inset-4 bg-blue-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div className="w-24 h-24 rounded-[2rem] bg-blue-600 flex items-center justify-center shadow-2xl shadow-blue-500/20 transform group-hover:rotate-6 group-hover:scale-110 transition-all duration-500 border border-white/20 relative z-10">
+                      <History className="w-12 h-12" style={{ color: 'white' }} />
+                    </div>
                   </div>
                 </div>
                 <div className="space-y-8 flex-1">
@@ -497,7 +507,7 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
                       </div>
                     )}
                     <div className="space-y-2">
-                      <h4 className="font-bold text-cyber-blue flex items-center gap-2 group-hover/item:text-white transition-colors">
+                      <h4 className="font-bold text-cyber-blue flex items-center gap-2 transition-colors">
                         {!item.image && <div className="w-2 h-2 bg-cyber-blue rounded-full" />}
                         {item.element}
                       </h4>
@@ -512,6 +522,6 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 }

@@ -9,12 +9,15 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, GraduationCap, BookOpen, Users, Newspaper, Award, Handshake } from "lucide-react";
 import { AuthButtons } from "@/components/auth-buttons";
 
-export function Navbar({ locale }: { locale: string }) {
+// Main Navbar component for the application
+export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
+    setMounted(true);
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
     };
@@ -68,7 +71,6 @@ export function Navbar({ locale }: { locale: string }) {
       icon: Newspaper,
       submenu: [
         { title: locale === 'id' ? "Berita" : "News", href: `/${locale}/berita-media/berita` },
-        { title: locale === 'id' ? "Pengumuman" : "Announcements", href: `/${locale}/berita-media/pengumuman` },
         { title: locale === 'id' ? "Events" : "Events", href: `/${locale}/berita-media/events` },
         { title: locale === 'id' ? "Galeri" : "Gallery", href: `/${locale}/berita-media/galeri` },
       ]
@@ -94,35 +96,55 @@ export function Navbar({ locale }: { locale: string }) {
   ];
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-      ? "bg-white/10 dark:bg-gray-900/30 backdrop-blur-xl border-b border-white/20 dark:border-gray-800/50 shadow-lg py-2"
-      : "bg-transparent py-4"
-      }`}>
+    <header
+      suppressHydrationWarning
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
+        ? "bg-white/10 dark:bg-gray-900/30 backdrop-blur-xl border-b border-white/20 dark:border-gray-800/50 shadow-lg py-1"
+        : "bg-transparent py-2"
+        }`}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href={`/${locale}`} className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.5)]">
-              <GraduationCap className="w-6 h-6 text-white/90 dark:text-white" />
+          <Link href={`/${locale}`} className="flex items-center gap-3 group">
+            <div className="w-12 h-12 lg:w-14 lg:h-14 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+              {profile?.logo ? (
+                <img
+                  suppressHydrationWarning
+                  src={profile.logo}
+                  alt="Logo"
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <div
+                  suppressHydrationWarning
+                  className="w-10 h-10 lg:w-12 lg:h-12 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+                >
+                  <GraduationCap className="w-6 h-6 lg:w-7 lg:h-7 text-white/90 dark:text-white" />
+                </div>
+              )}
             </div>
-            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
-              University
+            <span
+              suppressHydrationWarning
+              className="text-lg sm:text-xl lg:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 block whitespace-nowrap"
+            >
+              {profile?.name || "University"}
             </span>
           </Link>
 
           {/* Desktop Menu */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-2" suppressHydrationWarning>
             {navItems.map((item) => (
-              <div key={item.href} className="relative group">
+              <div key={item.href} className="relative group" suppressHydrationWarning>
                 <Link
                   href={item.href}
-                  className={`px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2 ${pathname === item.href || pathname.startsWith(item.href + "/")
+                  suppressHydrationWarning
+                  className={`px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2 whitespace-nowrap ${pathname === item.href || pathname.startsWith(item.href + "/")
                     ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-blue-700 dark:text-blue-300 shadow-[0_0_10px_rgba(99,102,241,0.2)]"
                     : "hover:bg-white/10 dark:hover:bg-gray-800/50 hover:text-blue-600 dark:hover:text-blue-400"
                     }`}
                 >
-                  <item.icon className="w-4 h-4" />
-                  <span>{item.title}</span>
+                  <item.icon className="w-4 h-4 shrink-0" suppressHydrationWarning />
+                  <span className="text-sm lg:text-base font-medium" suppressHydrationWarning>{item.title}</span>
                 </Link>
 
                 {/* Submenu */}
@@ -177,7 +199,7 @@ export function Navbar({ locale }: { locale: string }) {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden mt-2 py-4 rounded-xl bg-gradient-to-b from-white/90 to-gray-100/90 dark:from-gray-800/90 dark:to-gray-900/90 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50 shadow-2xl">
+          <div className="md:hidden mt-2 py-4 rounded-xl bg-gradient-to-b from-white/90 to-gray-100/90 dark:from-gray-800/90 dark:to-gray-900/90 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50 shadow-2xl max-h-[80vh] overflow-y-auto">
             <nav className="flex flex-col gap-2 px-4">
               {navItems.map((item) => (
                 <div key={item.href}>

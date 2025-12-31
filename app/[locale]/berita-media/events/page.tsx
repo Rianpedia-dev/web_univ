@@ -14,25 +14,49 @@ import {
   Shield,
   TrendingUp,
   Globe,
-  Lightbulb
+  Lightbulb,
+  Info,
+  ArrowRight
 } from "lucide-react";
 import { MotionDiv } from "@/components/motion-wrapper";
 import { Badge } from "@/components/ui/badge";
-import { getUpcomingEventsWithCategory } from '@/lib/db';
+import { getUpcomingEventsWithCategory, getPublishedUniversityProfile } from '@/lib/db';
+import { cn } from "@/lib/utils";
+import { EventShareButton } from "@/components/EventShareButton";
 
 export default async function AgendaPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  // Ambil data dari database (menggunakan fungsi dengan kategori)
+  // Ambil data dari database
   const eventsData = await getUpcomingEventsWithCategory(20);
+  const universityProfiles = await getPublishedUniversityProfile();
+  const universityProfile = universityProfiles[0] || null;
 
   // Fungsi untuk format tanggal
   const formatDate = (date: Date | null) => {
-    if (!date) return 'Tanggal belum ditentukan';
+    if (!date) return 'TBA';
     return new Date(date).toLocaleDateString('id-ID', {
       day: 'numeric',
       month: 'long',
       year: 'numeric'
     });
+  };
+
+  // Fungsi untuk format waktu
+  const formatTime = (time: string | null) => {
+    if (!time) return 'Selesai';
+    try {
+      // Jika dalam format ISO
+      if (time.includes('T')) {
+        return new Date(time).toLocaleTimeString('id-ID', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }) + ' WIB';
+      }
+      return time;
+    } catch (e) {
+      return time;
+    }
   };
 
   // Fungsi untuk menentukan status event
@@ -41,33 +65,21 @@ export default async function AgendaPage({ params }: { params: Promise<{ locale:
     if (!startDate) return 'pending';
 
     if (registrationEnd && new Date(registrationEnd) >= now) {
-      return 'dibukaPendaftaran';
+      return 'open';
     }
     if (new Date(startDate) > now) {
-      return 'akanDatang';
+      return 'upcoming';
     }
     if (endDate && new Date(endDate) >= now) {
-      return 'berlangsung';
+      return 'ongoing';
     }
-    return 'selesai';
+    return 'completed';
   };
 
-  // Hitung statistik
   const now = new Date();
-  const totalEvents = eventsData.length;
-  const upcomingEvents = eventsData.filter(e => e.startDate && new Date(e.startDate) > now).length;
-  const featuredEvents = eventsData.filter(e => e.isFeatured).length;
-
-  // Kelompokkan berdasarkan kategori
-  const categories = [...new Set(eventsData.map(e => e.categoryName || 'Umum'))];
-  const kategoriAgenda = categories.map(cat => ({
-    id: cat.toLowerCase().replace(/\s+/g, '-'),
-    name: cat,
-    count: eventsData.filter(e => (e.categoryName || 'Umum') === cat).length
-  }));
 
   return (
-    <div className="min-h-screen bg-background overflow-hidden relative">
+    <div className="min-h-screen bg-background overflow-hidden relative selection:bg-cyber-blue/30 selection:text-cyber-blue">
       {/* Animated background grid */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(0,240,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,240,255,0.1)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]" />
 
@@ -75,218 +87,202 @@ export default async function AgendaPage({ params }: { params: Promise<{ locale:
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyber-blue/10 rounded-full blur-3xl animate-pulse" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-electric-purple/10 rounded-full blur-3xl animate-pulse delay-1000" />
 
-      <div className="container mx-auto px-4 py-16 relative z-10">
-        {/* Header */}
-        <MotionDiv
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight transform transition-all duration-300 hover:scale-105" style={{
-            background: 'linear-gradient(to right, #10b981, #34d399)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-            WebkitTextStroke: '1px black',
-            textShadow: '0 0 5px rgba(16, 185, 129, 0.5), 0 0 10px rgba(52, 211, 153, 0.5), 0 0 20px rgba(16, 185, 129, 0.3)'
-          }}>
-            Event <span style={{
-              background: 'linear-gradient(to right, #10b981, #34d399)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              WebkitTextStroke: '1px black',
-              textShadow: '0 0 5px rgba(16, 185, 129, 0.5), 0 0 10px rgba(52, 211, 153, 0.5), 0 0 20px rgba(16, 185, 129, 0.3)'
-            }}>Kampus</span>
-          </h1>
-          <p className="text-lg md:text-xl text-foreground max-w-3xl mx-auto font-medium">
-            Kalender lengkap kegiatan dan event di lingkungan universitas
-          </p>
-        </MotionDiv>
+      {/* Full width background image section for header */}
+      <div
+        className="relative bg-[url('/images/backround_berita_media.png')] bg-cover bg-center bg-no-repeat -mx-4 sm:-mx-6 lg:-mx-8 xl:-mx-0 border-2 border-cyber-blue/50 rounded-3xl overflow-hidden mb-16"
+      >
+        <div className="absolute inset-0 bg-black/0"></div>
+        <div className="relative z-10 py-44 px-4 sm:px-6">
+          <div className="container mx-auto max-w-6xl">
+            {/* Header */}
+            <MotionDiv
+              className="text-center"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight transform transition-all duration-300 hover:scale-105" style={{
+                background: 'linear-gradient(to right, #10b981, #34d399)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                WebkitTextStroke: '1px black',
+                textShadow: '0 0 5px rgba(16, 185, 129, 0.5), 0 0 10px rgba(52, 211, 153, 0.5), 0 0 20px rgba(16, 185, 129, 0.3)'
+              }}>
+                Agenda & Event
+              </h1>
 
-        {/* Statistik Agenda */}
-        <MotionDiv
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(0,240,255,0.1)] transition-all duration-300">
-            <div className="w-12 h-12 bg-gradient-cyber rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(0,240,255,0.3)]">
-              <Calendar className="w-6 h-6 text-foreground" />
-            </div>
-            <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-cyber mb-2">
-              {totalEvents}
-            </div>
-            <div className="text-muted-foreground text-sm">Total Event</div>
+            </MotionDiv>
           </div>
+        </div>
+      </div>
 
-          <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(179,118,255,0.1)] transition-all duration-300">
-            <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
-              <Clock className="w-6 h-6 text-foreground" />
-            </div>
-            <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-emerald-600 mb-2">
-              {upcomingEvents}
-            </div>
-            <div className="text-muted-foreground text-sm">Event Mendatang</div>
-          </div>
+      <div className="container mx-auto px-4 relative z-10">
 
-          <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(179,118,255,0.1)] transition-all duration-300">
-            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(192,132,252,0.3)]">
-              <Star className="w-6 h-6 text-foreground" />
-            </div>
-            <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-600 mb-2">
-              {featuredEvents}
-            </div>
-            <div className="text-muted-foreground text-sm">Event Unggulan</div>
-          </div>
 
-          <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(179,118,255,0.1)] transition-all duration-300">
-            <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
-              <Award className="w-6 h-6 text-foreground" />
-            </div>
-            <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-blue-600 mb-2">
-              {kategoriAgenda.length}
-            </div>
-            <div className="text-muted-foreground text-sm">Kategori</div>
-          </div>
-        </MotionDiv>
 
-        {/* Filter Kategori */}
-        <MotionDiv
-          className="mb-8"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-        >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-3xl font-bold text-foreground">Kategori Agenda</h2>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            {kategoriAgenda.map((kategori) => (
-              <Button key={kategori.id} variant="outline" className="flex items-center gap-2 border-cyber-blue text-cyber-blue hover:bg-cyber-blue/10">
-                {kategori.name} ({kategori.count})
-              </Button>
-            ))}
-            <Button variant="outline" className="border-cyber-blue text-cyber-blue hover:bg-cyber-blue/10">Lihat Semua</Button>
-          </div>
-        </MotionDiv>
-
-        {/* Daftar Agenda */}
-        <MotionDiv
-          className="mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-        >
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold text-foreground">Agenda Mendatang</h2>
-            <div className="flex gap-2">
-              <Button variant="outline" className="border-cyber-blue text-cyber-blue hover:bg-cyber-blue/10">Minggu Ini</Button>
-              <Button variant="outline" className="border-cyber-blue text-cyber-blue hover:bg-cyber-blue/10">Bulan Ini</Button>
-              <Button variant="outline" className="border-cyber-blue text-cyber-blue hover:bg-cyber-blue/10">Terbaru</Button>
+        {/* Content Area */}
+        <div className="flex flex-col gap-12">
+          <div className="flex flex-wrap items-end justify-center gap-6 border-b border-primary/10 pb-8">
+            <div className="text-center mx-auto">
+              <h2 className="text-5xl font-bold tracking-tight mb-2 text-foreground">Daftar Events</h2>
+              <p className="text-muted-foreground font-medium">Jangan lewatkan kesempatan Event untuk menambah pengalaman dan wawasan anda</p>
             </div>
+
           </div>
 
           {eventsData.length > 0 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {eventsData.map((agenda, index) => {
-                const status = getEventStatus(agenda.startDate, agenda.endDate, agenda.registrationEnd);
+                const calculatedStatus = getEventStatus(agenda.startDate, agenda.endDate, agenda.registrationEnd);
+                // Prioritaskan status dari DB jika bukan 'upcoming' (berarti sudah disetel manual)
+                const displayStatus = agenda.status !== 'upcoming' ? agenda.status : calculatedStatus;
+
                 return (
                   <MotionDiv
                     key={agenda.id}
-                    className="glass-card rounded-2xl border hover:shadow-[0_0_30px_rgba(0,240,255,0.1)] transition-all duration-300"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 * index }}
+                    className="group relative"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.05 * index }}
                   >
-                    <div className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <div className="flex items-center gap-2 mb-2">
-                            <Badge className={`${status === 'akanDatang' ? 'bg-cyber-blue' :
-                              status === 'dibukaPendaftaran' ? 'bg-electric-purple' :
-                                status === 'berlangsung' ? 'bg-green-500' :
-                                  'bg-gray-500'
-                              } hover:bg-opacity-80`}>
-                              {status === 'akanDatang' ? 'Akan Datang' :
-                                status === 'dibukaPendaftaran' ? 'Pendaftaran Dibuka' :
-                                  status === 'berlangsung' ? 'Sedang Berlangsung' :
-                                    'Selesai'}
-                            </Badge>
-                            <Badge variant="secondary" className="bg-electric-purple/20 text-electric-purple border-electric-purple/30">
-                              {agenda.categoryName || 'Umum'}
-                            </Badge>
-                          </div>
-                          <h3 className="text-xl font-bold text-foreground mb-2">{agenda.title}</h3>
-                          <p className="text-cyber-blue font-semibold">{agenda.organizer || 'Universitas'}</p>
-                        </div>
-                      </div>
-
-                      <p className="text-muted-foreground mb-4 line-clamp-2">
-                        {agenda.description || 'Kegiatan kampus yang menarik untuk diikuti'}
-                      </p>
-
-                      <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-4 h-4 text-cyber-blue" />
-                          <div>
-                            <span className="text-sm text-muted-foreground">Tanggal</span>
-                            <p className="font-semibold text-foreground">{formatDate(agenda.startDate)}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4 text-electric-purple" />
-                          <div>
-                            <span className="text-sm text-muted-foreground">Waktu</span>
-                            <p className="font-semibold text-foreground">
-                              {agenda.startTime || '08:00'} - {agenda.endTime || 'Selesai'}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2 mb-4">
-                        <MapPin className="w-4 h-4 text-neon-green" />
-                        <div>
-                          <span className="text-sm text-muted-foreground">Tempat</span>
-                          <p className="font-semibold text-foreground">{agenda.venue || agenda.location || 'Kampus Utama'}</p>
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-3 gap-4 mb-4">
-                        {agenda.maxParticipants && (
-                          <div>
-                            <span className="text-sm text-muted-foreground">Kuota</span>
-                            <p className="font-semibold text-foreground">{agenda.maxParticipants} Orang</p>
+                    <div className="glass-card rounded-[2rem] border border-primary/10 hover:border-cyber-blue/30 transition-all duration-500 shadow-xl flex flex-col overflow-hidden">
+                      {/* Poster Image */}
+                      <div className="relative h-64 w-full overflow-hidden bg-muted/20">
+                        {agenda.poster ? (
+                          <img
+                            src={agenda.poster}
+                            alt={agenda.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center opacity-20">
+                            <Calendar className="w-12 h-12 text-muted-foreground" />
                           </div>
                         )}
-                        <div>
-                          <span className="text-sm text-muted-foreground">Biaya</span>
-                          <p className="font-semibold text-foreground">
-                            {agenda.registrationFee ? `Rp ${Number(agenda.registrationFee).toLocaleString('id-ID')}` : 'Gratis'}
+                        <div className="absolute top-4 left-4">
+                          <Badge className={cn(
+                            "px-3 py-1 rounded-full font-bold text-[8px] uppercase tracking-widest border-none shadow-lg",
+                            displayStatus === 'open' || displayStatus === 'ongoing' ? 'bg-green-500 text-white' :
+                              displayStatus === 'upcoming' ? 'bg-cyber-blue text-foreground' :
+                                displayStatus === 'completed' ? 'bg-muted text-muted-foreground' :
+                                  'bg-red-500 text-white' // cancelled
+                          )}>
+                            {displayStatus === 'open' ? 'Pendaftaran Buka' :
+                              displayStatus === 'upcoming' ? 'Mendatang' :
+                                displayStatus === 'ongoing' ? 'Sedang Berlangsung' :
+                                  displayStatus === 'completed' ? 'Selesai' : 'Dibatalkan'}
+                          </Badge>
+                        </div>
+                      </div>
+
+                      <div className="p-5 flex flex-col relative z-10">
+                        <div className="flex flex-wrap items-center gap-2 mb-3">
+                          <Badge variant="outline" className="text-muted-foreground border-primary/10 font-bold px-3 py-1 text-[9px] rounded-full">
+                            {agenda.categoryName || 'UMUM'}
+                          </Badge>
+                        </div>
+
+                        <div className="mb-3">
+                          <h3 className="text-xl font-bold text-foreground mb-1.5 group-hover:text-cyber-blue transition-colors leading-tight line-clamp-2">
+                            {agenda.title}
+                          </h3>
+                          <div className="flex items-center gap-2 font-medium">
+                            <span className="text-[10px] uppercase tracking-widest truncate text-muted-foreground">
+                              {agenda.organizer || 'Direktorat Kemahasiswaan'}
+                            </span>
+                          </div>
+                        </div>
+
+                        <p className="text-xs text-muted-foreground leading-relaxed mb-2 line-clamp-2 italic opacity-80">
+                          "{agenda.description || 'Kegiatan eksklusif untuk mengembangkan potensi diri dan jaringan profesional bagi mahasiswa masa depan.'}"
+                        </p>
+                        {agenda.content && (
+                          <p className="text-xs text-muted-foreground leading-relaxed mb-2 border-l-2 border-primary/20 pl-3">
+                            {agenda.content}
                           </p>
-                        </div>
-                        {agenda.speaker && (
-                          <div>
-                            <span className="text-sm text-muted-foreground">Narasumber</span>
-                            <p className="font-semibold text-sm text-muted-foreground">{agenda.speaker}</p>
-                          </div>
                         )}
-                      </div>
 
-                      <div className="flex gap-2">
-                        <Button className="flex-1 bg-gradient-cyber hover:shadow-[0_0_20px_rgba(0,240,255,0.5)]">
-                          <FileText className="w-4 h-4 mr-2" />
-                          Detail Kegiatan
-                        </Button>
-                        {agenda.registrationUrl && (
-                          <Button variant="outline" className="flex-1 border-cyber-blue text-cyber-blue hover:bg-cyber-blue/10">
-                            <ExternalLink className="w-4 h-4 mr-2" />
-                            Daftar
-                          </Button>
-                        )}
+                        <div className="grid grid-cols-1 gap-y-1 mb-2 pt-2 border-t border-primary/10">
+                          <div className="flex items-center gap-2.5">
+                            <div className="p-2 bg-muted/40 rounded-xl border border-primary/10">
+                              <Calendar className="w-3.5 h-3.5 text-cyber-blue" />
+                            </div>
+                            <div>
+                              <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Tanggal</p>
+                              <p className="text-[11px] font-bold text-foreground uppercase">{formatDate(agenda.startDate)}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2.5">
+                            <div className="p-2 bg-muted/40 rounded-xl border border-primary/10">
+                              <Clock className="w-3.5 h-3.5 text-electric-purple" />
+                            </div>
+                            <div>
+                              <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Waktu</p>
+                              <p className="text-[11px] font-bold text-foreground uppercase">
+                                {formatTime(agenda.startTime)} - {formatTime(agenda.endTime)}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2.5">
+                            <div className="p-2 bg-muted/40 rounded-xl border border-primary/10">
+                              <MapPin className="w-3.5 h-3.5 text-neon-green" />
+                            </div>
+                            <div>
+                              <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Lokasi</p>
+                              <p className="text-[11px] font-bold text-foreground uppercase truncate max-w-[150px]">{agenda.venue || agenda.location || 'Kampus Utama'}</p>
+                            </div>
+                          </div>
+                          {agenda.targetAudience && (
+                            <div className="flex items-center gap-2.5">
+                              <div className="p-2 bg-muted/40 rounded-xl border border-primary/10">
+                                <Users className="w-3.5 h-3.5 text-pink-500" />
+                              </div>
+                              <div>
+                                <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">Target Peserta</p>
+                                <p className="text-[11px] font-bold text-foreground uppercase truncate max-w-[150px]">{agenda.targetAudience}</p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex items-center justify-between gap-4 mb-2 p-2 bg-muted/20 rounded-2xl border border-primary/10">
+                          <div className="flex flex-col">
+                            <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-[0.1em] mb-0.5">Kuota</span>
+                            <span className="text-xs font-black text-foreground">{agenda.maxParticipants || 'N/A'} <span className="text-[8px] text-muted-foreground font-medium uppercase leading-none">Peserta</span></span>
+                          </div>
+                          <div className="flex flex-col text-right">
+                            <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-[0.1em] mb-0.5">Biaya</span>
+                            <span className="text-sm font-black text-cyber-blue tracking-tight">
+                              {agenda.registrationFee && agenda.registrationFee !== '0' && agenda.registrationFee !== ''
+                                ? agenda.registrationFee
+                                : 'FREE'}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <EventShareButton
+                            event={agenda}
+                            universityName={universityProfile?.name || 'Universitas Teknokrat Indonesia'}
+                            universityLogo={universityProfile?.logo}
+                          />
+                          {agenda.registrationUrl ? (
+                            <a
+                              href={agenda.registrationUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1"
+                            >
+                              <Button variant="outline" className="w-full h-11 rounded-xl font-bold uppercase tracking-[0.1em] text-[10px] border-primary/10 bg-primary/5 hover:border-cyber-blue hover:bg-cyber-blue hover:text-cyber-blue-foreground transition-all duration-300 group/btn">
+                                Daftar
+                                <ArrowRight className="w-3 h-3 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                              </Button>
+                            </a>
+                          ) : (
+                            <Button variant="secondary" disabled className="flex-1 h-11 rounded-xl font-bold uppercase tracking-[0.1em] text-[10px] opacity-40">
+                              CLOSED
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </MotionDiv>
@@ -294,43 +290,15 @@ export default async function AgendaPage({ params }: { params: Promise<{ locale:
               })}
             </div>
           ) : (
-            <div className="glass-card rounded-2xl border p-12 text-center">
-              <Calendar className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-foreground mb-2">Belum Ada Event</h3>
-              <p className="text-muted-foreground">Event kampus akan segera ditambahkan</p>
+            <div className="glass-card rounded-[2.5rem] border border-primary/10 p-24 text-center">
+              <div className="w-24 h-24 bg-muted/40 rounded-full flex items-center justify-center mx-auto mb-8 border border-primary/10">
+                <Info className="w-10 h-10 text-muted-foreground" />
+              </div>
+              <h3 className="text-2xl font-bold text-foreground mb-2 uppercase tracking-widest">SISTEM KOSONG</h3>
+              <p className="text-muted-foreground italic">Sedang mensinkronisasi data agenda baru...</p>
             </div>
           )}
-        </MotionDiv>
-
-        {/* Kalender Interaktif */}
-        <MotionDiv
-          className="glass-card rounded-3xl p-8 md:p-12 border mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-        >
-          <h2 className="text-3xl font-bold text-center text-foreground mb-8">Kalender Kegiatan</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {['Januari', 'Februari', 'Maret'].map((bulan, index) => {
-              const monthEvents = eventsData.filter(e => {
-                if (!e.startDate) return false;
-                const month = new Date(e.startDate).getMonth();
-                return month === index;
-              }).length;
-
-              return (
-                <div key={index} className="glass-card p-4 rounded-xl text-center border">
-                  <div className="w-16 h-16 bg-gradient-cyber rounded-full flex items-center justify-center mx-auto mb-2 shadow-[0_0_15px_rgba(0,240,255,0.3)]">
-                    <Calendar className="w-8 h-8 text-foreground" />
-                  </div>
-                  <h3 className="text-lg font-bold text-foreground">{bulan}</h3>
-                  <p className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-cyber">{monthEvents}</p>
-                  <p className="text-sm text-muted-foreground">Kegiatan</p>
-                </div>
-              );
-            })}
-          </div>
-        </MotionDiv>
+        </div>
       </div>
     </div>
   );

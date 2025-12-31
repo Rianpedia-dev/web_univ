@@ -2,74 +2,33 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Building2,
-  Globe,
   Users,
-  BookOpen,
-  Target,
   Award,
-  FileText,
   Download,
+  Handshake,
+  Shield,
+  Target,
+  MapPin,
   Mail,
   Phone,
-  MapPin,
-  Calendar,
-  Heart,
-  Handshake,
-  Zap,
-  Shield,
-  TrendingUp,
-  Lightbulb
+  Globe,
+  User,
+  Eye
 } from "lucide-react";
 import { MotionDiv } from "@/components/motion-wrapper";
+import { PartnershipDetailDialog } from "@/components/PartnershipDetailDialog";
 import { Badge } from "@/components/ui/badge";
 import { getPublishedPartnerships } from '@/lib/db';
 
 export default async function PartnershipPage() {
-  // Ambil data dari database
+  // Ambil data dari database (Table partners yang sekarang menyimpan detail kerjasama)
   const partnerUniversitas = await getPublishedPartnerships();
-
-  // Data jenis kerjasama (Tetap statis karena biasanya ini adalah kategori sistem)
-  const jenisKerjasama = [
-    {
-      id: 1,
-      nama: "Joint Research",
-      deskripsi: "Kerjasama penelitian bersama antar institusi",
-      jumlahPartner: 8,
-      manfaat: "Publikasi ilmiah bersama, pengembangan penelitian",
-      icon: Target
-    },
-    {
-      id: 2,
-      nama: "Student Exchange",
-      deskripsi: "Pertukaran mahasiswa antar universitas",
-      jumlahPartner: 5,
-      manfaat: "Pengalaman internasional, peningkatan kapasitas akademik",
-      icon: Users
-    },
-    {
-      id: 3,
-      nama: "Staff Exchange",
-      deskripsi: "Pertukaran tenaga kependidikan antar institusi",
-      jumlahPartner: 4,
-      manfaat: "Peningkatan kualitas layanan, kolaborasi akademik",
-      icon: BookOpen
-    },
-    {
-      id: 4,
-      nama: "Internship Program",
-      deskripsi: "Program magang untuk mahasiswa",
-      jumlahPartner: 12,
-      manfaat: "Pengalaman kerja nyata, penyaluran tenaga kerja",
-      icon: Award
-    }
-  ];
 
   // Hitung statistik
   const totalPartner = partnerUniversitas.length;
-  const totalKegiatan = partnerUniversitas.reduce((acc, p) => acc + (p.activities?.split('\n').length || 0), 0);
 
   return (
-    <div className="min-h-screen bg-background overflow-hidden relative">
+    <div className="min-h-screen bg-background overflow-hidden relative pb-20">
       {/* Background grid dengan opacity minimal */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(0,240,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,240,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)] z-0" />
 
@@ -105,54 +64,6 @@ export default async function PartnershipPage() {
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
 
-        {/* Statistik Kemitraan */}
-        <MotionDiv
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(0,240,255,0.1)] transition-all duration-300">
-            <div className="w-12 h-12 bg-gradient-cyber rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(0,240,255,0.3)]">
-              <Building2 className="w-6 h-6 text-foreground" />
-            </div>
-            <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-cyber mb-2">
-              {totalPartner}
-            </div>
-            <div className="text-muted-foreground text-sm">Total Partner</div>
-          </div>
-
-          <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(179,118,255,0.1)] transition-all duration-300">
-            <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
-              <Handshake className="w-6 h-6 text-foreground" />
-            </div>
-            <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-emerald-600 mb-2">
-              {totalKegiatan}
-            </div>
-            <div className="text-muted-foreground text-sm">Kegiatan Kerjasama</div>
-          </div>
-
-          <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(179,118,255,0.1)] transition-all duration-300">
-            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(192,132,252,0.3)]">
-              <Award className="w-6 h-6 text-foreground" />
-            </div>
-            <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-600 mb-2">
-              64
-            </div>
-            <div className="text-muted-foreground text-sm">Publikasi Bersama</div>
-          </div>
-
-          <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(179,118,255,0.1)] transition-all duration-300">
-            <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
-              <Users className="w-6 h-6 text-foreground" />
-            </div>
-            <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-blue-600 mb-2">
-              320+
-            </div>
-            <div className="text-muted-foreground text-sm">Mahasiswa Terlibat</div>
-          </div>
-        </MotionDiv>
 
         {/* Daftar Partner */}
         <MotionDiv
@@ -162,8 +73,11 @@ export default async function PartnershipPage() {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold text-foreground">Daftar Partner</h2>
+          <div className="flex flex-col items-center justify-center mb-12 text-center">
+            <h2 className="text-4xl md:text-5xl font-black text-foreground bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/60 tracking-tighter uppercase italic">
+              Daftar Partner
+            </h2>
+            <div className="w-24 h-1.5 bg-gradient-cyber rounded-full mt-4 shadow-[0_0_15px_rgba(0,240,255,0.5)]"></div>
           </div>
 
           {partnerUniversitas.length > 0 ? (
@@ -172,68 +86,116 @@ export default async function PartnershipPage() {
                 return (
                   <MotionDiv
                     key={partner.id}
-                    className="glass-card rounded-2xl border overflow-hidden hover:shadow-[0_0_30px_rgba(0,240,255,0.1)] transition-all duration-300"
+                    className="glass-card rounded-2xl border border-border dark:border-white/10 overflow-hidden hover:shadow-[0_0_30px_rgba(0,240,255,0.15)] transition-all duration-500 group flex flex-col h-full"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.1 * index }}
                   >
-                    <div className="p-6">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-16 h-16 rounded-lg bg-cyber-blue/10 flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.2)] overflow-hidden border border-white/10">
-                          {partner.partnerLogo ? (
-                            <img
-                              src={partner.partnerLogo}
-                              alt={partner.partnerName || partner.title}
-                              className="w-full h-full object-contain p-2"
-                            />
-                          ) : (
-                            <Building2 className="w-8 h-8 text-cyber-blue" />
-                          )}
+                    <div className="p-6 flex-1 flex flex-col">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-16 h-16 rounded-xl bg-cyber-blue/5 flex items-center justify-center shadow-[0_0_20px_rgba(0,240,255,0.1)] overflow-hidden border border-border dark:border-white/10 group-hover:scale-105 transition-transform duration-500">
+                            {partner.partnerLogo ? (
+                              <img
+                                src={partner.partnerLogo}
+                                alt={partner.partnerName}
+                                className="w-full h-full object-contain p-2"
+                              />
+                            ) : (
+                              <Building2 className="w-8 h-8 text-cyber-blue" />
+                            )}
+                          </div>
+                          <div>
+                            <h3 className="text-xl font-bold text-foreground mb-1 leading-tight group-hover:text-cyber-blue transition-colors">{partner.partnerName}</h3>
+                            <div className="flex flex-wrap gap-1.5 mt-1.5">
+                              <Badge className={`${partner.isActive ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'} hover:bg-transparent px-2 py-0 text-[10px] uppercase font-bold`}>
+                                {partner.isActive ? 'Aktif' : 'Tidak Aktif'}
+                              </Badge>
+                              <Badge variant="outline" className="text-[10px] uppercase font-bold border-cyber-blue/30 text-cyber-blue bg-cyber-blue/5">
+                                {partner.type === 'international' ? 'Luar Negeri' : 'Dalam Negeri'}
+                              </Badge>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="text-xl font-bold text-foreground mb-1">{partner.partnerName || partner.title}</h3>
-                          <Badge className={`${partner.isActive ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'}`}>
-                            {partner.isActive ? 'Aktif' : 'Tidak Aktif'}
+                      </div>
+
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        <Badge variant="secondary" className="bg-muted/50 dark:bg-white/5 text-muted-foreground border-border dark:border-white/10 text-[10px] uppercase tracking-wider px-2">
+                          <Target className="w-3 h-3 mr-1 text-electric-purple" /> {partner.category || 'General'}
+                        </Badge>
+                        {partner.city && (
+                          <Badge variant="secondary" className="bg-muted/50 dark:bg-white/5 text-muted-foreground border-border dark:border-white/10 text-[10px] uppercase tracking-wider px-2">
+                            <MapPin className="w-3 h-3 mr-1 text-rose-500" /> {partner.city}, {partner.country}
                           </Badge>
+                        )}
+                      </div>
+
+                      <p className="text-muted-foreground text-sm mb-6 line-clamp-3 italic leading-relaxed">
+                        "{partner.description || 'Kerjasama strategis universitas untuk meningkatkan kualitas pendidikan dan inovasi.'}"
+                      </p>
+
+                      <div className="grid grid-cols-1 gap-3 mb-6 bg-muted/30 dark:bg-white/[0.02] p-4 rounded-xl border border-border dark:border-white/5">
+                        <div className="flex justify-between items-center pb-2 border-b border-border dark:border-white/5">
+                          <span className="text-[10px] uppercase font-black text-muted-foreground tracking-widest">No. Perjanjian</span>
+                          <span className="font-mono text-[10px] text-foreground font-bold">{partner.agreementNumber || '-'}</span>
+                        </div>
+                        <div className="flex justify-between items-center pb-2 border-b border-border dark:border-white/5">
+                          <span className="text-[10px] uppercase font-black text-muted-foreground tracking-widest">Periode</span>
+                          <span className="text-[10px] text-foreground font-bold">
+                            {partner.startDate ? new Date(partner.startDate).toLocaleDateString('id-ID', { year: 'numeric', month: 'short' }) : '-'}
+                            —
+                            {partner.endDate ? new Date(partner.endDate).toLocaleDateString('id-ID', { year: 'numeric', month: 'short' }) : '-'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-[10px] uppercase font-black text-muted-foreground tracking-widest">Koordinator</span>
+                          <span className="text-[11px] text-foreground font-bold flex items-center gap-1">
+                            <User className="w-3 h-3 text-cyan-400" /> {partner.coordinator || '-'}
+                          </span>
                         </div>
                       </div>
 
-                      <p className="text-muted-foreground mb-4 line-clamp-2">{partner.description || 'Kerjasama strategis universitas'}</p>
+                      <div className="mt-auto space-y-4">
+                        <div className="flex items-center justify-between text-[11px] px-1">
+                          <div className="flex gap-4">
+                            {partner.contactEmail && (
+                              <a href={`mailto:${partner.contactEmail}`} className="text-muted-foreground hover:text-cyber-blue transition-colors" title={partner.contactEmail}>
+                                <Mail className="w-4 h-4" />
+                              </a>
+                            )}
+                            {partner.contactPhone && (
+                              <a href={`tel:${partner.contactPhone}`} className="text-muted-foreground hover:text-cyber-blue transition-colors" title={partner.contactPhone}>
+                                <Phone className="w-4 h-4" />
+                              </a>
+                            )}
+                            {partner.website && (
+                              <a href={partner.website.startsWith('http') ? partner.website : `https://${partner.website}`} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-cyber-blue transition-colors" title="Buka Website">
+                                <Globe className="w-4 h-4" />
+                              </a>
+                            )}
+                          </div>
+                        </div>
 
-                      <div className="space-y-3 mb-4">
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">No. Perjanjian</span>
-                          <span className="font-semibold text-foreground text-xs">{partner.agreementNumber || '-'}</span>
+                        <div className="flex gap-2 pt-2">
+                          <PartnershipDetailDialog partner={partner} />
+                          <Button
+                            className="flex-1 bg-gradient-to-r from-cyber-blue to-electric-purple hover:shadow-[0_0_20px_rgba(0,240,255,0.4)] transition-all duration-300 h-11 rounded-xl font-bold text-xs uppercase group text-white border-none"
+                            asChild={!!partner.agreementFile}
+                          >
+                            {partner.agreementFile ? (
+                              <a href={partner.agreementFile} target="_blank" rel="noopener noreferrer">
+                                <Eye className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform text-white" />
+                                DOKUMEN MOU
+                              </a>
+                            ) : (
+                              <span className="flex items-center opacity-50 cursor-not-allowed">
+                                <Eye className="w-4 h-4 mr-2 text-white/70" />
+                                DOKUMEN MOU
+                              </span>
+                            )}
+                          </Button>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Tgl. Mulai</span>
-                          <span className="font-semibold text-foreground">{partner.startDate ? new Date(partner.startDate).toLocaleDateString('id-ID') : '-'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Tgl. Selesai</span>
-                          <span className="font-semibold text-foreground">{partner.endDate ? new Date(partner.endDate).toLocaleDateString('id-ID') : '-'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Koordinator</span>
-                          <span className="font-semibold text-foreground">{partner.coordinator || '-'}</span>
-                        </div>
-                      </div>
-
-                      <div className="mb-4">
-                        <span className="text-sm text-muted-foreground block mb-2">Tujuan:</span>
-                        <p className="text-xs text-muted-foreground line-clamp-2">{partner.objectives || '-'}</p>
-                      </div>
-
-                      <div className="flex gap-2">
-                        <Button className="flex-1 bg-gradient-cyber hover:shadow-[0_0_20px_rgba(0,240,255,0.5)]">
-                          <FileText className="w-4 h-4 mr-2" />
-                          Detail
-                        </Button>
-                        <Button variant="outline" className="flex-1 border-cyber-blue text-cyber-blue hover:bg-cyber-blue/10">
-                          <Download className="w-4 h-4 mr-2" />
-                          Dokumen
-                        </Button>
                       </div>
                     </div>
                   </MotionDiv>
@@ -247,106 +209,6 @@ export default async function PartnershipPage() {
               <p className="text-muted-foreground">Data kerjasama akan segera ditampilkan</p>
             </div>
           )}
-        </MotionDiv>
-
-        {/* Jenis Kerjasama */}
-        <MotionDiv
-          className="mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-        >
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold text-foreground">Jenis Kerjasama</h2>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {jenisKerjasama.map((kerjasama, index) => {
-              const IconComponent = kerjasama.icon;
-              return (
-                <MotionDiv
-                  key={kerjasama.id}
-                  className="glass-card rounded-2xl border p-6 hover:shadow-[0_0_30px_rgba(192,132,252,0.1)] transition-all duration-300"
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.1 * index }}
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-rose-600 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(219,39,119,0.3)]">
-                      <IconComponent className="w-6 h-6 text-foreground" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-foreground">{kerjasama.nama}</h3>
-                      <Badge variant="secondary" className="bg-pink-500/20 text-pink-300 border-pink-500/30">Kategori</Badge>
-                    </div>
-                  </div>
-
-                  <p className="text-muted-foreground mb-4">{kerjasama.deskripsi}</p>
-
-                  <div className="space-y-2 mb-4">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-muted-foreground">Jumlah Partner Terlibat</span>
-                      <span className="font-semibold text-foreground">{kerjasama.jumlahPartner}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-muted-foreground">Manfaat Kerjasama</span>
-                      <span className="font-semibold text-sm text-foreground">{kerjasama.manfaat}</span>
-                    </div>
-                  </div>
-
-                  <Button className="w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:shadow-[0_0_20px_rgba(219,39,119,0.3)]">
-                    <Handshake className="w-4 h-4 mr-2" />
-                    Detail Kerjasama
-                  </Button>
-                </MotionDiv>
-              );
-            })}
-          </div>
-        </MotionDiv>
-
-        {/* Kontak Kemitraan */}
-        <MotionDiv
-          className="glass-card rounded-3xl p-8 md:p-12 border"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.7 }}
-        >
-          <h2 className="text-3xl font-bold text-center text-foreground mb-8">Kontak Kerjasama & Kemitraan</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-gradient-cyber rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(0,240,255,0.3)]">
-                <Mail className="w-6 h-6 text-foreground" />
-              </div>
-              <h3 className="font-bold text-foreground mb-2">Email</h3>
-              <p className="text-muted-foreground text-sm">kerjasama@university.ac.id</p>
-              <p className="text-xs text-muted-foreground">Untuk pertanyaan umum</p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-gradient-cyber rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(0,240,255,0.3)]">
-                <Phone className="w-6 h-6 text-foreground" />
-              </div>
-              <h3 className="font-bold text-foreground mb-2">Telepon</h3>
-              <p className="text-muted-foreground text-sm">(0274) 1234567</p>
-              <p className="text-xs text-muted-foreground">Senin-Jumat, 08:00-16:00</p>
-            </div>
-            <div className="text-center">
-              <div className="w-12 h-12 bg-gradient-cyber rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(0,240,255,0.3)]">
-                <MapPin className="w-6 h-6 text-foreground" />
-              </div>
-              <h3 className="font-bold text-foreground mb-2">Alamat</h3>
-              <p className="text-muted-foreground text-sm">Gedung Rektorat Lt. 2</p>
-              <p className="text-xs text-muted-foreground">Kampus Utama</p>
-            </div>
-          </div>
-          <div className="text-center mt-8">
-            <Button className="bg-gradient-cyber hover:shadow-[0_0_20px_rgba(0,240,255,0.5)] text-foreground">
-              <Handshake className="w-4 h-4 mr-2" />
-              Ajukan Kerjasama Baru
-            </Button>
-          </div>
         </MotionDiv>
       </div>
     </div>

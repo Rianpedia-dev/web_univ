@@ -26,35 +26,23 @@ const tableMap: Record<string, any> = {
     admissionDocuments: schema.admissionDocuments,
 
 
-    // Announcements
-    announcementCategories: schema.announcementCategories,
-    announcements: schema.announcements,
-    announcementAttachments: schema.announcementAttachments,
+
 
     // Events
     eventCategories: schema.eventCategories,
     events: schema.events,
-    eventRegistrants: schema.eventRegistrants,
-    eventDocuments: schema.eventDocuments,
+
 
     // Galleries
     galleryCategories: schema.galleryCategories,
-    galleryAlbums: schema.galleryAlbums,
     galleryMedia: schema.galleryMedia,
-    galleryAlbumMediaRel: schema.galleryAlbumMediaRel,
 
     // News
     newsCategories: schema.newsCategories,
     news: schema.news,
-    newsComments: schema.newsComments,
-    newsTags: schema.newsTags,
-    newsTagsRel: schema.newsTagsRel,
 
     // Partnerships
     partners: schema.partners,
-    partnershipTypes: schema.partnershipTypes,
-    partnerships: schema.partnerships,
-    partnershipActivities: schema.partnershipActivities,
     partnershipDocuments: schema.partnershipDocuments,
 
 
@@ -75,10 +63,7 @@ const tableMap: Record<string, any> = {
 
     // Student Services
     studentServices: schema.studentServices,
-    studentServiceRequests: schema.studentServiceRequests,
-    studentServiceDocuments: schema.studentServiceDocuments,
-    counselors: schema.counselors,
-
+    studentServiceContacts: schema.studentServiceContacts,
     studentOrganizations: schema.studentOrganizations,
 
     studentAchievements: schema.studentAchievements,
@@ -147,12 +132,21 @@ export async function POST(
                 }
 
                 // Convert date strings to Date objects
-                if (finalValue !== null && (columns[key] as any).dataType === 'date') {
+                const col = columns[key] as any;
+                if (finalValue !== null && (col.dataType === 'date' || col.columnType?.includes('Timestamp'))) {
                     finalValue = new Date(finalValue as any);
                 }
 
                 insertData[key] = finalValue;
             }
+        }
+
+        // Auto-generate slug if title exists but slug doesn't
+        if (!insertData.slug && insertData.title && 'slug' in columns) {
+            insertData.slug = insertData.title
+                .toLowerCase()
+                .replace(/[^\w ]+/g, '')
+                .replace(/ +/g, '-') + '-' + Math.random().toString(36).substring(2, 7);
         }
 
         const result = (await db.insert(tableSchema).values(insertData).returning()) as any[];
@@ -207,7 +201,8 @@ export async function PUT(
                 }
 
                 // Convert date strings to Date objects
-                if (finalValue !== null && (columns[key] as any).dataType === 'date') {
+                const col = columns[key] as any;
+                if (finalValue !== null && (col.dataType === 'date' || col.columnType?.includes('Timestamp'))) {
                     finalValue = new Date(finalValue as any);
                 }
 

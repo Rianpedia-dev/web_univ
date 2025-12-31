@@ -7,11 +7,10 @@ import {
   verification,
   news,
   newsCategories,
-  announcements,
   events,
   eventCategories,
-  galleryAlbums,
   galleryMedia,
+  galleryCategories,
   faculties,
   studyPrograms,
   academicCalendar,
@@ -20,31 +19,16 @@ import {
   educationCosts,
   scholarships,
   studentServices,
-  studentServiceRequests,
   studentOrganizations,
   studentAchievements,
-  partnerships,
   partners,
-  partnershipTypes,
   universityProfiles,
   campusStatistics,
   admissionRegistrations,
   admissionDocuments,
-  eventRegistrants,
-  newsComments,
-  newsTags,
-  newsTagsRel,
-  galleryCategories,
-  galleryAlbumMediaRel,
-  partnershipActivities,
   partnershipDocuments,
-  announcementAttachments,
-  eventDocuments,
-  studentServiceDocuments,
   organizationalEmployees,
-  counselors,
   campusFacilities as campusFacilitiesTable,
-  announcementCategories as announcementCategoriesTable,
   universityAccreditations as universityAccreditationsTable,
   contactInformation as contactInformationTable,
   organizationalStructures as organizationalStructuresTable
@@ -58,31 +42,18 @@ async function seedDatabase() {
     // Hapus semua data terlebih dahulu
     console.log('Membersihkan data yang ada...');
     await db.delete(partnershipDocuments);
-    await db.delete(partnershipActivities);
     await db.delete(studentAchievements);
-    await db.delete(studentServiceDocuments);
-    await db.delete(studentServiceRequests);
     await db.delete(admissionDocuments);
     await db.delete(admissionRegistrations);
-    await db.delete(eventDocuments);
-    await db.delete(eventRegistrants);
-    await db.delete(announcementAttachments);
-    await db.delete(newsComments);
-    await db.delete(newsTagsRel);
-    await db.delete(galleryAlbumMediaRel);
     await db.delete(session);
     await db.delete(account);
     await db.delete(verification);
     await db.delete(user);
     await db.delete(news);
     await db.delete(newsCategories);
-    await db.delete(newsTags);
-    await db.delete(announcements);
-    await db.delete(announcementCategoriesTable);
     await db.delete(events);
     await db.delete(eventCategories);
     await db.delete(galleryMedia);
-    await db.delete(galleryAlbums);
     await db.delete(galleryCategories);
 
     await db.delete(academicCalendar);
@@ -95,10 +66,7 @@ async function seedDatabase() {
     await db.delete(scholarships);
     await db.delete(studentServices);
     await db.delete(studentOrganizations);
-    await db.delete(counselors);
-    await db.delete(partnerships);
     await db.delete(partners);
-    await db.delete(partnershipTypes);
     await db.delete(universityProfiles);
     await db.delete(campusStatistics);
     await db.delete(universityAccreditationsTable);
@@ -162,48 +130,7 @@ async function seedDatabase() {
       });
     }
 
-    // Seed tabel kategori pengumuman
-    console.log('Mengisi kategori pengumuman...');
-    const announcementCatIds = [];
-    const announcementCategoriesData = [
-      { name: 'Akademik', slug: 'akademik', description: 'Pengumuman seputar kegiatan akademik' },
-      { name: 'Administrasi', slug: 'administrasi', description: 'Pengumuman seputar administrasi' },
-      { name: 'Kegiatan', slug: 'kegiatan', description: 'Pengumuman seputar kegiatan kampus' },
-      { name: 'Pendaftaran', slug: 'pendaftaran', description: 'Pengumuman seputar pendaftaran' },
-      { name: 'Lainnya', slug: 'lainnya', description: 'Pengumuman lainnya' }
-    ];
 
-    for (const cat of announcementCategoriesData) {
-      const [result] = await db.insert(announcementCategoriesTable).values({
-        ...cat,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }).returning();
-      announcementCatIds.push(result.id);
-    }
-
-    // Seed tabel pengumuman
-    console.log('Mengisi pengumuman...');
-    for (let i = 0; i < 15; i++) {
-      const randomUserId = users[Math.floor(Math.random() * users.length)].id;
-      const randomCategoryId = announcementCatIds[Math.floor(Math.random() * announcementCatIds.length)];
-
-      await db.insert(announcements).values({
-        title: faker.lorem.sentence(),
-        slug: faker.helpers.slugify(faker.lorem.words(3)).toLowerCase(),
-        content: faker.lorem.paragraphs(3),
-        excerpt: faker.lorem.paragraph(),
-        featuredImage: faker.image.url(),
-        priority: faker.number.int({ min: 0, max: 2 }),
-        isPublished: true,
-        publishedAt: faker.date.past(),
-        expiresAt: faker.date.future(),
-        authorName: faker.person.fullName(), // Updated from authorId
-        categoryId: randomCategoryId,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      });
-    }
 
     // Seed tabel kategori event
     console.log('Mengisi kategori event...');
@@ -285,50 +212,54 @@ async function seedDatabase() {
       galleryCatIds.push(result.id);
     }
 
-    // Seed tabel album galeri
-    console.log('Mengisi album galeri...');
-    const albumIds = [];
-    for (let i = 0; i < 8; i++) {
-      const randomUserId = users[Math.floor(Math.random() * users.length)].id;
-      const randomCategoryId = galleryCatIds[Math.floor(Math.random() * galleryCatIds.length)];
-
-      const [result] = await db.insert(galleryAlbums).values({
-        title: faker.lorem.words(3),
-        slug: faker.helpers.slugify(faker.lorem.words(3)).toLowerCase(),
-        description: faker.lorem.paragraph(),
-        coverImage: faker.image.url(),
-        isPublic: true,
-        isFeatured: faker.datatype.boolean(),
-        authorName: faker.person.fullName(), // Updated from authorId
-        categoryId: randomCategoryId,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }).returning();
-      albumIds.push(result.id);
-    }
-
-    // Seed tabel media galeri
+    // Seed tabel media galeri (langsung dengan kategori)
     console.log('Mengisi media galeri...');
-    for (let i = 0; i < 40; i++) {
-      const randomUserId = users[Math.floor(Math.random() * users.length)].id;
-      const randomAlbumId = albumIds[Math.floor(Math.random() * albumIds.length)];
+    const galleryMediaData = [
+      // Kategori Wisuda (index 3)
+      { title: 'Prosesi Wisuda di Panggung Utama', description: 'Momen khidmat prosesi wisuda dengan latar panggung utama.', categoryIndex: 3, type: 'image' },
+      { title: 'Seremoni Pelepasan Wisudawan', description: 'Video dokumentasi seremoni pelepasan wisudawan.', categoryIndex: 3, type: 'video', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' },
+      { title: 'Wisudawan Menerima Ijazah', description: 'Wisudawan menerima ijazah dari Rektor Universitas.', categoryIndex: 3, type: 'image' },
+
+      // Kategori Kegiatan Akademik (index 0)
+      { title: 'Highlight Seminar Nasional', description: 'Video kompilasi kegiatan seminar nasional bertema AI.', categoryIndex: 0, type: 'video', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' },
+      { title: 'Pembicara Seminar Nasional', description: 'Narasumber ahli memaparkan materi di seminar nasional.', categoryIndex: 0, type: 'image' },
+      { title: 'Workshop Kewirausahaan', description: 'Video cuplikan workshop kewirausahaan mahasiswa.', categoryIndex: 0, type: 'video', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' },
+
+      // Kategori Prestasi (index 2)
+      { title: 'Tim Debat Meraih Juara', description: 'Pemberian piala kepada tim debat universitas.', categoryIndex: 2, type: 'image' },
+      { title: 'Momen Kemenangan Atlet', description: 'Video detik-detik kemenangan atlet universitas.', categoryIndex: 2, type: 'video', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' },
+      { title: 'Penyerahan Medali Emas', description: 'Atlet menerima medali emas pekan olahraga.', categoryIndex: 2, type: 'image' },
+
+      // Kategori Kegiatan Kemahasiswaan (index 1)
+      { title: 'Flashmob OSPEK', description: 'Video flashmob ribuan mahasiswa baru saat OSPEK.', categoryIndex: 1, type: 'video', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' },
+      { title: 'Pentas Seni Mahasiswa', description: 'Penampilan bakat seni dari mahasiswa baru.', categoryIndex: 1, type: 'image' },
+      { title: 'Aftermovie Dies Natalis', description: 'Video aftermovie perayaan dies natalis universitas.', categoryIndex: 1, type: 'video', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' },
+
+      // Kategori Fasilitas (index 4)
+      { title: 'Tours Fasilitas Kampus', description: 'Video tour keliling fasilitas kampus modern.', categoryIndex: 4, type: 'video', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' },
+      { title: 'Ruang Baca Perpustakaan', description: 'Suasana nyaman ruang baca perpustakaan digital.', categoryIndex: 4, type: 'image' },
+      { title: 'Lab Komputer Terpadu', description: 'Video fasilitas lab komputer dengan perangkat terkini.', categoryIndex: 4, type: 'video', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' }
+    ];
+
+    for (let i = 0; i < galleryMediaData.length; i++) {
+      const mediaItem = galleryMediaData[i];
+      const isVideo = mediaItem.type === 'video';
+
+      const imageUrl = isVideo ? null : faker.image.url({ width: 1280, height: 720 });
 
       await db.insert(galleryMedia).values({
-        title: faker.lorem.words(3),
-        description: faker.lorem.paragraph(),
-        fileName: faker.system.commonFileName(),
-        filePath: faker.system.directoryPath() + '/' + faker.system.commonFileName(),
-        fileSize: faker.number.int({ min: 100000, max: 5000000 }),
-        mimeType: faker.helpers.arrayElement(['image/jpeg', 'image/png', 'image/gif']),
-        mediaType: 'image',
-        thumbnailPath: faker.system.directoryPath() + '/' + faker.system.commonFileName(),
-        duration: null,
-        width: faker.number.int({ min: 800, max: 1920 }),
-        height: faker.number.int({ min: 600, max: 1080 }),
+        title: mediaItem.title,
+        description: mediaItem.description,
+        filePath: isVideo ? (mediaItem.url || '') : (imageUrl || ''),
+        fileSize: isVideo ? 0 : faker.number.int({ min: 100000, max: 2000000 }),
+        mediaType: isVideo ? 'video' : 'image',
+        thumbnailPath: isVideo ? null : imageUrl, // Menggunakan URL yang sama agar tidak berbeda gambar
+        duration: isVideo ? faker.number.int({ min: 60, max: 300 }) : null,
+        width: 1280,
+        height: 720,
         isPublic: true,
-        isFeatured: faker.datatype.boolean(),
-        authorName: faker.person.fullName(), // Updated from authorId
-        albumId: randomAlbumId,
+        isFeatured: i < 6,
+        categoryId: galleryCatIds[mediaItem.categoryIndex],
         createdAt: new Date(),
         updatedAt: new Date()
       });
@@ -506,18 +437,16 @@ async function seedDatabase() {
     // Seed tabel profil universitas
     console.log('Mengisi profil universitas...');
     await db.insert(universityProfiles).values({
-      name: 'Universitas Teknologi Indonesia',
-      slug: 'universitas-teknologi-indonesia',
-      shortName: 'UTI',
-      description: 'Universitas Teknologi Indonesia adalah perguruan tinggi swasta yang berfokus pada pengembangan teknologi dan inovasi.',
+      name: 'Universitas Rianpedia',
+      slug: 'universitas-rianpedia',
+      shortName: 'UR',
       vision: 'Menjadi universitas teknologi terkemuka di Asia Tenggara yang berkontribusi dalam kemajuan ilmu pengetahuan dan teknologi.',
       mission: 'Menyelenggarakan pendidikan, penelitian, dan pengabdian kepada masyarakat di bidang teknologi yang unggul dan berdaya saing global.',
       values: 'Integritas, Inovasi, Kolaborasi, Kemandirian',
       history: 'Berdiri sejak tahun 1995 dengan fokus pada pengembangan teknologi informasi dan komunikasi. Kini berkembang menjadi universitas teknologi terkemuka.',
-      logo: '/images/uti-logo.png',
-      banner: '/images/uti-banner.jpg',
+      logo: 'https://www.nicepng.com/png/full/912-9125490_yale-university-logo-png.png',
       establishedYear: 1995,
-      motto: 'Technology for Better Future',
+      motto: 'Menggapai Masa Depan dengan Akal Budi dan Kecerdasan Buatan Membangun Peradaban Digital yang Beretika, Inklusif, dan Berkelanjutan',
       colors: JSON.stringify({ primary: '#00f0ff', secondary: '#b376ff', accent: '#39ff14' }),
       isPublished: true,
       createdAt: new Date(),
@@ -619,31 +548,8 @@ async function seedDatabase() {
       } as any);
     }
 
-    // Seed tabel jenis kerja sama
-    console.log('Mengisi jenis kerja sama...');
-    const partnershipTypeIds = [];
-    const partnershipTypesData = [
-      { name: 'Joint Research', slug: 'joint-research', description: 'Kerjasama penelitian bersama', type: 'joint_research', isPublished: true },
-      { name: 'Student Exchange', slug: 'student-exchange', description: 'Kerjasama pertukaran mahasiswa', type: 'student_exchange', isPublished: true },
-      { name: 'Faculty Exchange', slug: 'faculty-exchange', description: 'Kerjasama pertukaran dosen', type: 'faculty_exchange', isPublished: true },
-      { name: 'Academic Collaboration', slug: 'academic-collaboration', description: 'Kerjasama akademik', type: 'academic_collaboration', isPublished: true },
-      { name: 'Internship Program', slug: 'internship-program', description: 'Kerjasama program magang', type: 'internship', isPublished: true },
-      { name: 'Employment Partnership', slug: 'employment-partnership', description: 'Kerjasama penyaluran kerja', type: 'employment', isPublished: true },
-      { name: 'Technology Transfer', slug: 'technology-transfer', description: 'Kerjasama alih teknologi', type: 'technology_transfer', isPublished: true }
-    ];
-
-    for (const ptype of partnershipTypesData) {
-      const [result] = await db.insert(partnershipTypes).values({
-        ...ptype,
-        type: ptype.type as any,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      } as any).returning();
-      partnershipTypeIds.push(result.id);
-    }
-
-    // Seed tabel mitra
-    console.log('Mengisi data mitra...');
+    // Seed tabel mitra (dengan data kerjasama)
+    console.log('Mengisi data mitra & kerjasama...');
     const partnerIds = [];
     const partnerNames = [
       'Google Indonesia', 'Microsoft Indonesia', 'IBM Indonesia', 'Intel Indonesia',
@@ -669,6 +575,16 @@ async function seedDatabase() {
         website: faker.internet.url(),
         logo: faker.image.url(),
         partnershipStatus: faker.helpers.arrayElement(['active', 'inactive', 'expired', 'pending'] as const),
+
+        // Data Kerjasama Baru
+        agreementNumber: `MOU/${faker.number.int({ min: 1000, max: 9999 })}/UNIV/${new Date().getFullYear()}`,
+        agreementFile: `/documents/mou-${faker.helpers.slugify(partnerName)}.pdf`,
+        startDate: faker.date.past(),
+        endDate: faker.date.future(),
+        isActive: true,
+        objectives: faker.lorem.sentences(2),
+        coordinator: faker.person.fullName(),
+
         isPublished: true,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -676,36 +592,6 @@ async function seedDatabase() {
       partnerIds.push(result.id);
     }
 
-    // Seed tabel kerja sama
-    console.log('Mengisi data kerja sama...');
-    for (let i = 0; i < 15; i++) {
-      const randomPartnerId = partnerIds[Math.floor(Math.random() * partnerIds.length)];
-      const randomTypeId = partnershipTypeIds[Math.floor(Math.random() * partnershipTypeIds.length)];
-
-      await db.insert(partnerships).values({
-        title: `Kerjasama ${faker.company.name()} - ${faker.company.name()}`,
-        slug: faker.helpers.slugify(`kerjasama-${faker.company.name()}-${faker.company.name()}`).toLowerCase(),
-        description: faker.lorem.paragraph(),
-        partnerId: randomPartnerId,
-        partnershipTypeId: randomTypeId,
-        startDate: faker.date.past(),
-        endDate: faker.date.future(),
-        isActive: faker.datatype.boolean(),
-        agreementNumber: `MOU/${faker.number.int({ min: 1000, max: 9999 })}/UNIV/${new Date().getFullYear()}`,
-        agreementDate: faker.date.past(),
-        agreementFile: `/documents/mou-${faker.helpers.slugify(faker.company.name())}.pdf`,
-        objectives: faker.lorem.sentences(2),
-        activities: faker.lorem.sentences(3),
-        benefits: faker.lorem.sentences(2),
-        funding: faker.number.float({ min: 10000000, max: 1000000000, multipleOf: 1000000 }).toString(),
-        coordinator: faker.person.fullName(),
-        partnerCoordinator: faker.person.fullName(),
-        status: faker.helpers.arrayElement(['draft', 'proposed', 'approved', 'active', 'completed', 'terminated'] as const) as any,
-        isPublished: true,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      } as any);
-    }
 
     // Seed tabel organisasi mahasiswa
     console.log('Mengisi organisasi mahasiswa...');
@@ -726,6 +612,42 @@ async function seedDatabase() {
         createdAt: new Date(),
         updatedAt: new Date()
       } as any);
+    }
+
+    // Seed tabel prestasi mahasiswa
+    console.log('Mengisi prestasi mahasiswa...');
+    for (let i = 0; i < 15; i++) {
+      const randomStudyProgramId = studyProgramIds[Math.floor(Math.random() * studyProgramIds.length)];
+
+      await db.insert(studentAchievements).values({
+        studentName: faker.person.fullName(),
+        studentId: `NIM${faker.number.int({ min: 100000, max: 999999 })}`,
+        studyProgramId: randomStudyProgramId,
+        title: faker.helpers.arrayElement([
+          'Juara 1 Lomba Karya Tulis Ilmiah Nasional (LKTIN) 2024',
+          'Medali Emas Olimpiade Sains Nasional Bidang Informatika',
+          'Juara 2 Kompetisi Debat Mahasiswa Indonesia (KDMI)',
+          'Medali Perak Pekan Olahraga Mahasiswa Nasional (POMNAS)',
+          'Juara 1 Hackathon Startup Digital Indonesia',
+          'Pemenang Hibah Program Kreativitas Mahasiswa (PKM-K)',
+          'Juara Harapan 1 Kompetisi Robotika Indonesia',
+          'Juara 3 International Business Case Competition',
+          'Best Speaker pada Model United Nations (MUN) Regional',
+          'Juara 1 Lomba Fotografi Jurnalistik Nasional'
+        ]),
+        description: 'Mahasiswa tersebut telah menunjukkan prestasi yang membanggakan dan dedikasi yang tinggi dalam kompetisi ini, membawa nama baik program studi dan universitas di tingkat nasional maupun internasional.',
+        achievementType: faker.helpers.arrayElement(['non_academic', 'competition', 'community_service', 'other'] as const),
+        achievementLevel: faker.helpers.arrayElement(['local', 'regional', 'national', 'international'] as const),
+        achievementCategory: faker.helpers.arrayElement(['first', 'second', 'third', 'champion', 'participation', 'other'] as const),
+        eventName: faker.company.name() + ' Festival 2024',
+        eventDate: faker.date.past({ years: 1 }),
+        organizer: faker.company.name(),
+        image: faker.image.url({ width: 800, height: 600 }),
+        supportingDocuments: null,
+        isPublished: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
     }
 
 

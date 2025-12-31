@@ -14,7 +14,7 @@ export const eventCategories = pgTable("event_categories", {
 export const events = pgTable("events", {
     id: uuid("id").defaultRandom().primaryKey(),
     title: text("title").notNull(),
-    slug: text("slug").notNull().unique(),
+    slug: text("slug").unique(),
     description: text("description").notNull(),
     content: text("content"),
     poster: text("poster"), // URL gambar poster event
@@ -31,7 +31,7 @@ export const events = pgTable("events", {
     registrationStart: timestamp("registration_start"),
     registrationEnd: timestamp("registration_end"),
     registrationUrl: text("registration_url"), // URL eksternal untuk pendaftaran
-    registrationFee: decimal("registration_fee", { precision: 10, scale: 2 }).default('0'),
+    registrationFee: text("registration_fee").default('0'),
     organizer: text("organizer").notNull(),
     speaker: text("speaker"), // narasumber/pembicara
     targetAudience: text("target_audience"), // sasaran peserta
@@ -43,35 +43,4 @@ export const events = pgTable("events", {
     categoryId: uuid("category_id").references(() => eventCategories.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
-
-// Tabel pendaftar event
-export const eventRegistrants = pgTable("event_registrants", {
-    id: uuid("id").defaultRandom().primaryKey(),
-    eventId: uuid("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
-    name: text("name").notNull(),
-    email: text("email").notNull(),
-    phone: text("phone"),
-    institution: text("institution"), // asal instansi
-    status: text("status", { enum: ['registered', 'confirmed', 'attended', 'cancelled'] }).default('registered').notNull(),
-    registrationDate: timestamp("registration_date").defaultNow().notNull(),
-    confirmationDate: timestamp("confirmation_date"),
-    ticketNumber: text("ticket_number").unique(), // nomor tiket unik
-    checkedIn: boolean("checked_in").default(false).notNull(),
-    checkedInAt: timestamp("checked_in_at"),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
-
-// Tabel dokumen/arsip event
-export const eventDocuments = pgTable("event_documents", {
-    id: uuid("id").defaultRandom().primaryKey(),
-    eventId: uuid("event_id").notNull().references(() => events.id, { onDelete: "cascade" }),
-    title: text("title").notNull(),
-    fileName: text("file_name").notNull(),
-    filePath: text("file_path").notNull(),
-    fileSize: integer("file_size"), // dalam bytes
-    mimeType: text("mime_type"),
-    documentType: text("document_type", { enum: ['proposal', 'report', 'certificate', 'material', 'other'] }).notNull(),
-    uploadedAt: timestamp("uploaded_at").defaultNow().notNull(),
 });

@@ -8,13 +8,11 @@ export const universityProfiles = pgTable("university_profiles", {
     name: text("name").notNull(), // nama universitas
     slug: text("slug").notNull().unique(),
     shortName: text("short_name"), // nama singkat
-    description: text("description"),
     vision: text("vision"), // visi universitas
     mission: text("mission"), // misi universitas
     values: text("values"), // nilai-nilai universitas
     history: text("history"), // sejarah universitas
     logo: text("logo"), // URL logo universitas
-    banner: text("banner"), // URL banner utama
     establishedYear: integer("established_year"), // tahun berdiri
     motto: text("motto"), // moto universitas
     colors: json("colors"), // warna resmi universitas (dalam format JSON)
@@ -223,4 +221,3 @@ export const socialMediaLinks = pgTable("social_media_links", {
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
-

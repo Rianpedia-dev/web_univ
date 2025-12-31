@@ -109,43 +109,8 @@
   --dark-bg-oklch: 5.3% 0.008 248.01;
   --darker-bg-oklch: 3.1% 0.004 248.01;
   --accent-pink-oklch: 57.2% 0.218 2.85;
-}
 
-:root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
-  --muted: oklch(0.968 0.007 247.896);
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
-  --accent-foreground: oklch(0.208 0.042 265.755);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.929 0.013 255.508);
-  --input: oklch(0.929 0.013 255.508);
-  --ring: oklch(0.704 0.04 256.788);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
-
-  /* Cyber/Futuristic Colors OKLCH */
+  /* CSS Variable definitions using OKLCH */
   --color-cyber-blue: oklch(var(--cyber-blue-oklch));
   --color-electric-purple: oklch(var(--electric-purple-oklch));
   --color-neon-green: oklch(var(--neon-green-oklch));
@@ -215,15 +180,62 @@
 }
 
 @layer base {
-  * {
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
     @apply border-border outline-ring/50;
   }
+
   html {
     scroll-behavior: smooth;
+    /* Browser-native scaling: sets the base for rem units to achieve 90% scale consistently */
+    font-size: 14.4px;
+    /* 90% of 16px */
   }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    min-height: 100vh;
+    overflow-x: hidden;
   }
+
+  /* Standardized Scrollbar for all browsers */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--foreground) 20%, transparent) transparent;
+  }
+
+  /* Webkit-specific scrollbar (Chrome, Safari, Edge) */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--foreground) 20%, transparent);
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in srgb, var(--foreground) 30%, transparent);
+  }
+
+  /* Ensure fixed elements behave consistently */
+  .fixed {
+    max-width: 100vw;
+  }
+
 
   /* Override untuk elemen dengan warna tetap - Mode Terang */
   :root .text-white:not(.dark *),
@@ -360,20 +372,25 @@
 
 /* Holographic/Iridescent Effects */
 .holographic {
-  background: linear-gradient(
-    45deg,
-    rgb(var(--accent-pink)),
-    rgb(var(--cyber-blue)),
-    rgb(var(--electric-purple)),
-    rgb(var(--neon-green))
-  );
+  background: linear-gradient(45deg,
+      rgb(var(--accent-pink)),
+      rgb(var(--cyber-blue)),
+      rgb(var(--electric-purple)),
+      rgb(var(--neon-green)));
   background-size: 300% 300%;
   animation: gradient-shift 3s ease infinite;
 }
 
 @keyframes gradient-shift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 /* Futuristic Card Hover Effect */
@@ -390,14 +407,12 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: conic-gradient(
-    from 0deg,
-    transparent,
-    rgba(var(--cyber-blue), 0.1),
-    transparent,
-    rgba(var(--electric-purple), 0.1),
-    transparent
-  );
+  background: conic-gradient(from 0deg,
+      transparent,
+      rgba(var(--cyber-blue), 0.1),
+      transparent,
+      rgba(var(--electric-purple), 0.1),
+      transparent);
   z-index: -1;
   animation: rotate 6s linear infinite;
 }

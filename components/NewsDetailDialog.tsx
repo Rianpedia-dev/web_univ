@@ -1,0 +1,515 @@
+"use client";
+
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogClose,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+    Calendar,
+    User,
+    Eye,
+    Download,
+    Share2,
+    Clock,
+    Tag,
+    X,
+    FileText,
+    MessageCircle,
+    Link2,
+    Loader2,
+    Check,
+} from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
+import { toast } from "sonner";
+
+
+
+interface NewsDetailDialogProps {
+    news: any;
+    isOpen: boolean;
+    onOpenChange: (open: boolean) => void;
+    uniProfile?: any;
+}
+
+export function NewsDetailDialog({ news, isOpen, onOpenChange, uniProfile }: NewsDetailDialogProps) {
+    const [isSharing, setIsSharing] = useState(false);
+    const [isDownloading, setIsDownloading] = useState(false);
+    const [isCopied, setIsCopied] = useState(false);
+    const [showFullImage, setShowFullImage] = useState(false);
+
+    if (!news) return null;
+
+    const publishedDate = news.publishedAt ? new Date(news.publishedAt).toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    }) : '-';
+
+    const dateOnly = news.publishedAt ? new Date(news.publishedAt).toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    }) : '-';
+
+    const timeOnly = news.publishedAt ? new Date(news.publishedAt).toLocaleTimeString('id-ID', {
+        hour: '2-digit',
+        minute: '2-digit'
+    }) : '-';
+
+    const handleCopyLink = () => {
+        // Mendapatkan URL lengkap halaman saat ini dengan slug berita
+        const url = `${window.location.origin}${window.location.pathname}?slug=${news.slug}`;
+
+        navigator.clipboard.writeText(url).then(() => {
+            setIsCopied(true);
+            toast.success("Link berita berhasil disalin!");
+            setTimeout(() => setIsCopied(false), 2000);
+        }).catch((err) => {
+            console.error("Gagal menyalin link:", err);
+            toast.error("Gagal menyalin link.");
+        });
+    };
+
+    const handleWhatsAppShare = () => {
+        const text = `📢 *${news.title}*\n\n${news.excerpt || ""}\n\nBaca selengkapnya di: ${window.location.origin}/berita-media/berita?slug=${news.slug}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+    };
+
+    const handleDownload = async () => {
+        setIsDownloading(true);
+        toast.info("Sedang menyiapkan gaya koran...");
+
+        try {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+
+            // Dimensions for a newspaper (e.g., A4-like ratio)
+            const width = 800;
+            const height = 1100;
+            canvas.width = width;
+            canvas.height = height;
+
+            // --- 0. Load Images ---
+            const loadImage = (src: string): Promise<HTMLImageElement | null> => {
+                return new Promise((resolve) => {
+                    if (!src) return resolve(null);
+
+                    const isExternal = src.startsWith('http') || src.startsWith('https');
+                    const isLocalhost = src.includes('localhost') || src.includes('127.0.0.1');
+
+                    // Jika eksternal dan bukan localhost, gunakan proxy weserv.nl untuk bypass CORS
+                    const finalSrc = (isExternal && !isLocalhost)
+                        ? `https://wsrv.nl/?url=${encodeURIComponent(src)}&output=png`
+                        : src;
+
+                    const img = new window.Image();
+                    if (isExternal) {
+                        img.crossOrigin = 'anonymous';
+                    }
+
+                    img.onload = () => resolve(img);
+                    img.onerror = () => {
+                        console.warn("Failed to load image:", finalSrc);
+                        // Fallback: jika lewat proxy gagal, coba langsung (dengan resiko CORS)
+                        if (finalSrc !== src) {
+                            const fallbackImg = new window.Image();
+                            fallbackImg.crossOrigin = 'anonymous';
+                            fallbackImg.onload = () => resolve(fallbackImg);
+                            fallbackImg.onerror = () => resolve(null);
+                            fallbackImg.src = src;
+                        } else {
+                            resolve(null);
+                        }
+                    };
+
+                    img.src = finalSrc;
+                });
+            };
+
+            // Ambil logo langsung dari database
+            const universityLogoUrl = uniProfile?.logo;
+
+            const [mainImg, logoImg] = await Promise.all([
+                loadImage(news.featuredImage || "/images/berita_placeholder.png"),
+                loadImage(universityLogoUrl)
+            ]);
+
+            // --- 1. Background ---
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, width, height);
+
+            // Subtle paper texture (simulated)
+            ctx.fillStyle = 'rgba(232, 232, 232, 0.2)';
+            ctx.fillRect(0, 0, width, height);
+
+            const padding = 50;
+            let currentY = 50;
+
+            // --- 2. Header ---
+            // Logo
+            if (logoImg) {
+                // Draw centered with aspect ratio handling
+                const aspect = logoImg.width / logoImg.height;
+                let drawW, drawH, drawX, drawY;
+                if (aspect > 1) { // Wide image
+                    drawH = 70;
+                    drawW = 70 * aspect;
+                } else { // Tall or square image
+                    drawW = 70;
+                    drawH = 70 / aspect;
+                }
+                drawX = padding; // Start from padding
+                drawY = currentY;
+
+                ctx.drawImage(logoImg, drawX, drawY, drawW, drawH);
+            } else {
+                // Background circle for text fallback
+                ctx.fillStyle = '#1e3a8a';
+                ctx.beginPath();
+                ctx.arc(padding + 35, currentY + 35, 35, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 36px Georgia, serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                const initial = uniProfile?.name?.charAt(0).toUpperCase() || '🎓';
+                ctx.fillText(initial, padding + 35, currentY + 38);
+            }
+
+            // University Info
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#1a1a1a';
+            ctx.font = 'bold 28px Georgia, serif';
+            ctx.fillText(uniProfile?.name || 'UNIVERSITY', padding + 90, currentY + 45);
+
+            // News Label in Top Right
+            ctx.textAlign = 'right';
+            ctx.fillStyle = '#1a1a1a';
+            ctx.font = 'bold 32px Georgia, serif';
+            ctx.fillText('NEWS', width - padding, currentY + 45);
+
+            currentY += 100;
+
+            // Divider
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padding, currentY);
+            ctx.lineTo(width - padding, currentY);
+            ctx.stroke();
+
+            currentY += 40;
+
+            // Date (di atas image sebelah kanan)
+            ctx.font = '14px Georgia, serif';
+            ctx.fillStyle = '#666';
+            ctx.textAlign = 'right';
+            ctx.fillText(`📅 ${dateOnly}`, width - padding, currentY - 15);
+
+            // --- 3. Main Image ---
+            if (mainImg) {
+                const imgBoxH = 350;
+                // Border/Frame
+                ctx.fillStyle = '#f5f5f5';
+                ctx.fillRect(padding - 8, currentY - 8, width - (padding * 2) + 16, imgBoxH + 16);
+
+                ctx.drawImage(mainImg, padding, currentY, width - (padding * 2), imgBoxH);
+                currentY += imgBoxH + 40;
+            }
+
+            // --- 4. Title ---
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#1a1a1a';
+            ctx.font = 'bold 36px Georgia, serif';
+
+            const titleWords = news.title.split(' ');
+            let line = '';
+            let titleLines = [];
+            for (let n = 0; n < titleWords.length; n++) {
+                let testLine = line + titleWords[n] + ' ';
+                if (ctx.measureText(testLine).width > width - (padding * 2)) {
+                    titleLines.push(line);
+                    line = titleWords[n] + ' ';
+                } else {
+                    line = testLine;
+                }
+            }
+            titleLines.push(line);
+
+            titleLines.forEach(l => {
+                ctx.fillText(l.trim(), padding, currentY);
+                currentY += 45;
+            });
+
+            currentY += 20;
+
+            // --- 5. Content Columns ---
+            ctx.font = '14px Georgia, serif';
+            ctx.fillStyle = '#333';
+            const plainContent = news.content?.replace(/<[^>]*>/g, '') || '';
+            const words = plainContent.split(' ');
+
+            const columnGap = 30;
+            const columnWidth = (width - (padding * 2) - columnGap) / 2;
+
+            let currentLine = '';
+            let lines = [];
+            for (let i = 0; i < words.length; i++) {
+                let testLine = currentLine + words[i] + ' ';
+                if (ctx.measureText(testLine).width > columnWidth) {
+                    lines.push(currentLine);
+                    currentLine = words[i] + ' ';
+                } else {
+                    currentLine = testLine;
+                }
+            }
+            lines.push(currentLine);
+
+            const midPoint = Math.ceil(lines.length / 2);
+            let col1Y = currentY;
+
+            // Col 1
+            for (let i = 0; i < midPoint && i < 25; i++) {
+                ctx.fillText(lines[i], padding, col1Y);
+                col1Y += 24;
+            }
+
+            // Col 2
+            let col2Y = currentY;
+            for (let i = midPoint; i < lines.length && i < lines.length; i++) {
+                ctx.fillText(lines[i], padding + columnWidth + columnGap, col2Y);
+                col2Y += 24;
+            }
+
+            // --- 6. Footer ---
+            const footerY = height - 80;
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, footerY - 30);
+            ctx.lineTo(width - padding, footerY - 30);
+            ctx.stroke();
+
+            // Category
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#666';
+            ctx.font = 'bold 13px Arial';
+            ctx.fillText('Category:', padding, footerY);
+
+            const catW = ctx.measureText('Category:').width + 10;
+            ctx.fillStyle = '#1a1a1a';
+            ctx.font = 'bold 12px Arial';
+            ctx.fillText((news.categoryName || 'BERITA').toUpperCase(), padding + catW, footerY);
+
+            // Author
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#666';
+            ctx.font = 'bold 13px Arial';
+            const authorLabel = 'By: ';
+            ctx.fillText(authorLabel, padding + catW + 140, footerY);
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillText(news.authorName || 'Humas Universitas', padding + catW + 140 + ctx.measureText(authorLabel).width, footerY);
+
+            // URL
+            ctx.textAlign = 'right';
+            ctx.fillStyle = '#1e3a8a';
+            ctx.font = '500 12px Arial';
+            ctx.fillText(`${window.location.origin}/berita/${news.slug}`, width - padding, footerY);
+
+            // Export
+            const link = document.createElement('a');
+            link.download = `berita-koran-${news.slug}.jpg`;
+            link.href = canvas.toDataURL('image/jpeg', 0.95);
+            link.click();
+
+            toast.success("Berita berhasil disimpan gaya koran!");
+        } catch (error) {
+            console.error(error);
+            toast.error("Gagal membuat gambar berita.");
+        } finally {
+            setIsDownloading(false);
+        }
+    };
+
+    return (
+        <Dialog open={isOpen} onOpenChange={onOpenChange}>
+            <DialogContent showCloseButton={false} className="sm:max-w-[95vw] lg:max-w-5xl h-[90vh] p-0 flex flex-col glass-card border-cyber-blue/30 bg-background/95 backdrop-blur-3xl gap-0 overflow-hidden shadow-2xl rounded-3xl">
+                {/* Decorative corner accents */}
+                <div className="absolute top-0 left-0 w-32 h-32 border-t border-l border-cyber-blue/30 rounded-tl-3xl pointer-events-none z-20" />
+                <div className="absolute bottom-0 right-0 w-32 h-32 border-b border-r border-electric-purple/30 rounded-br-3xl pointer-events-none z-20" />
+
+                {/* Header Section */}
+                <div className="flex-shrink-0 relative">
+                    <div
+                        className="h-64 md:h-96 w-full relative overflow-hidden cursor-zoom-in group/img"
+                        onClick={() => setShowFullImage(true)}
+                    >
+                        <Image
+                            src={news.featuredImage || "/images/berita_placeholder.png"}
+                            alt={news.title}
+                            fill
+                            className="object-cover group-hover/img:scale-105 transition-transform duration-700"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+
+                        <div className="absolute bottom-6 left-6 right-6 z-10">
+
+                            <DialogTitle className="text-3xl md:text-5xl font-black text-white leading-tight tracking-tighter drop-shadow-2xl">
+                                {news.title}
+                            </DialogTitle>
+                        </div>
+
+                        <div className="absolute top-4 left-4 z-20 opacity-0 group-hover/img:opacity-100 transition-opacity">
+                            <Badge variant="outline" className="bg-black/60 backdrop-blur-md border-white/20 text-white text-[10px] uppercase font-black tracking-widest px-3 py-1">
+                                Klik untuk perbesar
+                            </Badge>
+                        </div>
+
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute top-4 right-4 z-20 rounded-full bg-background/20 backdrop-blur-md hover:bg-white hover:text-black transition-all border border-white/10"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onOpenChange(false);
+                            }}
+                        >
+                            <X className="w-5 h-5" />
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Content Area */}
+                <ScrollArea className="flex-1 min-h-0">
+                    <div className="p-6 md:p-10">
+                        <DialogDescription className="sr-only">Detail berita: {news.title}</DialogDescription>
+
+                        <div className="flex flex-wrap items-center gap-4 mb-4">
+                            <div className="flex items-center gap-2.5 bg-white/5 border border-white/5 px-3 py-1.5 rounded-xl">
+                                <div className="w-8 h-8 rounded-full bg-gradient-cyber p-[2px] shadow-[0_0_15px_rgba(0,240,255,0.2)]">
+                                    <div className="w-full h-full rounded-full bg-background flex items-center justify-center">
+                                        <User className="w-4 h-4 text-cyber-blue" />
+                                    </div>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-[8px] text-muted-foreground uppercase font-black tracking-widest opacity-60">Penulis Berita</span>
+                                    <span className="text-xs font-black text-foreground">{news.authorName || "Humas Universitas"}</span>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-2.5 bg-white/5 border border-white/5 px-3 py-1.5 rounded-xl">
+                                <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                                    <Tag className="w-4 h-4 text-amber-500" />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-[8px] text-muted-foreground uppercase font-black tracking-widest opacity-60">Kategori Berita</span>
+                                    <span className="text-xs font-black text-foreground">{news.categoryName || "Umum"}</span>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-2.5 bg-white/5 border border-white/5 px-3 py-1.5 rounded-xl ml-auto md:ml-0">
+                                <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                                    <Clock className="w-4 h-4 text-electric-purple" />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-[8px] text-muted-foreground uppercase font-black tracking-widest opacity-60">Waktu Publikasi</span>
+                                    <span className="text-xs font-black text-foreground uppercase tracking-tighter">
+                                        {dateOnly} <span className="text-electric-purple ml-1">• {timeOnly} WIB</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Article Content */}
+                        <div
+                            className="prose prose-invert max-w-none prose-p:text-foreground/80 prose-p:leading-relaxed prose-p:text-lg prose-headings:text-cyber-blue prose-img:rounded-2xl"
+                            dangerouslySetInnerHTML={{ __html: news.content }}
+                        />
+                    </div>
+                </ScrollArea>
+
+                {/* Action Footer */}
+                <div className="flex-shrink-0 p-6 border-t border-white/10 bg-background/60 backdrop-blur-3xl flex flex-col sm:flex-row items-center justify-between gap-6 relative z-30">
+                    <div className="text-center sm:text-left">
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-[0.3em] font-black opacity-50 mb-1">DIBAGIKAN MELALUI</p>
+                        <div className="flex gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="rounded-full border-cyan-500/30 hover:bg-cyan-500/10 text-cyan-400 gap-2 h-9"
+                                onClick={handleWhatsAppShare}
+                            >
+                                <MessageCircle className="w-4 h-4" />
+                                <span className="text-xs font-bold">WhatsApp</span>
+                            </Button>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className={`rounded-full gap-2 h-9 transition-all duration-300 ${isCopied
+                                    ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-400"
+                                    : "border-purple-500/30 hover:bg-purple-500/10 text-purple-400"}`}
+                                onClick={handleCopyLink}
+                            >
+                                {isCopied ? <Check className="w-4 h-4" /> : <Link2 className="w-4 h-4" />}
+                                <span className="text-xs font-bold">{isCopied ? "Tersalin!" : "Salin Link"}</span>
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div className="flex gap-3 w-full sm:w-auto">
+                        <Button
+                            className="flex-1 sm:flex-none h-11 px-8 bg-gradient-to-r from-cyber-blue to-electric-purple hover:shadow-[0_0_20px_rgba(0,240,255,0.5)] border-none text-white rounded-xl font-black group transition-all duration-300 gap-2 text-[11px] uppercase"
+                            onClick={handleDownload}
+                            disabled={isDownloading}
+                        >
+                            {isDownloading ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                                <Download className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                            )}
+                            {isDownloading ? "Menyiapkan..." : "Download Berita"}
+                        </Button>
+                        <DialogClose asChild>
+                            <Button variant="secondary" className="flex-1 sm:flex-none h-11 px-8 rounded-xl font-black tracking-[0.2em] text-[11px] uppercase hover:bg-white hover:text-black transition-all">
+                                TUTUP
+                            </Button>
+                        </DialogClose>
+                    </div>
+                </div>
+                {/* Full Image Dialog (Lightbox) */}
+                <Dialog open={showFullImage} onOpenChange={setShowFullImage}>
+                    <DialogContent showCloseButton={false} className="max-w-[95vw] max-h-[95vh] p-0 bg-transparent border-none shadow-none flex items-center justify-center">
+                        <DialogTitle className="sr-only">Foto Berita Full</DialogTitle>
+                        <div className="relative w-full h-full flex items-center justify-center group/full">
+                            <img
+                                src={news.featuredImage || "/images/berita_placeholder.png"}
+                                alt={news.title}
+                                className="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl border border-white/10 animate-in zoom-in-95 duration-300"
+                            />
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="absolute top-4 right-4 rounded-full bg-black/40 backdrop-blur-md text-white hover:bg-white hover:text-black"
+                                onClick={() => setShowFullImage(false)}
+                            >
+                                <X className="w-6 h-6" />
+                            </Button>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+            </DialogContent>
+        </Dialog>
+    );
+}
