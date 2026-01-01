@@ -20,6 +20,7 @@ import {
   universityProfiles,
   admissionClasses,
   admissionPathways,
+  admissionWaves,
   organizationalStructures,
   organizationalEmployees,
   universityAccreditations,
@@ -640,6 +641,24 @@ export async function getPublishedEducationCosts() {
   }
 }
 
+/**
+ * Fungsi untuk mengambil biaya pendidikan yang dipublikasikan (Raw Data untuk simulator)
+ */
+export async function getRawEducationCosts() {
+  try {
+    const result = await db
+      .select()
+      .from(educationCosts)
+      .where(eq(educationCosts.isPublished, true))
+      .orderBy(sql`${educationCosts.year} DESC`);
+
+    return result;
+  } catch (error) {
+    console.error('Error fetching raw education costs:', error);
+    throw new Error('Failed to fetch raw education costs');
+  }
+}
+
 
 /**
  * Fungsi untuk mengambil kerjasama (mitra) yang dipublikasikan
@@ -1056,5 +1075,23 @@ export async function getUniversityProfile() {
   } catch (error) {
     console.error('Error fetching university profile:', error);
     return null;
+  }
+}
+
+/**
+ * Fungsi untuk mengambil gelombang pendaftaran yang dipublikasikan
+ */
+export async function getPublishedAdmissionWaves() {
+  try {
+    const result = await db
+      .select()
+      .from(admissionWaves)
+      .where(eq(admissionWaves.isPublished, true))
+      .orderBy(sql`${admissionWaves.startDate} ASC`);
+
+    return result;
+  } catch (error) {
+    console.error('Error fetching published admission waves:', error);
+    throw new Error('Failed to fetch admission waves');
   }
 }

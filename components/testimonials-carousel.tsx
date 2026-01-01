@@ -54,7 +54,7 @@ export function TestimonialsCarousel({ testimonials }: TestimonialsCarouselProps
                                 className="glass-card p-10 h-full rounded-[2.5rem] border border-white/10 relative overflow-hidden group flex flex-col shadow-xl"
                             >
                                 <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                                    <Quote className="w-16 h-16 text-cyber-blue rotate-180" />
+                                    <Quote className="w-16 h-16 text-cyber-blue rotate-180" suppressHydrationWarning />
                                 </div>
 
                                 <div className="flex items-center gap-1 mb-8 text-yellow-500">
@@ -65,6 +65,7 @@ export function TestimonialsCarousel({ testimonials }: TestimonialsCarouselProps
                                                 "w-4 h-4 fill-current",
                                                 i >= (Number(testimonial.rating) || 5) && "text-foreground/20"
                                             )}
+                                            suppressHydrationWarning
                                         />
                                     ))}
                                 </div>

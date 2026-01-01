@@ -22,9 +22,14 @@ export function ThemeToggle() {
 
   if (!mounted) {
     return (
-      <Button variant="outline" size="icon" className="border-cyber-blue text-cyber-blue bg-white/10 hover:bg-white/20 dark:border-cyber-blue dark:text-cyber-blue dark:bg-darker-bg dark:hover:bg-white/10">
-        <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-amber-500" />
-        <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-cyber-blue" />
+      <Button
+        variant="outline"
+        size="icon"
+        className="border-cyber-blue text-cyber-blue bg-white/10 hover:bg-white/20 dark:border-cyber-blue dark:text-cyber-blue dark:bg-darker-bg dark:hover:bg-white/10"
+        suppressHydrationWarning
+      >
+        <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-amber-500" suppressHydrationWarning />
+        <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-cyber-blue" suppressHydrationWarning />
         <span className="sr-only">Toggle theme</span>
       </Button>
     );
@@ -33,9 +38,14 @@ export function ThemeToggle() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" className="border-cyber-blue text-cyber-blue bg-white/10 hover:bg-white/20 dark:border-cyber-blue dark:text-cyber-blue dark:bg-darker-bg dark:hover:bg-white/10">
-          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-amber-500" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-cyber-blue" />
+        <Button
+          variant="outline"
+          size="icon"
+          className="border-cyber-blue text-cyber-blue bg-white/10 hover:bg-white/20 dark:border-cyber-blue dark:text-cyber-blue dark:bg-darker-bg dark:hover:bg-white/10"
+          suppressHydrationWarning
+        >
+          <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-amber-500" suppressHydrationWarning />
+          <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-cyber-blue" suppressHydrationWarning />
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
@@ -43,8 +53,8 @@ export function ThemeToggle() {
         <DropdownMenuItem
           onClick={() => setTheme("light")}
           className={`${(theme === 'light' || (theme === 'system' && resolvedTheme === 'light'))
-              ? 'bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/30'
-              : 'text-foreground hover:bg-white/10'
+            ? 'bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/30'
+            : 'text-foreground hover:bg-white/10'
             }`}
         >
           Light
@@ -52,8 +62,8 @@ export function ThemeToggle() {
         <DropdownMenuItem
           onClick={() => setTheme("dark")}
           className={`${(theme === 'dark' || (theme === 'system' && resolvedTheme === 'dark'))
-              ? 'bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/30'
-              : 'text-foreground hover:bg-white/10'
+            ? 'bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/30'
+            : 'text-foreground hover:bg-white/10'
             }`}
         >
           Dark
@@ -61,8 +71,8 @@ export function ThemeToggle() {
         <DropdownMenuItem
           onClick={() => setTheme("system")}
           className={`${theme === 'system'
-              ? 'bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/30'
-              : 'text-foreground hover:bg-white/10'
+            ? 'bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/30'
+            : 'text-foreground hover:bg-white/10'
             }`}
         >
           System
@@ -74,6 +84,26 @@ export function ThemeToggle() {
 
 export function SimpleThemeToggle() {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <Button
+        variant="outline"
+        size="icon"
+        className="border-cyber-blue text-cyber-blue bg-white/10 hover:bg-white/20 dark:border-cyber-blue dark:text-cyber-blue dark:bg-darker-bg dark:hover:bg-white/10"
+        suppressHydrationWarning
+      >
+        <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-amber-500" suppressHydrationWarning />
+        <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-cyber-blue" suppressHydrationWarning />
+        <span className="sr-only">Toggle theme</span>
+      </Button>
+    );
+  }
 
   return (
     <Button
@@ -81,9 +111,10 @@ export function SimpleThemeToggle() {
       size="icon"
       className="border-cyber-blue text-cyber-blue bg-white/10 hover:bg-white/20 dark:border-cyber-blue dark:text-cyber-blue dark:bg-darker-bg dark:hover:bg-white/10"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      suppressHydrationWarning
     >
-      <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-amber-500" />
-      <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-cyber-blue" />
+      <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 text-amber-500" suppressHydrationWarning />
+      <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 text-cyber-blue" suppressHydrationWarning />
       <span className="sr-only">Toggle theme</span>
     </Button>
   );

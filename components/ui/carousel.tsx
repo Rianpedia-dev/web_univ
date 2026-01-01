@@ -193,9 +193,10 @@ function CarouselPrevious({
       )}
       disabled={!canScrollPrev}
       onClick={scrollPrev}
+      suppressHydrationWarning
       {...props}
     >
-      <ArrowLeft />
+      <ArrowLeft suppressHydrationWarning />
       <span className="sr-only">Previous slide</span>
     </Button>
   )
@@ -223,9 +224,10 @@ function CarouselNext({
       )}
       disabled={!canScrollNext}
       onClick={scrollNext}
+      suppressHydrationWarning
       {...props}
     >
-      <ArrowRight />
+      <ArrowRight suppressHydrationWarning />
       <span className="sr-only">Next slide</span>
     </Button>
   )

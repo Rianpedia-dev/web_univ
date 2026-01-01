@@ -34,8 +34,7 @@ import {
   admissionClasses,
   educationCosts,
   scholarships,
-  admissionRegistrations,
-  admissionDocuments,
+  admissionWaves,
 
 
   // Tabel kemahasiswaan
@@ -82,9 +81,7 @@ async function seedComprehensiveDatabase() {
     await db.delete(organizationalEmployees);
     await db.delete(partnershipDocuments);
     await db.delete(studentAchievements);
-    await db.delete(admissionDocuments);
     await db.delete(universityLogoMeanings);
-    await db.delete(admissionRegistrations);
     await db.delete(session);
     await db.delete(account);
     await db.delete(verification);
@@ -103,6 +100,7 @@ async function seedComprehensiveDatabase() {
     await db.delete(admissionClasses);
     await db.delete(educationCosts);
     await db.delete(scholarships);
+    await db.delete(admissionWaves);
     await db.delete(studentServices);
     await db.delete(studentOrganizations);
     await db.delete(partners);
@@ -590,29 +588,48 @@ async function seedComprehensiveDatabase() {
 
     // Seed tabel biaya pendidikan
     console.log('Mengisi biaya pendidikan...');
+    const costTypes = [
+      { type: 'tuition' as const, name: 'Uang Kuliah Tunggal (UKT)', baseAmount: 5000000 },
+      { type: 'registration' as const, name: 'Sumbangan Pengembangan Institusi (SPI)', baseAmount: 15000000 },
+      { type: 'other' as const, name: 'Biaya Kemahasiswaan & Praktikum', baseAmount: 1500000 },
+      { type: 'other' as const, name: 'Biaya Orientasi Mahasiswa (PKKMB)', baseAmount: 750000 },
+      { type: 'other' as const, name: 'Biaya Perpustakaan & Digital Library', baseAmount: 500000 },
+      { type: 'other' as const, name: 'Biaya Asuransi Kecelakaan Mahasiswa', baseAmount: 150000 },
+      { type: 'other' as const, name: 'Biaya Jaket Almamater & Atribut', baseAmount: 850000 },
+      { type: 'other' as const, name: 'Biaya Kartu Tanda Mahasiswa (KTM) RFID', baseAmount: 125000 }
+    ];
+
     for (const studyProgramId of studyProgramIds) {
       for (const classId of classIds) {
-        await db.insert(educationCosts).values({
-          studyProgramId,
-          classId,
-          costType: faker.helpers.arrayElement(['registration', 'tuition', 'other'] as const),
-          year: '2024/2025',
-          semester: faker.helpers.arrayElement(['Ganjil', 'Genap'] as const),
-          amount: faker.number.float({ min: 5000000, max: 20000000, multipleOf: 100000 }).toString(),
-          description: `Biaya ${faker.helpers.arrayElement(['registrasi', 'kuliah', 'praktek'])} untuk ${studyProgramId}`,
-          isPublished: true,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        });
+        for (const pathwayId of admissionPathwayIds) {
+          for (const item of costTypes) {
+            // Berikan variasi harga sedikit berdasarkan prodi dan kelas
+            const variation = faker.number.int({ min: -500000, max: 2000000, multipleOf: 100000 });
+            await db.insert(educationCosts).values({
+              studyProgramId,
+              classId,
+              pathwayId,
+              costType: item.type,
+              year: '2026/2027',
+              semester: item.type === 'tuition' ? 'Ganjil' : null,
+              amount: (item.baseAmount + variation).toString(),
+              description: `${item.name} TA 2026/2027`,
+              isPublished: true,
+              createdAt: new Date(),
+              updatedAt: new Date()
+            });
+          }
+        }
       }
     }
 
     // Seed tabel beasiswa
     console.log('Mengisi data beasiswa...');
     for (let i = 0; i < 15; i++) {
+      const companyName = faker.company.name();
       await db.insert(scholarships).values({
-        name: faker.company.name() + ' Beasiswa',
-        slug: faker.helpers.slugify(faker.company.name() + '-beasiswa').toLowerCase(),
+        name: companyName + ' Beasiswa',
+        slug: faker.helpers.slugify(companyName + '-beasiswa-' + faker.string.alphanumeric(5)).toLowerCase(),
         description: 'Beasiswa ini diberikan kepada mahasiswa berprestasi yang memiliki indeks prestasi tinggi dan aktif dalam kegiatan organisasi.',
         eligibility: 'Mahasiswa aktif semester 3 sampai 7 yang memiliki IPK minimal 3.50.',
         benefits: 'Bebas biaya UKT selama satu tahun penuh dan uang saku bulanan.',
@@ -623,78 +640,52 @@ async function seedComprehensiveDatabase() {
         quota: faker.number.int({ min: 10, max: 100 }),
         amount: faker.number.float({ min: 1000000, max: 10000000, multipleOf: 100000 }).toString(),
         coverage: faker.helpers.arrayElement(['full', 'partial', 'specific'] as const),
-        provider: faker.company.name(),
+        provider: companyName,
         isPublished: true,
         createdAt: new Date(),
         updatedAt: new Date()
       });
     }
 
-    // Seed tabel pendaftaran mahasiswa baru
-    console.log('Mengisi pendaftaran mahasiswa baru...');
-    for (let i = 0; i < 100; i++) {
-      const randomStudyProgramId = studyProgramIds[Math.floor(Math.random() * studyProgramIds.length)];
-      const randomClassId = classIds[Math.floor(Math.random() * classIds.length)];
-      const randomPathwayId = admissionPathwayIds[Math.floor(Math.random() * admissionPathwayIds.length)];
+    // Seed tabel gelombang pendaftaran
+    console.log('Mengisi gelombang pendaftaran...');
+    const admissionWavesData = [
+      {
+        name: 'Gelombang 1 - Jalur Prestasi',
+        startDate: new Date('2026-01-01T00:00:00'),
+        endDate: new Date('2026-03-31T23:59:59'),
+        notes: 'Terbuka untuk siswa lulusan 2024-2026 dengan prestasi akademik minimal rata-rata rapor 8.0.',
+        isPublished: true
+      },
+      {
+        name: 'Gelombang 2 - Jalur Reguler I',
+        startDate: new Date('2026-04-01T00:00:00'),
+        endDate: new Date('2026-06-30T23:59:59'),
+        notes: 'Pendaftaran reguler periode pertama untuk calon mahasiswa baru tahun akademik 2026/2027.',
+        isPublished: true
+      },
+      {
+        name: 'Gelombang 3 - Jalur Reguler II',
+        startDate: new Date('2026-07-01T00:00:00'),
+        endDate: new Date('2026-08-31T23:59:59'),
+        notes: 'Pendaftaran reguler periode terakhir sebelum perkuliahan dimulai.',
+        isPublished: true
+      },
+      {
+        name: 'Gelombang Khusus - Beasiswa Institusi',
+        startDate: new Date('2026-01-01T00:00:00'),
+        endDate: new Date('2026-02-15T23:59:59'),
+        notes: 'Khusus bagi pendaftar yang mengajukan beasiswa penuh dari yayasan.',
+        isPublished: true
+      }
+    ];
 
-      const [registration] = await db.insert(admissionRegistrations).values({
-        registrationNumber: `REG-${faker.string.alphanumeric(8).toUpperCase()}`,
-        firstName: faker.person.firstName(),
-        lastName: faker.person.lastName(),
-        email: faker.internet.email(),
-        phone: faker.phone.number(),
-        dateOfBirth: faker.date.birthdate({ min: 17, max: 25, mode: 'age' }),
-        placeOfBirth: faker.location.city(),
-        gender: faker.helpers.arrayElement(['male', 'female'] as const),
-        nationality: 'Indonesia',
-        address: faker.location.streetAddress(),
-        city: faker.location.city(),
-        province: faker.location.state(),
-        postalCode: faker.location.zipCode(),
-        highSchool: 'SMA ' + faker.location.city(),
-        highSchoolMajor: faker.helpers.arrayElement(['IPA', 'IPS', 'Bahasa']),
-        graduationYear: (new Date().getFullYear() - faker.number.int({ min: 1, max: 3 })).toString(),
-        studyProgramId: randomStudyProgramId,
-        classId: randomClassId,
-        pathwayId: randomPathwayId,
-        status: faker.helpers.arrayElement(['registered', 'paid', 'document_submitted', 'verified', 'accepted', 'rejected', 'enrolled'] as const),
-        registrationDate: faker.date.past({ years: 0.5 }),
-        paymentDate: faker.helpers.arrayElement([faker.date.past({ years: 0.5 }), null]),
-        verificationDate: faker.helpers.arrayElement([faker.date.past({ years: 0.4 }), null]),
-        acceptanceDate: faker.helpers.arrayElement([faker.date.past({ years: 0.3 }), null]),
-        documentStatus: faker.helpers.arrayElement(['pending', 'submitted', 'verified', 'rejected'] as const),
-        documentNotes: faker.helpers.arrayElement([faker.lorem.sentence(), null]),
-        notes: faker.helpers.arrayElement([faker.lorem.sentence(), null]),
-        isVerified: faker.datatype.boolean(),
-        isAccepted: faker.datatype.boolean(),
+    for (const wave of admissionWavesData) {
+      await db.insert(admissionWaves).values({
+        ...wave,
         createdAt: new Date(),
         updatedAt: new Date()
-      }).returning();
-
-      // Buat dokumen pendaftaran acak
-      if (registration.status !== 'rejected') {
-        const docTypes = [
-          'identity_card', 'birth_certificate', 'high_school_diploma',
-          'high_school_transcript', 'photo', 'payment_proof', 'other'
-        ];
-        const numDocs = faker.number.int({ min: 3, max: 7 });
-        const selectedDocTypes = faker.helpers.arrayElements(docTypes, numDocs);
-
-        for (const docType of selectedDocTypes) {
-          await db.insert(admissionDocuments).values({
-            registrationId: registration.id,
-            documentType: docType as any,
-            fileName: `document_${faker.string.alphanumeric(8)}.pdf`,
-            filePath: `/documents/registration_${registration.id}_${docType}.pdf`,
-            fileSize: faker.number.int({ min: 100000, max: 5000000 }),
-            mimeType: 'application/pdf',
-            isVerified: faker.datatype.boolean(),
-            verifiedAt: faker.helpers.arrayElement([faker.date.past({ years: 0.33 }), null]),
-            notes: faker.helpers.arrayElement([faker.lorem.sentence(), null]),
-            uploadedAt: new Date()
-          });
-        }
-      }
+      });
     }
 
     // Seed tabel layanan mahasiswa

@@ -1,4 +1,3 @@
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Award,
@@ -8,16 +7,14 @@ import {
   CheckCircle,
   Star,
   Target,
-  BookOpen,
   Calendar,
-  Zap,
-  Shield,
-  TrendingUp,
   Globe,
-  Lightbulb
+  ArrowRight,
+  Coins
 } from "lucide-react";
-import { MotionDiv, MotionH1, MotionP } from "@/components/motion-wrapper";
+import { MotionDiv } from "@/components/motion-wrapper";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 import { getPublishedScholarships } from '@/lib/db';
 
 export default async function BeasiswaPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -29,21 +26,37 @@ export default async function BeasiswaPage({ params }: { params: Promise<{ local
   const formatDate = (date: Date | null) => {
     if (!date) return 'Tanggal belum ditentukan';
     return new Date(date).toLocaleDateString('id-ID', {
+      day: 'numeric',
       month: 'long',
       year: 'numeric'
     });
   };
 
   // Fungsi untuk format currency
-  const formatCurrency = (amount: number | null | undefined) => {
+  const formatCurrency = (amount: number | string | null | undefined) => {
     if (!amount) return '-';
     return `Rp ${Number(amount).toLocaleString('id-ID')}`;
+  };
+
+  // Fungsi untuk label coverage
+  const getCoverageLabel = (coverage: string | null) => {
+    switch (coverage) {
+      case 'full':
+        return 'Beasiswa Penuh';
+      case 'partial':
+        return 'Beasiswa Parsial';
+      case 'specific':
+        return 'Beasiswa Spesifik';
+      default:
+        return 'Bantuan Biaya';
+    }
   };
 
   // Statistik
   const totalScholarships = scholarshipsData.length;
   const totalQuota = scholarshipsData.reduce((acc, s) => acc + (s.quota || 0), 0);
   const providers = [...new Set(scholarshipsData.map(s => s.provider || 'Universitas'))];
+  const fullScholarships = scholarshipsData.filter(s => s.coverage === 'full').length;
 
   return (
     <div className="min-h-screen bg-background overflow-hidden relative">
@@ -79,7 +92,7 @@ export default async function BeasiswaPage({ params }: { params: Promise<{ local
                 Program Beasiswa
               </h1>
               <p className="text-lg md:text-xl text-foreground max-w-2xl mx-auto font-medium">
-                Berbagai program beasiswa untuk mendukung pendidikan mahasiswa berprestasi dan tidak mampu secara ekonomi
+                Dukungan finansial untuk calon mahasiswa berprestasi dan tidak mampu secara ekonomi
               </p>
             </MotionDiv>
           </div>
@@ -110,7 +123,7 @@ export default async function BeasiswaPage({ params }: { params: Promise<{ local
               <Users className="w-6 h-6 text-foreground" />
             </div>
             <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-emerald-600 mb-2">
-              {totalQuota || '∞'}
+              {totalQuota > 0 ? totalQuota : '∞'}
             </div>
             <div className="text-muted-foreground text-sm">Total Kuota</div>
           </div>
@@ -130,9 +143,9 @@ export default async function BeasiswaPage({ params }: { params: Promise<{ local
               <Star className="w-6 h-6 text-foreground" />
             </div>
             <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-blue-600 mb-2">
-              100%
+              {fullScholarships}
             </div>
-            <div className="text-muted-foreground text-sm">Transparansi</div>
+            <div className="text-muted-foreground text-sm">Beasiswa Penuh</div>
           </div>
         </MotionDiv>
 
@@ -150,7 +163,7 @@ export default async function BeasiswaPage({ params }: { params: Promise<{ local
               {scholarshipsData.map((item, index) => (
                 <MotionDiv
                   key={item.id}
-                  className="glass-card rounded-2xl border overflow-hidden hover:shadow-[0_0_30px_rgba(0,240,255,0.1)] transition-all duration-300"
+                  className="glass-card rounded-2xl border overflow-hidden hover:shadow-[0_0_30px_rgba(0,240,255,0.1)] transition-all duration-300 group"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 * index }}
@@ -160,11 +173,19 @@ export default async function BeasiswaPage({ params }: { params: Promise<{ local
                       <div>
                         <div className="flex items-center mb-2">
                           <Award className="w-6 h-6 text-yellow-500 mr-2" />
-                          <h3 className="text-xl font-bold text-foreground">{item.name}</h3>
+                          <h3 className="text-xl font-bold text-foreground group-hover:text-cyber-blue transition-colors">
+                            {item.name}
+                          </h3>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 flex-wrap">
                           <Badge variant="outline" className="border-cyber-blue text-cyber-blue bg-cyber-blue/10">
                             {item.provider || 'Universitas'}
+                          </Badge>
+                          <Badge className={`${item.coverage === 'full'
+                            ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                            : 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+                            }`}>
+                            {getCoverageLabel(item.coverage)}
                           </Badge>
                         </div>
                       </div>
@@ -177,27 +198,36 @@ export default async function BeasiswaPage({ params }: { params: Promise<{ local
                       {item.description || 'Program beasiswa untuk mendukung pendidikan mahasiswa.'}
                     </p>
 
-                    <div className="mb-4">
-                      <span className="text-sm font-medium text-muted-foreground">Cakupan: </span>
-                      <span className="text-sm font-bold text-cyber-blue">
-                        {item.coverage || item.benefits || 'Bantuan biaya pendidikan'}
-                      </span>
+                    {/* Cakupan Manfaat */}
+                    <div className="mb-4 p-4 bg-muted/30 rounded-xl">
+                      <div className="flex items-center mb-2">
+                        <Coins className="w-4 h-4 text-yellow-500 mr-2" />
+                        <span className="text-sm font-medium text-foreground">Cakupan Manfaat:</span>
+                      </div>
+                      <p className="text-sm text-cyber-blue font-semibold">
+                        {item.benefits || item.coverage === 'full'
+                          ? 'Bebas biaya kuliah penuh + biaya hidup'
+                          : 'Potongan biaya pendidikan'}
+                      </p>
                     </div>
 
                     {item.amount && (
                       <div className="mb-4">
                         <span className="text-sm font-medium text-muted-foreground">Nilai Beasiswa: </span>
-                        <span className="text-sm font-bold text-cyber-blue">
-                          {formatCurrency(item.amount ? Number(item.amount) : 0)}
+                        <span className="text-lg font-bold text-cyber-blue">
+                          {formatCurrency(item.amount)}
                         </span>
                       </div>
                     )}
 
                     {item.requirements && (
                       <div className="mb-6">
-                        <h4 className="font-semibold text-foreground mb-2">Persyaratan:</h4>
+                        <h4 className="font-semibold text-foreground mb-2 flex items-center">
+                          <FileText className="w-4 h-4 mr-2 text-cyber-blue" />
+                          Persyaratan:
+                        </h4>
                         <ul className="space-y-2">
-                          {item.requirements.split('\n').map((syarat, idx) => (
+                          {item.requirements.split('\n').slice(0, 4).map((syarat, idx) => (
                             <li key={idx} className="flex items-start">
                               <CheckCircle className="w-4 h-4 text-cyber-blue mt-0.5 mr-2 flex-shrink-0" />
                               <span className="text-sm text-muted-foreground">{syarat}</span>
@@ -214,17 +244,19 @@ export default async function BeasiswaPage({ params }: { params: Promise<{ local
                       </div>
                     )}
 
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between pt-4 border-t border-white/10">
                       <div className="text-sm text-muted-foreground">
                         <div className="flex items-center">
-                          <Calendar className="w-4 h-4 mr-1" />
+                          <Calendar className="w-4 h-4 mr-1 text-cyber-blue" />
+                          <span className="font-medium text-foreground mr-1">Periode:</span>
                           {item.applicationStart ? formatDate(item.applicationStart) : 'Segera dibuka'}
                           {item.applicationEnd && ` - ${formatDate(item.applicationEnd)}`}
                         </div>
                       </div>
-                      <Button className="bg-gradient-cyber hover:shadow-[0_0_20px_rgba(0,240,255,0.5)]">
-                        <FileText className="w-4 h-4 mr-2" />
-                        Daftar
+                      <Button asChild className="bg-gradient-cyber hover:shadow-[0_0_20px_rgba(0,240,255,0.5)]">
+                        <Link href="https://forms.google.com" target="_blank">
+                          Daftar <ArrowRight className="w-4 h-4 ml-2" />
+                        </Link>
                       </Button>
                     </div>
                   </div>
@@ -238,6 +270,58 @@ export default async function BeasiswaPage({ params }: { params: Promise<{ local
               <p className="text-muted-foreground">Program beasiswa akan segera ditambahkan</p>
             </div>
           )}
+        </MotionDiv>
+
+        {/* Jenis Beasiswa Contoh */}
+        <MotionDiv
+          className="glass-card rounded-3xl p-8 md:p-12 mb-16 border"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+        >
+          <h2 className="text-3xl font-bold text-center text-foreground mb-8">Kategori Beasiswa</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                nama: "Beasiswa Prestasi Akademik",
+                deskripsi: "Untuk mahasiswa dengan prestasi akademik unggul",
+                icon: GraduationCap,
+                color: "from-yellow-500 to-orange-600"
+              },
+              {
+                nama: "Beasiswa Tidak Mampu",
+                deskripsi: "KIP-K / BIDIKMISI untuk keluarga kurang mampu",
+                icon: Users,
+                color: "from-blue-500 to-cyan-600"
+              },
+              {
+                nama: "Beasiswa Yayasan",
+                deskripsi: "Beasiswa internal dari yayasan universitas",
+                icon: Award,
+                color: "from-purple-500 to-pink-600"
+              },
+              {
+                nama: "Beasiswa Mitra",
+                deskripsi: "Beasiswa dari perusahaan dan instansi mitra",
+                icon: Globe,
+                color: "from-green-500 to-emerald-600"
+              }
+            ].map((kategori, index) => (
+              <MotionDiv
+                key={index}
+                className="glass-card p-6 rounded-xl border text-center hover:shadow-[0_0_30px_rgba(0,240,255,0.1)] transition-all duration-300"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * index }}
+              >
+                <div className={`w-14 h-14 bg-gradient-to-r ${kategori.color} rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg`}>
+                  <kategori.icon className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="font-bold text-foreground mb-2">{kategori.nama}</h3>
+                <p className="text-sm text-muted-foreground">{kategori.deskripsi}</p>
+              </MotionDiv>
+            ))}
+          </div>
         </MotionDiv>
 
         {/* Panduan Pendaftaran */}

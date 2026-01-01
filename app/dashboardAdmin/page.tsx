@@ -275,6 +275,9 @@ const tableConfigurations = {
         label: "Biaya Pendidikan",
         description: "Daftar biaya pendidikan",
         fields: [
+          { key: "studyProgramId", label: "Program Studi", type: "select", referenceTable: "studyPrograms", referenceLabel: "name" },
+          { key: "classId", label: "Kelas", type: "select", referenceTable: "admissionClasses", referenceLabel: "name" },
+          { key: "pathwayId", label: "Jalur Masuk", type: "select", referenceTable: "admissionPathways", referenceLabel: "name" },
           { key: "costType", label: "Jenis Biaya", type: "select", options: ["registration", "tuition", "other"], required: true },
           { key: "year", label: "Tahun", type: "text", required: true },
           { key: "semester", label: "Semester", type: "select", options: ["Ganjil", "Genap"] },
@@ -302,36 +305,15 @@ const tableConfigurations = {
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
         ],
       },
-      admissionRegistrations: {
-        label: "Pendaftaran Mahasiswa",
-        description: "Data pendaftaran mahasiswa baru",
+      admissionWaves: {
+        label: "Gelombang Pendaftaran",
+        description: "Periode waktu penerimaan mahasiswa baru",
         fields: [
-          { key: "studyProgramId", label: "Program Studi", type: "select", referenceTable: "studyPrograms", referenceLabel: "name", required: true },
-          { key: "classId", label: "Kelas", type: "select", referenceTable: "admissionClasses", referenceLabel: "name", required: true },
-          { key: "pathwayId", label: "Jalur", type: "select", referenceTable: "admissionPathways", referenceLabel: "name", required: true },
-          { key: "registrationNumber", label: "Nomor Pendaftaran", type: "text", required: true },
-          { key: "firstName", label: "Nama Depan", type: "text", required: true },
-          { key: "lastName", label: "Nama Belakang", type: "text" },
-          { key: "email", label: "Email", type: "email", required: true },
-          { key: "phone", label: "Telepon", type: "text", required: true },
-          { key: "dateOfBirth", label: "Tanggal Lahir", type: "datetime", required: true },
-          { key: "placeOfBirth", label: "Tempat Lahir", type: "text", required: true },
-          { key: "gender", label: "Jenis Kelamin", type: "select", options: ["male", "female"] },
-          { key: "address", label: "Alamat", type: "textarea" },
-          { key: "status", label: "Status", type: "select", options: ["registered", "paid", "document_submitted", "verified", "accepted", "rejected", "enrolled"] },
-          { key: "isVerified", label: "Terverifikasi", type: "boolean" },
-          { key: "isAccepted", label: "Diterima", type: "boolean" },
-        ],
-      },
-      admissionDocuments: {
-        label: "Dokumen Pendaftaran",
-        description: "Dokumen yang diunggah oleh pendaftar",
-        fields: [
-          { key: "registrationId", label: "Pendaftar (Nomor)", type: "select", referenceTable: "admissionRegistrations", referenceLabel: "registrationNumber", required: true },
-          { key: "documentType", label: "Jenis Dokumen", type: "select", options: ["identity_card", "birth_certificate", "high_school_diploma", "high_school_transcript", "photo", "payment_proof", "other"], required: true },
-          { key: "fileName", label: "Nama File", type: "text", required: true },
-          { key: "filePath", label: "Path File", type: "text", required: true },
-          { key: "isVerified", label: "Terverifikasi", type: "boolean" },
+          { key: "name", label: "Nama Gelombang", type: "text", required: true },
+          { key: "startDate", label: "Tanggal Mulai", type: "datetime", required: true },
+          { key: "endDate", label: "Tanggal Berakhir", type: "datetime", required: true },
+          { key: "notes", label: "Catatan Khusus", type: "textarea" },
+          { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
         ],
       },
 
@@ -910,6 +892,28 @@ function DataTableView({
   const [selectedItem, setSelectedItem] = useState<any>(null)
   const [formData, setFormData] = useState<Record<string, any>>({})
   const [saving, setSaving] = useState(false)
+  const [refData, setRefData] = useState<Record<string, Record<string, string>>>({})
+
+  // Fetch reference data for labels
+  useEffect(() => {
+    tableConfig.fields.forEach(async (field) => {
+      if (field.referenceTable && !refData[field.key]) {
+        try {
+          const response = await fetch(`/api/admin/${field.referenceTable}`)
+          const result = await response.json()
+          if (result.data) {
+            const mapping: Record<string, string> = {}
+            result.data.forEach((item: any) => {
+              mapping[item.id] = item[field.referenceLabel || 'name'] || item.title || item.name || item.id
+            })
+            setRefData(prev => ({ ...prev, [field.key]: mapping }))
+          }
+        } catch (error) {
+          console.error(`Error fetching refs for ${field.key}:`, error)
+        }
+      }
+    })
+  }, [tableConfig.fields, refData])
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -1013,16 +1017,27 @@ function DataTableView({
   // Filter data based on search
   const filteredData = data.filter((item) => {
     if (!searchTerm) return true
-    return Object.values(item).some((value) =>
-      String(value).toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    const searchLower = searchTerm.toLowerCase()
+
+    // Check raw values
+    const hasMatchInValues = Object.entries(item).some(([key, value]) => {
+      // If it's a reference field, also check the label in refData
+      const fieldConfig = tableConfig.fields.find(f => f.key === key)
+      if (fieldConfig?.referenceTable) {
+        const label = refData[key]?.[String(value)]
+        if (label?.toLowerCase().includes(searchLower)) return true
+      }
+      return String(value).toLowerCase().includes(searchLower)
+    })
+
+    return hasMatchInValues
   })
 
   // Get display columns: Filter out long/technical fields for a cleaner table view
   const displayFields = tableConfig.fields
     .filter(f => !["content", "slug", "description", "requirements", "procedure", "vision", "mission", "history"].includes(f.key))
     .filter(f => f.type !== "textarea")
-    .slice(0, 5)
+    .slice(0, 6)
 
   if (loading) {
     return (
@@ -1131,7 +1146,21 @@ function DataTableView({
                             {item[field.key] ? "Ya" : "Tidak"}
                           </Badge>
                         ) : field.type === "datetime" && item[field.key] ? (
-                          new Date(item[field.key]).toLocaleDateString("id-ID")
+                          <div className="text-[10px] text-muted-foreground">
+                            {new Date(item[field.key]).toLocaleDateString("id-ID", { day: '2-digit', month: 'short', year: 'numeric' })}
+                          </div>
+                        ) : (field.key === "amount" || field.key.toLowerCase().includes("fee") || field.key.toLowerCase().includes("salary")) ? (
+                          <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                            {new Intl.NumberFormat('id-ID', {
+                              style: 'currency',
+                              currency: 'IDR',
+                              maximumFractionDigits: 0
+                            }).format(Number(item[field.key] || 0))}
+                          </span>
+                        ) : field.referenceTable ? (
+                          <span className="max-w-[150px] truncate block text-xs font-medium text-cyber-blue">
+                            {refData[field.key]?.[item[field.key]] || (item[field.key] ? String(item[field.key]).slice(0, 8) + '...' : "-")}
+                          </span>
                         ) : (
                           <span className="max-w-[150px] truncate block text-xs">
                             {String(item[field.key] || "-")}

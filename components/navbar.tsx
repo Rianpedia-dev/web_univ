@@ -60,7 +60,7 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
       icon: Users,
       submenu: [
         { title: locale === 'id' ? "Pendaftaran PMB" : "Registration", href: `/${locale}/penerimaan/pendaftaran-pmb` },
-        { title: locale === 'id' ? "Kelas" : "Classes", href: `/${locale}/penerimaan/kelas` },
+        { title: locale === 'id' ? "Jenis Kelas" : "Class Types", href: `/${locale}/penerimaan/jenis-kelas` },
         { title: locale === 'id' ? "Biaya Pendidikan" : "Education Cost", href: `/${locale}/penerimaan/biaya-pendidikan` },
         { title: locale === 'id' ? "Beasiswa" : "Scholarships", href: `/${locale}/penerimaan/beasiswa` },
       ]
@@ -119,7 +119,7 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
                   suppressHydrationWarning
                   className="w-10 h-10 lg:w-12 lg:h-12 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.5)]"
                 >
-                  <GraduationCap className="w-6 h-6 lg:w-7 lg:h-7 text-white/90 dark:text-white" />
+                  <GraduationCap className="w-6 h-6 lg:w-7 lg:h-7 text-white/90 dark:text-white" suppressHydrationWarning />
                 </div>
               )}
             </div>
@@ -190,7 +190,7 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
                 className="text-foreground/80 dark:text-foreground hover:bg-white/10 dark:hover:bg-gray-800/50"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
-                {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {isMenuOpen ? <X className="w-5 h-5" suppressHydrationWarning /> : <Menu className="w-5 h-5" suppressHydrationWarning />}
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </div>

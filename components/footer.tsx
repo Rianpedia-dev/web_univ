@@ -32,7 +32,7 @@ export function Footer({ locale = 'id' }: { locale?: string }) {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-lg bg-gradient-cyber flex items-center justify-center shadow-[0_0_20px_rgba(0,240,255,0.3)]">
-                <GraduationCap className="w-7 h-7 text-foreground/90" />
+                <GraduationCap className="w-7 h-7 text-foreground/90" suppressHydrationWarning />
               </div>
               <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-cyber">
                 University
@@ -49,7 +49,7 @@ export function Footer({ locale = 'id' }: { locale?: string }) {
                   className="p-3 rounded-full bg-foreground/10 hover:bg-cyber-blue/20 transition-all duration-300 hover:shadow-[0_0_15px_rgba(0,240,255,0.3)]"
                   aria-label={social.label}
                 >
-                  <social.icon className="w-5 h-5 text-cyber-blue" />
+                  <social.icon className="w-5 h-5 text-cyber-blue" suppressHydrationWarning />
                 </Link>
               ))}
             </div>
@@ -58,7 +58,7 @@ export function Footer({ locale = 'id' }: { locale?: string }) {
           {/* Tautan Cepat */}
           <div>
             <h3 className="text-lg font-bold mb-6 text-foreground flex items-center gap-2">
-              <Zap className="w-5 h-5 text-cyber-blue" />
+              <Zap className="w-5 h-5 text-cyber-blue" suppressHydrationWarning />
               Tautan Cepat
             </h3>
             <ul className="space-y-3">
@@ -78,13 +78,13 @@ export function Footer({ locale = 'id' }: { locale?: string }) {
           {/* Kontak */}
           <div>
             <h3 className="text-lg font-bold mb-6 text-foreground flex items-center gap-2">
-              <Shield className="w-5 h-5 text-electric-purple" />
+              <Shield className="w-5 h-5 text-electric-purple" suppressHydrationWarning />
               Kontak
             </h3>
             <ul className="space-y-4">
               {contactInfo.map((contact, index) => (
                 <li key={index} className="flex items-start gap-4">
-                  <contact.icon className="w-5 h-5 mt-1 flex-shrink-0 text-neon-green" />
+                  <contact.icon className="w-5 h-5 mt-1 flex-shrink-0 text-neon-green" suppressHydrationWarning />
                   <span className="text-foreground/70">{contact.text}</span>
                 </li>
               ))}
@@ -94,7 +94,7 @@ export function Footer({ locale = 'id' }: { locale?: string }) {
           {/* Info Tambahan */}
           <div>
             <h3 className="text-lg font-bold mb-6 text-foreground flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-neon-pink" />
+              <TrendingUp className="w-5 h-5 text-neon-pink" suppressHydrationWarning />
               Informasi
             </h3>
             <ul className="space-y-3">

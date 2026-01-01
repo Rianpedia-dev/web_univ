@@ -38,6 +38,7 @@ export const educationCosts = pgTable("education_costs", {
     id: uuid("id").defaultRandom().primaryKey(),
     studyProgramId: uuid("study_program_id").references(() => studyPrograms.id, { onDelete: "set null" }),
     classId: uuid("class_id").references(() => admissionClasses.id, { onDelete: "set null" }),
+    pathwayId: uuid("pathway_id").references(() => admissionPathways.id, { onDelete: "set null" }),
     costType: text("cost_type", { enum: ['registration', 'tuition', 'other'] }).notNull(),
     year: text("year").notNull(), // tahun akademik
     semester: text("semester", { enum: ['Ganjil', 'Genap'] }), // semester (opsional)
@@ -69,62 +70,18 @@ export const scholarships = pgTable("scholarships", {
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-// Tabel pendaftaran mahasiswa baru
-export const admissionRegistrations = pgTable("admission_registrations", {
+
+
+// Tabel gelombang pendaftaran
+export const admissionWaves = pgTable("admission_waves", {
     id: uuid("id").defaultRandom().primaryKey(),
-    registrationNumber: text("registration_number").notNull().unique(), // nomor pendaftaran
-    firstName: text("first_name").notNull(),
-    lastName: text("last_name"),
-    email: text("email").notNull(),
-    phone: text("phone").notNull(),
-    dateOfBirth: timestamp("date_of_birth").notNull(),
-    placeOfBirth: text("place_of_birth").notNull(),
-    gender: text("gender", { enum: ['male', 'female'] }),
-    nationality: text("nationality").default('Indonesian').notNull(),
-    address: text("address"),
-    city: text("city"),
-    province: text("province"),
-    postalCode: text("postal_code"),
-    highSchool: text("high_school"), // nama sekolah
-    highSchoolMajor: text("high_school_major"), // jurusan SMA
-    graduationYear: text("graduation_year"), // tahun lulus
-    studyProgramId: uuid("study_program_id").references(() => studyPrograms.id, { onDelete: "set null" }),
-    classId: uuid("class_id").references(() => admissionClasses.id, { onDelete: "set null" }),
-    pathwayId: uuid("pathway_id").references(() => admissionPathways.id, { onDelete: "set null" }),
-    status: text("status", {
-        enum: ['registered', 'paid', 'document_submitted', 'verified', 'accepted', 'rejected', 'enrolled']
-    }).default('registered').notNull(),
-    registrationDate: timestamp("registration_date").defaultNow().notNull(),
-    paymentDate: timestamp("payment_date"), // tanggal pembayaran
-    verificationDate: timestamp("verification_date"), // tanggal verifikasi
-    acceptanceDate: timestamp("acceptance_date"), // tanggal diterima
-    documentStatus: text("document_status", {
-        enum: ['pending', 'submitted', 'verified', 'rejected']
-    }).default('pending').notNull(),
-    documentNotes: text("document_notes"), // catatan verifikasi dokumen
-    notes: text("notes"), // catatan tambahan
-    isVerified: boolean("is_verified").default(false).notNull(),
-    isAccepted: boolean("is_accepted").default(false).notNull(),
+    name: text("name").notNull(), // nama gelombang (e.g. Gelombang 1, Gelombang 2)
+    startDate: timestamp("start_date").notNull(), // tanggal mulai
+    endDate: timestamp("end_date").notNull(), // tanggal berakhir
+    notes: text("notes"), // catatan khusus (e.g. "Termasuk seleksi beasiswa")
+    isPublished: boolean("is_published").default(false).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-// Tabel dokumen pendaftaran
-export const admissionDocuments = pgTable("admission_documents", {
-    id: uuid("id").defaultRandom().primaryKey(),
-    registrationId: uuid("registration_id").notNull().references(() => admissionRegistrations.id, { onDelete: "cascade" }),
-    documentType: text("document_type", {
-        enum: [
-            'identity_card', 'birth_certificate', 'high_school_diploma',
-            'high_school_transcript', 'photo', 'payment_proof', 'other'
-        ]
-    }).notNull(),
-    fileName: text("file_name").notNull(),
-    filePath: text("file_path").notNull(),
-    fileSize: integer("file_size"), // dalam bytes
-    mimeType: text("mime_type"),
-    isVerified: boolean("is_verified").default(false).notNull(),
-    verifiedAt: timestamp("verified_at"),
-    notes: text("notes"), // catatan verifikasi
-    uploadedAt: timestamp("uploaded_at").defaultNow().notNull(),
-});
+

@@ -11,36 +11,114 @@ import {
   ShieldCheck,
   Zap,
   Star,
-  Download
+  Download,
+  GraduationCap,
+  Building2,
+  BookOpen,
+  HelpCircle,
+  Target,
+  Shield,
+  Award,
+  Users,
+  Timer,
+  AlertCircle,
+  CalendarDays,
+  Flag
 } from "lucide-react";
+import Link from "next/link";
 import { MotionDiv } from "@/components/motion-wrapper";
 import { Badge } from "@/components/ui/badge";
-import { getPublishedAdmissionPathways } from '@/lib/db';
+import {
+  getPublishedAdmissionPathways,
+  getPublishedAdmissionClasses,
+  getPublishedStudyPrograms,
+  getPublishedAdmissionWaves
+} from '@/lib/db';
 
 export default async function PendaftaranPMBPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
 
   // Ambil data dari database
-  const jalurMasuk = await getPublishedAdmissionPathways();
-
-  // Data timeline pendaftaran dibuat dari data jalur masuk
-  const timelinePendaftaran = jalurMasuk.flatMap(jalur => [
-    {
-      kegiatan: `Pendaftaran ${jalur.name}`,
-      tanggal: jalur.registrationStart ? `${new Date(jalur.registrationStart).toLocaleDateString('id-ID', { day: 'numeric', month: 'long' })} - ${new Date(jalur.registrationEnd || '').toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}` : 'Segera',
-      status: "Berlangsung",
-      type: jalur.name.toLowerCase().includes('prestasi') ? 'prestasi' : 'reguler'
-    }
+  const [jalurMasuk, jenisKelas, programStudi, gelombangData] = await Promise.all([
+    getPublishedAdmissionPathways(),
+    getPublishedAdmissionClasses(),
+    getPublishedStudyPrograms(),
+    getPublishedAdmissionWaves()
   ]);
 
+  // Tentukan gelombang aktif
+  const now = new Date();
+  const gelombangAktif = gelombangData.find(g => now >= g.startDate && now <= g.endDate);
+
+  // Data timeline pendaftaran
+  const timelinePendaftaran = [
+    { kegiatan: "Pendaftaran Online", status: "Berlangsung", icon: UserPlus },
+    { kegiatan: "Upload Dokumen", status: "Berlangsung", icon: FileText },
+    { kegiatan: "Verifikasi", status: "Menunggu", icon: ShieldCheck },
+    { kegiatan: "Pengumuman", status: "Menunggu", icon: Star },
+    { kegiatan: "Daftar Ulang", status: "Menunggu", icon: CheckCircle },
+  ];
+
+  // Syarat umum pendaftaran
+  const syaratUmum = [
+    "Warga Negara Indonesia (WNI)",
+    "Lulusan SMA/SMK/MA/Sederajat",
+    "Memiliki ijazah atau Surat Keterangan Lulus (SKL)",
+    "Memiliki rapor semester 1-6 dengan nilai memenuhi syarat",
+    "Sehat jasmani dan rohani",
+    "Tidak sedang terdaftar di perguruan tinggi lain"
+  ];
+
+  // FAQ singkat
+  const faqData = [
+    {
+      q: "Bagaimana cara mendaftar?",
+      a: "Klik tombol 'Daftar Sekarang', isi formulir, upload dokumen, dan tunggu verifikasi."
+    },
+    {
+      q: "Berapa biaya pendaftaran?",
+      a: "Biaya pendaftaran bervariasi sesuai jalur masuk. Lihat halaman Biaya Pendidikan untuk detail."
+    },
+    {
+      q: "Kapan pengumuman hasil?",
+      a: "Pengumuman dilakukan 1-2 minggu setelah penutupan pendaftaran gelombang."
+    }
+  ];
+
+  // Helper functions
+  const formatDate = (date: Date | null) => {
+    if (!date) return 'Tanggal belum ditentukan';
+    return new Date(date).toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  };
+
+  const getWaveStatus = (startDate: Date, endDate: Date) => {
+    const now = new Date();
+    if (now < startDate) {
+      return { status: 'upcoming', label: 'Belum Dibuka', color: 'blue', icon: '⚪' };
+    } else if (now >= startDate && now <= endDate) {
+      return { status: 'active', label: 'Aktif', color: 'green', icon: '🔵' };
+    } else {
+      return { status: 'closed', label: 'Ditutup', color: 'red', icon: '🔴' };
+    }
+  };
+
+  const formatCurrency = (amount: number | string | null | undefined) => {
+    if (!amount) return 'Gratis';
+    return `Rp ${Number(amount).toLocaleString('id-ID')}`;
+  };
+
   return (
-    <div className="min-h-screen bg-background overflow-hidden relative pb-20">
+    <div className="min-h-screen bg-background overflow-hidden relative">
       {/* Animated background grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,240,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,240,255,0.03)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,240,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,240,255,0.1)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]" />
 
       {/* Gradient orbs */}
-      <div className="absolute top-1/4 -left-20 w-[500px] h-[500px] bg-cyber-blue/5 rounded-full blur-[120px] animate-pulse" />
-      <div className="absolute bottom-1/4 -right-20 w-[500px] h-[500px] bg-electric-purple/5 rounded-full blur-[120px] animate-pulse delay-1000" />
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyber-blue/10 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-electric-purple/10 rounded-full blur-3xl animate-pulse delay-1000" />
 
       {/* Full width background image section for header */}
       <div
@@ -74,71 +152,193 @@ export default async function PendaftaranPMBPage({ params }: { params: Promise<{
         </div>
       </div>
 
-      <div className="container mx-auto px-4 max-w-7xl relative z-10">
-        {/* Main Grid Section */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 mb-32 items-start">
+      <div className="container mx-auto px-4 relative z-10">
 
-          {/* Left Column: Jalur Pendaftaran (Individual Cards) */}
-          <div className="xl:col-span-8 space-y-12">
-            <MotionDiv
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <div className="flex items-center gap-4 mb-10">
-                <div className="w-12 h-12 bg-gradient-cyber rounded-2xl flex items-center justify-center shadow-lg">
-                  <UserPlus className="w-6 h-6 text-white" />
+        {/* Gelombang Aktif Banner */}
+        {gelombangAktif && (
+          <MotionDiv
+            className="glass-card rounded-2xl p-6 border-2 border-green-500/50 mb-12 bg-green-500/5"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex items-center">
+                <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center mr-4">
+                  <Calendar className="w-6 h-6 text-green-500" />
                 </div>
                 <div>
-                  <h2 className="text-3xl font-black text-white tracking-tight">Jalur Penerimaan</h2>
-                  <p className="text-muted-foreground font-medium">Temukan jalur masuk yang paling sesuai dengan kualifikasimu</p>
+                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30 mb-1">
+                    🟢 Gelombang Aktif
+                  </Badge>
+                  <h3 className="text-xl font-bold text-foreground">{gelombangAktif.name}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Berakhir: {gelombangAktif.endDate ? new Date(gelombangAktif.endDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'}
+                  </p>
+                </div>
+              </div>
+              <Button asChild className="bg-gradient-cyber hover:shadow-[0_0_20px_rgba(0,240,255,0.5)] px-8">
+                <Link href="https://forms.google.com" target="_blank">
+                  Daftar Sekarang <ArrowRight className="w-4 h-4 ml-2" />
+                </Link>
+              </Button>
+            </div>
+          </MotionDiv>
+        )}
+
+        {/* Main Grid Section */}
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-12 mb-16 items-start">
+
+          {/* Left Column: Konten Dinamis */}
+          <div className="xl:col-span-8 space-y-12">
+
+            {/* Penjelasan Singkat PMB */}
+            <MotionDiv
+              className="glass-card rounded-2xl p-8 border"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center">
+                <GraduationCap className="w-6 h-6 text-cyber-blue mr-3" />
+                Tentang PMB
+              </h2>
+              <p className="text-muted-foreground leading-relaxed mb-4">
+                Penerimaan Mahasiswa Baru (PMB) adalah proses seleksi calon mahasiswa untuk bergabung
+                dengan universitas kami. Kami menyediakan berbagai jalur masuk yang dapat dipilih
+                sesuai dengan prestasi dan kebutuhan Anda.
+              </p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                <div className="text-center p-4 bg-muted/30 rounded-xl">
+                  <div className="text-2xl font-bold text-cyber-blue">{jalurMasuk.length}</div>
+                  <div className="text-xs text-muted-foreground">Jalur Masuk</div>
+                </div>
+                <div className="text-center p-4 bg-muted/30 rounded-xl">
+                  <div className="text-2xl font-bold text-electric-purple">{programStudi.length}</div>
+                  <div className="text-xs text-muted-foreground">Program Studi</div>
+                </div>
+                <div className="text-center p-4 bg-muted/30 rounded-xl">
+                  <div className="text-2xl font-bold text-green-500">{jenisKelas.length}</div>
+                  <div className="text-xs text-muted-foreground">Jenis Kelas</div>
+                </div>
+                <div className="text-center p-4 bg-muted/30 rounded-xl">
+                  <div className="text-2xl font-bold text-yellow-500">{gelombangData.length}</div>
+                  <div className="text-xs text-muted-foreground">Gelombang</div>
+                </div>
+              </div>
+            </MotionDiv>
+
+            {/* Jalur Masuk Section */}
+            <MotionDiv
+              id="jalur-masuk"
+              className="space-y-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-r from-electric-purple to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <Zap className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-foreground tracking-tight">Jalur Pendaftaran</h2>
+                  <p className="text-muted-foreground text-sm">Pilih jalur yang sesuai dengan kualifikasi Anda</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {jalurMasuk.map((jalur, index) => (
-                  <MotionDiv
-                    key={jalur.id}
-                    className="group"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <div className="glass-card relative rounded-[2rem] p-8 border border-white/10 h-full overflow-hidden hover:border-cyber-blue/40 transition-all duration-500 bg-black/40 backdrop-blur-xl">
-                      {/* Glow effect on hover */}
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-cyber-blue to-electric-purple rounded-[2rem] blur opacity-0 group-hover:opacity-10 transition duration-500" />
-
-                      <div className="relative z-10">
-                        <div className="flex justify-between items-start mb-6">
-                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${index % 2 === 0 ? 'bg-cyber-blue/20 text-cyber-blue' : 'bg-electric-purple/20 text-electric-purple'}`}>
-                            {index % 2 === 0 ? <Zap className="w-6 h-6" /> : <Star className="w-6 h-6" />}
-                          </div>
-                          <Badge className="bg-white/5 text-white/60 border-white/10 px-3 py-1 font-bold text-[10px] uppercase tracking-widest">
-                            2024/2025
+                {jalurMasuk.map((jalur, index) => {
+                  const isActive = (jalur.registrationStart ? new Date(jalur.registrationStart) : new Date()) <= now && (jalur.registrationEnd ? new Date(jalur.registrationEnd) : new Date()) >= now;
+                  return (
+                    <div key={jalur.id} className="glass-card rounded-2xl p-6 border hover:border-electric-purple/40 transition-all flex flex-col justify-between">
+                      <div>
+                        <div className="flex justify-between items-start mb-4">
+                          <h3 className="font-bold text-lg text-foreground">{jalur.name}</h3>
+                          <Badge className={isActive ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}>
+                            {isActive ? "Aktif" : "Tutup"}
                           </Badge>
                         </div>
-
-                        <h3 className="text-2xl font-black text-white mb-3 group-hover:text-cyber-blue transition-colors tracking-tight">
-                          {jalur.name}
-                        </h3>
-                        <p className="text-muted-foreground text-sm leading-relaxed mb-8 line-clamp-3 font-medium">
-                          {jalur.description || "Jalur pendaftaran eksklusif untuk calon mahasiswa berprestasi dengan berbagai keuntungan dan beasiswa penuh."}
+                        <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
+                          {jalur.description}
                         </p>
-
-                        <div className="pt-6 border-t border-white/5 flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4 text-cyber-blue opacity-70" />
-                            <span className="text-xs font-bold text-white/70">
-                              {jalur.registrationStart ? new Date(jalur.registrationStart).toLocaleDateString('id-ID', { month: 'short', day: 'numeric' }) : '-'} - {jalur.registrationEnd ? new Date(jalur.registrationEnd).toLocaleDateString('id-ID', { month: 'short', day: 'numeric' }) : '-'}
-                            </span>
+                        {jalur.requirements && (
+                          <div className="space-y-1 mb-4">
+                            <p className="text-xs font-bold text-foreground uppercase tracking-wider">Syarat Utama:</p>
+                            <p className="text-xs text-muted-foreground">{jalur.requirements.split('\n')[0]}</p>
                           </div>
-                          <Button variant="ghost" className="text-xs font-black text-cyber-blue hover:text-white hover:bg-cyber-blue/20 px-0">
-                            DETAIL <ArrowRight className="ml-1 w-3 h-3" />
+                        )}
+                      </div>
+                      <div className="pt-4 border-t border-white/5 flex items-center justify-between">
+                        <span className="text-sm font-bold text-cyber-blue">{formatCurrency(jalur.registrationFee)}</span>
+                        {isActive && (
+                          <Button size="sm" variant="ghost" className="text-xs text-electric-purple hover:text-electric-purple hover:bg-electric-purple/10">
+                            Detail <ArrowRight className="w-3 h-3 ml-1" />
                           </Button>
-                        </div>
+                        )}
                       </div>
                     </div>
-                  </MotionDiv>
+                  );
+                })}
+              </div>
+            </MotionDiv>
+
+            {/* Gelombang Pendaftaran Section */}
+            <MotionDiv
+              id="gelombang"
+              className="space-y-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <Calendar className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-foreground tracking-tight">Gelombang Pendaftaran</h2>
+                  <p className="text-muted-foreground text-sm">Jadwal periode pendaftaran mahasiswa baru</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {gelombangData.map((wave) => {
+                  const status = getWaveStatus(new Date(wave.startDate), new Date(wave.endDate));
+                  return (
+                    <div key={wave.id} className={`glass-card rounded-2xl p-6 border transition-all ${status.status === 'active' ? 'border-green-500/30' : ''}`}>
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="flex items-center gap-4">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${status.status === 'active' ? 'bg-green-500/20 text-green-500' : 'bg-muted text-muted-foreground'}`}>
+                            <Flag className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <h3 className="font-bold text-foreground">{wave.name}</h3>
+                            <p className="text-sm text-muted-foreground">
+                              {formatDate(new Date(wave.startDate))} - {formatDate(new Date(wave.endDate))}
+                            </p>
+                          </div>
+                        </div>
+                        <Badge className={`${status.status === 'active' ? 'bg-green-500/20 text-green-400' : status.status === 'upcoming' ? 'bg-blue-500/20 text-blue-400' : 'bg-gray-500/20 text-gray-400'}`}>
+                          {status.icon} {status.label}
+                        </Badge>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </MotionDiv>
+
+            {/* Syarat Umum Pendaftaran */}
+            <MotionDiv
+              className="glass-card rounded-2xl p-8 border"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center">
+                <FileText className="w-6 h-6 text-cyber-blue mr-3" />
+                Syarat Umum Pendaftaran
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {syaratUmum.map((syarat, index) => (
+                  <div key={index} className="flex items-start p-3 bg-muted/30 rounded-xl">
+                    <CheckCircle className="w-5 h-5 text-cyber-blue mt-0.5 mr-3 flex-shrink-0" />
+                    <span className="text-muted-foreground text-sm">{syarat}</span>
+                  </div>
                 ))}
               </div>
             </MotionDiv>
@@ -163,15 +363,17 @@ export default async function PendaftaranPMBPage({ params }: { params: Promise<{
                 {/* Timeline Line */}
                 <div className="absolute left-6 top-2 bottom-2 w-0.5 bg-gradient-to-b from-cyber-blue via-electric-purple to-transparent opacity-20" />
 
-                {timelinePendaftaran.slice(0, 5).map((item, index) => (
+                {timelinePendaftaran.map((item, index) => (
                   <div key={index} className="relative flex gap-6 group">
                     <div className="relative z-10 w-12 h-12 rounded-2xl glass-card border-2 border-white/10 flex items-center justify-center bg-black transition-all group-hover:border-cyber-blue group-hover:shadow-[0_0_20px_rgba(0,240,255,0.2)]">
-                      <span className="text-sm font-black text-white">{index + 1}</span>
+                      <item.icon className="w-5 h-5 text-cyber-blue" />
                     </div>
                     <div>
                       <h3 className="font-bold text-white group-hover:text-cyber-blue transition-colors text-base mb-1">{item.kegiatan}</h3>
-                      <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{item.tanggal}</p>
-                      <Badge className="mt-2 bg-cyber-blue/10 text-cyber-blue border-none text-[9px] font-black tracking-widest px-2">
+                      <Badge className={`text-[9px] font-black tracking-widest px-2 ${item.status === 'Berlangsung'
+                        ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                        : 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+                        }`}>
                         {item.status}
                       </Badge>
                     </div>
@@ -195,99 +397,26 @@ export default async function PendaftaranPMBPage({ params }: { params: Promise<{
           </div>
         </div>
 
-        {/* Requirements Section - Horizontal Styled */}
-        <div className="mb-32">
-          <MotionDiv
-            className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 px-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyber-blue/10 border border-cyber-blue/20 mb-4">
-                <ShieldCheck className="w-4 h-4 text-cyber-blue" />
-                <span className="text-[10px] font-black tracking-[0.2em] text-cyber-blue uppercase">Verifikasi Dokumen</span>
-              </div>
-              <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight leading-tight">Persiapan <br /><span className="text-muted-foreground/40">Dokumen Wajib</span></h2>
-            </div>
-            <p className="text-muted-foreground font-medium max-w-sm">Siapkan pindaian (scan) berkas asli dalam format PDF/JPG maksimal 2MB per file.</p>
-          </MotionDiv>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4">
-            {[
-              { icon: FileText, title: "Ijazah & SKL", desc: "Scan Ijazah asli atau Surat Keterangan Lulus yang telah dilegalisir oleh pihak sekolah.", color: "cyber-blue" },
-              { icon: CheckCircle, title: "Transkrip Nilai", desc: "Scan raport semester 1-5 bagi pendaftar jalur prestasi atau raport SMA sederajat.", color: "emerald-400" },
-              { icon: UserPlus, title: "Kartu Identitas", desc: "Scan KTP/Kartu Pelajar dan Kartu Keluarga (KK) yang masih berlaku dengan jelas.", color: "electric-purple" },
-              { icon: ShieldCheck, title: "Pas Foto Terbaru", desc: "Foto formal terbaru berpakaian rapi dengan latar belakang merah, ukuran 4x6.", color: "accent-pink" }
-            ].map((req, index) => (
-              <MotionDiv
-                key={index}
-                className="group p-1"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <div className="glass-card h-full p-10 rounded-[3rem] border border-white/10 hover:border-white/20 transition-all bg-white/[0.02] relative overflow-hidden flex flex-col items-center text-center">
-                  <div className={`w-20 h-20 rounded-[2rem] bg-${req.color}/10 flex items-center justify-center mb-8 border border-${req.color}/20 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500`}>
-                    <req.icon className={`w-10 h-10 text-${req.color}`} />
-                  </div>
-                  <h3 className="font-black text-xl text-white mb-4 tracking-tight">{req.title}</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed font-medium">{req.desc}</p>
-                </div>
-              </MotionDiv>
-            ))}
-          </div>
-        </div>
-
-        {/* Professional Contact Support Section */}
+        {/* FAQ Singkat */}
         <MotionDiv
-          className="relative rounded-[4rem] p-12 md:p-24 border border-white/10 overflow-hidden group shadow-2xl"
-          initial={{ opacity: 0, y: 30 }}
+          className="glass-card rounded-2xl p-8 border mb-16"
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          {/* Background visuals */}
-          <div className="absolute inset-0 bg-black/80" />
-          <div className="absolute inset-0 bg-gradient-to-br from-cyber-blue/10 via-transparent to-electric-purple/10" />
-          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-cyber-blue/10 rounded-full blur-[120px] -mr-64 -mt-64 group-hover:opacity-60 transition-opacity" />
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center relative z-10">
-            <div>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-md">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[10px] font-black tracking-[0.2em] text-white/70 uppercase">Layanan Konsultasi Online</span>
+          <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center">
+            <HelpCircle className="w-6 h-6 text-cyber-blue mr-3" />
+            FAQ Singkat
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {faqData.map((faq, index) => (
+              <div key={index} className="bg-muted/30 rounded-xl p-6">
+                <h3 className="font-bold text-foreground mb-2">{faq.q}</h3>
+                <p className="text-sm text-muted-foreground">{faq.a}</p>
               </div>
-              <h2 className="text-4xl md:text-6xl font-black text-white mb-10 leading-[1.1] tracking-tight">Butuh Bantuan <br /> <span className="text-white/40">Secara Langsung?</span></h2>
-              <p className="text-white/60 text-lg md:text-xl mb-12 font-medium leading-relaxed max-w-xl">
-                Tim Admisi kami siap memberikan pendampingan pendaftaran dan pilihan program studi gratis setiap hari kerja pukul 08.00 - 16.00 WIB.
-              </p>
-              <div className="flex flex-wrap gap-6">
-                <Button className="bg-white text-black hover:bg-white/90 px-10 py-7 rounded-full font-black text-xl shadow-2xl flex items-center group/btn transition-all active:scale-95">
-                  <Phone className="w-6 h-6 mr-3 group-hover/btn:rotate-12 transition-transform" /> Chat WhatsApp
-                </Button>
-                <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 px-10 py-7 rounded-full font-black text-xl flex items-center backdrop-blur-md">
-                  <Mail className="w-6 h-6 mr-3" /> Kirim Email
-                </Button>
-              </div>
-            </div>
-
-            <div className="hidden lg:flex justify-end pr-8">
-              <div className="relative">
-                {/* Decorative floating elements */}
-                <div className="absolute -top-10 -left-10 w-24 h-24 bg-gradient-cyber rounded-3xl blur-2xl opacity-40 animate-pulse" />
-                <div className="absolute -bottom-10 -right-10 w-24 h-24 bg-gradient-purple rounded-3xl blur-2xl opacity-40 animate-pulse delay-700" />
-
-                <div className="relative w-80 h-96 rounded-[3rem] border border-white/20 bg-white/5 backdrop-blur-2xl p-10 flex flex-col justify-end overflow-hidden group/card shadow-[0_0_50px_rgba(0,0,0,0.5)]">
-                  <div className="absolute top-10 left-10 w-16 h-16 bg-gradient-cyber rounded-2xl flex items-center justify-center">
-                    <Zap className="w-8 h-8 text-white" />
-                  </div>
-                  <div className="space-y-4">
-                    <p className="text-white font-black text-3xl leading-tight tracking-tight">Langkah Kecil untuk Karir Besar.</p>
-                    <div className="h-1 w-20 bg-cyber-blue rounded-full" />
-                  </div>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </MotionDiv>
+
       </div>
     </div>
   );

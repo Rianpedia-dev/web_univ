@@ -24,8 +24,6 @@ import {
   partners,
   universityProfiles,
   campusStatistics,
-  admissionRegistrations,
-  admissionDocuments,
   partnershipDocuments,
   organizationalEmployees,
   campusFacilities as campusFacilitiesTable,
@@ -43,8 +41,6 @@ async function seedDatabase() {
     console.log('Membersihkan data yang ada...');
     await db.delete(partnershipDocuments);
     await db.delete(studentAchievements);
-    await db.delete(admissionDocuments);
-    await db.delete(admissionRegistrations);
     await db.delete(session);
     await db.delete(account);
     await db.delete(verification);

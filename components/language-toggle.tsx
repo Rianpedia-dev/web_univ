@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,6 +16,11 @@ const locales = ['id', 'en']; // Daftar locale yang didukung
 export function LanguageToggle() {
   const pathname = usePathname();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Ekstrak locale dari pathname
   const currentLocale = pathname.split('/')[1];
@@ -33,11 +39,20 @@ export function LanguageToggle() {
     router.push(newPathname);
   };
 
+  if (!mounted) {
+    return (
+      <Button variant="outline" size="icon" suppressHydrationWarning>
+        <Globe className="h-[1.2rem] w-[1.2rem]" suppressHydrationWarning />
+        <span className="sr-only">Toggle language</span>
+      </Button>
+    );
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Globe className="h-[1.2rem] w-[1.2rem]" />
+        <Button variant="outline" size="icon" suppressHydrationWarning>
+          <Globe className="h-[1.2rem] w-[1.2rem]" suppressHydrationWarning />
           <span className="sr-only">Toggle language</span>
         </Button>
       </DropdownMenuTrigger>
