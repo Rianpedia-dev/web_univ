@@ -23,6 +23,9 @@ const tableMap: Record<string, any> = {
     educationCosts: schema.educationCosts,
     scholarships: schema.scholarships,
     admissionWaves: schema.admissionWaves,
+    admissionRequirements: schema.admissionRequirements,
+    admissionFaqs: schema.admissionFaqs,
+    admissionTimelines: schema.admissionTimelines,
 
 
 

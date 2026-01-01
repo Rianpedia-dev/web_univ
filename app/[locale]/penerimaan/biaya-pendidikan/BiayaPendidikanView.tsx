@@ -157,12 +157,13 @@ export default function BiayaPendidikanView({
 
                 {/* Step-by-Step Selection */}
                 <MotionDiv
-                    className="glass-card rounded-3xl border border-white/10 p-4 md:p-6 mb-16 shadow-2xl relative overflow-hidden"
+                    className="glass-card rounded-3xl border border-white/10 p-5 md:p-8 mb-12 shadow-2xl relative overflow-hidden bg-white/[0.02] backdrop-blur-md"
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-cyber-blue/10 rounded-full blur-3xl -mr-16 -mt-16" />
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-cyber-blue/5 rounded-full blur-[100px] -mr-32 -mt-32" />
+                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-electric-purple/5 rounded-full blur-[100px] -ml-32 -mb-32" />
 
                     <div className="flex flex-col md:flex-row items-center gap-4 mb-6">
                         <div className="w-10 h-10 rounded-xl bg-gradient-cyber flex items-center justify-center shadow-lg">
@@ -262,49 +263,56 @@ export default function BiayaPendidikanView({
                             </div>
 
                             {filteredCosts.length > 0 ? (
-                                <div className="glass-card rounded-2xl border border-white/10 overflow-hidden shadow-2xl">
-                                    <Table>
-                                        <TableHeader className="bg-white/5">
-                                            <TableRow className="hover:bg-transparent border-white/10">
-                                                <TableHead className="py-6 text-foreground font-bold">Deskripsi Biaya</TableHead>
-                                                <TableHead className="py-6 text-foreground font-bold text-right">Nominal</TableHead>
-                                                <TableHead className="py-6 text-foreground font-bold">Keterangan</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {filteredCosts.map((cost) => (
-                                                <TableRow key={cost.id} className="border-white/5 hover:bg-white/5 transition-colors group">
-                                                    <TableCell className="py-6">
-                                                        <div className="font-semibold text-foreground group-hover:text-cyber-blue transition-colors">
-                                                            {cost.description || 'Biaya Pendidikan'}
-                                                        </div>
-                                                        <Badge variant="secondary" className="mt-2 capitalize bg-muted/50 text-[10px]">
-                                                            {cost.costType === 'tuition' ? 'SPP / UKT' : cost.costType === 'registration' ? 'Pendaftaran' : 'Lainnya'}
-                                                        </Badge>
+                                <div className="glass-card rounded-2xl border border-white/10 overflow-hidden shadow-2xl bg-white/[0.01] backdrop-blur-sm">
+                                    <div className="overflow-x-auto">
+                                        <Table className="min-w-[600px]">
+                                            <TableHeader className="bg-white/5">
+                                                <TableRow className="hover:bg-transparent border-white/10">
+                                                    <TableHead className="py-6 px-6 text-foreground font-bold border-r border-white/10">Komponen Biaya</TableHead>
+                                                    <TableHead className="py-6 px-6 text-foreground font-bold text-right border-r border-white/10">Nominal</TableHead>
+                                                    <TableHead className="py-6 px-6 text-foreground font-bold">Keterangan / Jadwal</TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {filteredCosts.map((cost) => (
+                                                    <TableRow key={cost.id} className="border-white/5 hover:bg-white/5 transition-colors group">
+                                                        <TableCell className="py-6 px-6 border-r border-white/5">
+                                                            <div className="font-bold text-foreground group-hover:text-cyber-blue transition-colors text-base">
+                                                                {cost.description || 'Biaya Pendidikan'}
+                                                            </div>
+                                                            <Badge variant="secondary" className="mt-2 capitalize bg-muted/40 text-[10px] border-white/5">
+                                                                {cost.costType === 'tuition' ? 'SPP / UKT' : cost.costType === 'registration' ? 'Pendaftaran' : 'Lainnya'}
+                                                            </Badge>
+                                                        </TableCell>
+                                                        <TableCell className="py-6 px-6 text-right border-r border-white/5">
+                                                            <div className="text-xl font-black bg-clip-text text-transparent bg-gradient-cyber">
+                                                                {formatCurrency(cost.amount)}
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="py-6 px-6">
+                                                            <div className="text-sm text-muted-foreground font-medium">
+                                                                Semester {cost.semester || 'Sesuai Ketentuan'}
+                                                            </div>
+                                                            <div className="text-[11px] text-muted-foreground/60 mt-1 uppercase tracking-wider font-bold">
+                                                                Tahun Akademik {cost.year}
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))}
+
+                                                <TableRow className="bg-cyber-blue/[0.03] border-t-2 border-cyber-blue/30">
+                                                    <TableCell className="py-8 px-6 text-xl font-black text-foreground border-r border-white/5">
+                                                        Total Estimasi
                                                     </TableCell>
-                                                    <TableCell className="py-6 text-right">
-                                                        <div className="text-xl font-bold bg-clip-text text-transparent bg-gradient-cyber">
-                                                            {formatCurrency(cost.amount)}
-                                                        </div>
-                                                    </TableCell>
-                                                    <TableCell className="py-6">
-                                                        <div className="text-xs text-muted-foreground italic">
-                                                            Semester {cost.semester || 'Sesuai Ketentuan'} • TA {cost.year}
+                                                    <TableCell className="py-8 px-6 text-right border-r border-white/5" colSpan={2}>
+                                                        <div className="text-3xl font-black text-cyber-blue pr-4">
+                                                            {formatCurrency(filteredCosts.reduce((acc, c) => acc + Number(c.amount), 0))}
                                                         </div>
                                                     </TableCell>
                                                 </TableRow>
-                                            ))}
-
-                                            <TableRow className="bg-cyber-blue/5 border-t-2 border-cyber-blue/30 text-right">
-                                                <TableCell className="py-8 text-lg font-bold text-foreground text-left">Total Estimasi Awal</TableCell>
-                                                <TableCell className="py-8" colSpan={2}>
-                                                    <div className="text-3xl font-black text-cyber-blue pr-4">
-                                                        {formatCurrency(filteredCosts.reduce((acc, c) => acc + Number(c.amount), 0))}
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
-                                        </TableBody>
-                                    </Table>
+                                            </TableBody>
+                                        </Table>
+                                    </div>
                                 </div>
                             ) : (
                                 <div className="glass-card rounded-2xl border border-white/10 p-20 text-center bg-white/5">
@@ -343,36 +351,40 @@ export default function BiayaPendidikanView({
                                                 </Badge>
                                             </div>
 
-                                            <div className="glass-card rounded-2xl border border-white/10 overflow-hidden shadow-xl bg-white/5 relative">
-                                                <Table>
-                                                    <TableHeader className="bg-white/5">
-                                                        <TableRow className="hover:bg-transparent border-white/10">
-                                                            <TableHead className="py-5 text-foreground/80 text-xs font-bold uppercase tracking-wider">Komponen Biaya</TableHead>
-                                                            <TableHead className="py-5 text-foreground/80 text-xs font-bold uppercase tracking-wider text-right">Nominal</TableHead>
-                                                        </TableRow>
-                                                    </TableHeader>
-                                                    <TableBody>
-                                                        {group.map((cost) => (
-                                                            <TableRow key={cost.id} className="border-white/5 hover:bg-white/5 transition-colors">
-                                                                <TableCell className="py-5">
-                                                                    <div className="font-semibold text-foreground">{cost.description || 'Biaya Pendidikan'}</div>
-                                                                    <div className="text-[10px] text-muted-foreground mt-1">TA {cost.year} • {cost.semester || 'Sesuai Ketentuan'}</div>
+                                            <div className="glass-card rounded-2xl border border-white/10 overflow-hidden shadow-xl bg-white/[0.01] backdrop-blur-sm relative">
+                                                <div className="overflow-x-auto">
+                                                    <Table className="min-w-[500px]">
+                                                        <TableHeader className="bg-white/5">
+                                                            <TableRow className="hover:bg-transparent border-white/10">
+                                                                <TableHead className="py-5 px-6 text-foreground/80 text-[10px] font-black uppercase tracking-widest border-r border-white/10">Komponen Biaya Pendidikan</TableHead>
+                                                                <TableHead className="py-5 px-6 text-foreground/80 text-[10px] font-black uppercase tracking-widest text-right">Nominal (IDR)</TableHead>
+                                                            </TableRow>
+                                                        </TableHeader>
+                                                        <TableBody>
+                                                            {group.map((cost) => (
+                                                                <TableRow key={cost.id} className="border-white/5 hover:bg-white/5 transition-colors">
+                                                                    <TableCell className="py-5 px-6 border-r border-white/5">
+                                                                        <div className="font-bold text-foreground text-sm">{cost.description || 'Biaya Pendidikan'}</div>
+                                                                        <div className="text-[10px] text-muted-foreground/70 mt-1.5 font-bold tracking-tight">TA {cost.year} • {cost.semester || 'Sesuai Ketentuan'}</div>
+                                                                    </TableCell>
+                                                                    <TableCell className="py-5 px-6 text-right font-black text-foreground text-base">
+                                                                        {formatCurrency(cost.amount)}
+                                                                    </TableCell>
+                                                                </TableRow>
+                                                            ))}
+                                                            <TableRow className="bg-cyber-blue/[0.04] border-t-2 border-cyber-blue/20">
+                                                                <TableCell className="py-6 px-6 text-base font-black text-cyber-blue border-r border-white/5">
+                                                                    Total Estimasi
                                                                 </TableCell>
-                                                                <TableCell className="py-5 text-right font-bold text-foreground">
-                                                                    {formatCurrency(cost.amount)}
+                                                                <TableCell className="py-6 px-6 text-right">
+                                                                    <div className="text-2xl font-black text-cyber-blue">
+                                                                        {formatCurrency(total)}
+                                                                    </div>
                                                                 </TableCell>
                                                             </TableRow>
-                                                        ))}
-                                                        <TableRow className="bg-cyber-blue/10 border-t border-cyber-blue/30">
-                                                            <TableCell className="py-6 text-md font-bold text-cyber-blue">Total Biaya Pendidikan</TableCell>
-                                                            <TableCell className="py-6 text-right">
-                                                                <div className="text-2xl font-black text-cyber-blue">
-                                                                    {formatCurrency(total)}
-                                                                </div>
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    </TableBody>
-                                                </Table>
+                                                        </TableBody>
+                                                    </Table>
+                                                </div>
                                             </div>
                                         </div>
                                     );

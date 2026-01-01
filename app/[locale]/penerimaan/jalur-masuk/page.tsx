@@ -22,28 +22,8 @@ export default async function JalurMasukPage({ params }: { params: Promise<{ loc
     // Ambil data dari database
     const jalurMasukData = await getPublishedAdmissionPathways();
 
-    // Fungsi untuk format tanggal
-    const formatDate = (date: Date | null) => {
-        if (!date) return 'Tanggal belum ditentukan';
-        return new Date(date).toLocaleDateString('id-ID', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
-        });
-    };
-
-    // Fungsi untuk format currency
-    const formatCurrency = (amount: number | string | null | undefined) => {
-        if (!amount) return 'Gratis';
-        return `Rp ${Number(amount).toLocaleString('id-ID')}`;
-    };
-
     // Statistik
     const totalJalur = jalurMasukData.length;
-    const activeJalur = jalurMasukData.filter(j => {
-        const now = new Date();
-        return j.registrationStart <= now && j.registrationEnd >= now;
-    }).length;
 
     return (
         <div className="min-h-screen bg-background overflow-hidden relative">
@@ -79,7 +59,7 @@ export default async function JalurMasukPage({ params }: { params: Promise<{ loc
                                 Jalur Masuk
                             </h1>
                             <p className="text-lg md:text-xl text-foreground max-w-2xl mx-auto font-medium">
-                                Informasi lengkap tentang berbagai jalur pendaftaran mahasiswa baru beserta persyaratan dan biaya pendaftaran
+                                Informasi lengkap tentang berbagai jalur pendaftaran mahasiswa baru yang tersedia.
                             </p>
                         </MotionDiv>
                     </div>
@@ -90,7 +70,7 @@ export default async function JalurMasukPage({ params }: { params: Promise<{ loc
 
                 {/* Statistik */}
                 <MotionDiv
-                    className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16"
+                    className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.2 }}
@@ -105,15 +85,7 @@ export default async function JalurMasukPage({ params }: { params: Promise<{ loc
                         <div className="text-muted-foreground text-sm">Total Jalur</div>
                     </div>
 
-                    <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(179,118,255,0.1)] transition-all duration-300">
-                        <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
-                            <CheckCircle className="w-6 h-6 text-foreground" />
-                        </div>
-                        <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-emerald-600 mb-2">
-                            {activeJalur}
-                        </div>
-                        <div className="text-muted-foreground text-sm">Jalur Aktif</div>
-                    </div>
+
 
                     <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(179,118,255,0.1)] transition-all duration-300">
                         <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(192,132,252,0.3)]">
@@ -148,11 +120,6 @@ export default async function JalurMasukPage({ params }: { params: Promise<{ loc
                     {jalurMasukData.length > 0 ? (
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             {jalurMasukData.map((jalur, index) => {
-                                const now = new Date();
-                                const isActive = jalur.registrationStart <= now && jalur.registrationEnd >= now;
-                                const isPast = jalur.registrationEnd < now;
-                                const isFuture = jalur.registrationStart > now;
-
                                 return (
                                     <MotionDiv
                                         key={jalur.id}
@@ -164,10 +131,7 @@ export default async function JalurMasukPage({ params }: { params: Promise<{ loc
                                         <div className="p-8">
                                             <div className="flex items-start justify-between mb-4">
                                                 <div className="flex items-center">
-                                                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mr-4 ${isActive ? 'bg-green-500/20 text-green-500' :
-                                                        isFuture ? 'bg-blue-500/20 text-blue-500' :
-                                                            'bg-gray-500/20 text-gray-500'
-                                                        }`}>
+                                                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center mr-4 bg-cyber-blue/20 text-cyber-blue">
                                                         {index % 3 === 0 ? <Zap className="w-7 h-7" /> :
                                                             index % 3 === 1 ? <Star className="w-7 h-7" /> :
                                                                 <Shield className="w-7 h-7" />}
@@ -176,19 +140,8 @@ export default async function JalurMasukPage({ params }: { params: Promise<{ loc
                                                         <h3 className="text-2xl font-bold text-foreground group-hover:text-cyber-blue transition-colors">
                                                             {jalur.name}
                                                         </h3>
-                                                        <Badge className={`mt-1 ${isActive ? 'bg-green-500/20 text-green-400 border-green-500/30' :
-                                                            isFuture ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' :
-                                                                'bg-gray-500/20 text-gray-400 border-gray-500/30'
-                                                            }`}>
-                                                            {isActive ? '🟢 Aktif' : isFuture ? '🔵 Segera Dibuka' : '🔴 Ditutup'}
-                                                        </Badge>
+
                                                     </div>
-                                                </div>
-                                                <div className="text-right">
-                                                    <div className="text-lg font-bold bg-clip-text text-transparent bg-gradient-cyber">
-                                                        {formatCurrency(jalur.registrationFee)}
-                                                    </div>
-                                                    <div className="text-xs text-muted-foreground">Biaya Pendaftaran</div>
                                                 </div>
                                             </div>
 
@@ -196,60 +149,11 @@ export default async function JalurMasukPage({ params }: { params: Promise<{ loc
                                                 {jalur.description || 'Jalur pendaftaran untuk calon mahasiswa baru.'}
                                             </p>
 
-                                            {/* Periode Pendaftaran */}
-                                            <div className="grid grid-cols-2 gap-4 mb-6">
-                                                <div className="bg-muted/30 rounded-xl p-4">
-                                                    <div className="flex items-center text-sm text-muted-foreground mb-1">
-                                                        <Calendar className="w-4 h-4 mr-2 text-cyber-blue" />
-                                                        Mulai Pendaftaran
-                                                    </div>
-                                                    <div className="font-semibold text-foreground text-sm">
-                                                        {formatDate(jalur.registrationStart)}
-                                                    </div>
-                                                </div>
-                                                <div className="bg-muted/30 rounded-xl p-4">
-                                                    <div className="flex items-center text-sm text-muted-foreground mb-1">
-                                                        <Clock className="w-4 h-4 mr-2 text-electric-purple" />
-                                                        Batas Pendaftaran
-                                                    </div>
-                                                    <div className="font-semibold text-foreground text-sm">
-                                                        {formatDate(jalur.registrationEnd)}
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {jalur.requirements && (
-                                                <div className="mb-6">
-                                                    <h4 className="font-semibold text-foreground mb-3 flex items-center">
-                                                        <FileText className="w-4 h-4 mr-2 text-cyber-blue" />
-                                                        Persyaratan:
-                                                    </h4>
-                                                    <ul className="space-y-2">
-                                                        {jalur.requirements.split('\n').slice(0, 4).map((syarat, idx) => (
-                                                            <li key={idx} className="flex items-start">
-                                                                <CheckCircle className="w-4 h-4 text-cyber-blue mt-0.5 mr-2 flex-shrink-0" />
-                                                                <span className="text-sm text-muted-foreground">{syarat}</span>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            )}
-
                                             <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                                                {jalur.testDate && (
-                                                    <div className="text-sm text-muted-foreground">
-                                                        <span className="font-medium text-foreground">Tes:</span> {formatDate(jalur.testDate)}
-                                                    </div>
-                                                )}
                                                 <Button
-                                                    className={`ml-auto ${isActive ? 'bg-gradient-cyber hover:shadow-[0_0_20px_rgba(0,240,255,0.5)]' : 'bg-muted text-muted-foreground cursor-not-allowed'}`}
-                                                    disabled={!isActive}
+                                                    className="ml-auto bg-gradient-cyber hover:shadow-[0_0_20px_rgba(0,240,255,0.5)]"
                                                 >
-                                                    {isActive ? (
-                                                        <>
-                                                            Daftar Sekarang <ArrowRight className="w-4 h-4 ml-2" />
-                                                        </>
-                                                    ) : isFuture ? 'Segera Dibuka' : 'Pendaftaran Ditutup'}
+                                                    Informasi Selengkapnya <ArrowRight className="w-4 h-4 ml-2" />
                                                 </Button>
                                             </div>
                                         </div>

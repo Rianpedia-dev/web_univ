@@ -355,9 +355,9 @@ async function seedDatabase() {
     console.log('Mengisi jalur pendaftaran...');
     const admissionPathwayIds = [];
     const admissionPathwaysData = [
-      { name: 'SNBP (Seleksi Nasional Berdasarkan Prestasi)', slug: 'snbp', description: 'Seleksi berdasarkan prestasi akademik dan non-akademik', requirements: 'Rata-rata rapor minimal 8.0\nMemiliki prestasi akademik/non-akademik\nSurat rekomendasi sekolah', registrationStart: new Date('2024-02-01'), registrationEnd: new Date('2024-03-31'), testDate: null, announcementDate: new Date('2024-05-15'), registrationFee: '0', isPublished: true },
-      { name: 'SNBT (Seleksi Nasional Berdasarkan Tes)', slug: 'snbt', description: 'Seleksi berdasarkan hasil tes tertulis UTBK-SNBT', requirements: 'Mengikuti UTBK-SNBT\nNilai UTBK sesuai passing grade\nDokumen kelulusan', registrationStart: new Date('2024-03-01'), registrationEnd: new Date('2024-04-30'), testDate: new Date('2024-06-15'), announcementDate: new Date('2024-07-15'), registrationFee: '200000', isPublished: true },
-      { name: 'Seleksi Mandiri', slug: 'seleksi-mandiri', description: 'Seleksi khusus melalui ujian masuk universitas', requirements: 'Mendaftar melalui portal universitas\nMengikuti ujian seleksi\nWawancara\nDokumen pendukung', registrationStart: new Date('2024-04-01'), registrationEnd: new Date('2024-06-30'), testDate: new Date('2024-07-15'), announcementDate: new Date('2024-07-30'), registrationFee: '300000', isPublished: true }
+      { name: 'SNBP (Seleksi Nasional Berdasarkan Prestasi)', description: 'Seleksi berdasarkan prestasi akademik dan non-akademik', isPublished: true },
+      { name: 'SNBT (Seleksi Nasional Berdasarkan Tes)', description: 'Seleksi berdasarkan hasil tes tertulis UTBK-SNBT', isPublished: true },
+      { name: 'Seleksi Mandiri', description: 'Seleksi khusus melalui ujian masuk universitas', isPublished: true }
     ];
 
     for (const path of admissionPathwaysData) {

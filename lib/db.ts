@@ -35,7 +35,10 @@ import {
   campusAccessibilities,
   socialMediaLinks,
   careerProspects,
-  studentServiceContacts
+  studentServiceContacts,
+  admissionRequirements,
+  admissionFaqs,
+  admissionTimelines
 } from '@/db/schema';
 import { eq, and, or, sql } from 'drizzle-orm';
 
@@ -749,7 +752,7 @@ export async function getPublishedAdmissionPathways() {
       .select()
       .from(admissionPathways)
       .where(eq(admissionPathways.isPublished, true))
-      .orderBy(sql`${admissionPathways.registrationStart} ASC`);
+      .orderBy(sql`${admissionPathways.createdAt} ASC`);
 
     return result;
   } catch (error) {
@@ -1093,5 +1096,59 @@ export async function getPublishedAdmissionWaves() {
   } catch (error) {
     console.error('Error fetching published admission waves:', error);
     throw new Error('Failed to fetch admission waves');
+  }
+}
+
+/**
+ * Fungsi untuk mengambil syarat umum pendaftaran yang dipublikasikan
+ */
+export async function getPublishedAdmissionRequirements() {
+  try {
+    const result = await db
+      .select()
+      .from(admissionRequirements)
+      .where(eq(admissionRequirements.isPublished, true))
+      .orderBy(sql`${admissionRequirements.order} ASC`);
+
+    return result;
+  } catch (error) {
+    console.error('Error fetching admission requirements:', error);
+    return [];
+  }
+}
+
+/**
+ * Fungsi untuk mengambil FAQ pendaftaran yang dipublikasikan
+ */
+export async function getPublishedAdmissionFaqs() {
+  try {
+    const result = await db
+      .select()
+      .from(admissionFaqs)
+      .where(eq(admissionFaqs.isPublished, true))
+      .orderBy(sql`${admissionFaqs.order} ASC`);
+
+    return result;
+  } catch (error) {
+    console.error('Error fetching admission faqs:', error);
+    return [];
+  }
+}
+
+/**
+ * Fungsi untuk mengambil timeline pendaftaran yang dipublikasikan
+ */
+export async function getPublishedAdmissionTimelines() {
+  try {
+    const result = await db
+      .select()
+      .from(admissionTimelines)
+      .where(eq(admissionTimelines.isPublished, true))
+      .orderBy(sql`${admissionTimelines.order} ASC`);
+
+    return result;
+  } catch (error) {
+    console.error('Error fetching admission timelines:', error);
+    return [];
   }
 }

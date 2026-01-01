@@ -35,6 +35,9 @@ import {
   educationCosts,
   scholarships,
   admissionWaves,
+  admissionRequirements,
+  admissionFaqs,
+  admissionTimelines,
 
 
   // Tabel kemahasiswaan
@@ -101,6 +104,9 @@ async function seedComprehensiveDatabase() {
     await db.delete(educationCosts);
     await db.delete(scholarships);
     await db.delete(admissionWaves);
+    await db.delete(admissionRequirements);
+    await db.delete(admissionFaqs);
+    await db.delete(admissionTimelines);
     await db.delete(studentServices);
     await db.delete(studentOrganizations);
     await db.delete(partners);
@@ -554,9 +560,9 @@ async function seedComprehensiveDatabase() {
     console.log('Mengisi jalur pendaftaran...');
     const admissionPathwayIds = [];
     const admissionPathwaysData = [
-      { name: 'SNBP (Seleksi Nasional Berdasarkan Prestasi)', slug: 'snbp', description: 'Seleksi berdasarkan prestasi akademik dan non-akademik', requirements: 'Rata-rata rapor minimal 8.0\nMemiliki prestasi akademik/non-akademik\nSurat rekomendasi sekolah', registrationStart: new Date('2024-02-01'), registrationEnd: new Date('2024-03-31'), testDate: null, announcementDate: new Date('2024-05-15'), registrationFee: '0', isPublished: true },
-      { name: 'SNBT (Seleksi Nasional Berdasarkan Tes)', slug: 'snbt', description: 'Seleksi berdasarkan hasil tes tertulis UTBK-SNBT', requirements: 'Mengikuti UTBK-SNBT\nNilai UTBK sesuai passing grade\nDokumen kelulusan', registrationStart: new Date('2024-03-01'), registrationEnd: new Date('2024-04-30'), testDate: new Date('2024-06-15'), announcementDate: new Date('2024-07-15'), registrationFee: '200000', isPublished: true },
-      { name: 'Seleksi Mandiri', slug: 'seleksi-mandiri', description: 'Seleksi khusus melalui ujian masuk universitas', requirements: 'Mendaftar melalui portal universitas\nMengikuti ujian seleksi\nWawancara\nDokumen pendukung', registrationStart: new Date('2024-04-01'), registrationEnd: new Date('2024-06-30'), testDate: new Date('2024-07-15'), announcementDate: new Date('2024-07-30'), registrationFee: '300000', isPublished: true }
+      { name: 'SNBP (Seleksi Nasional Berdasarkan Prestasi)', description: 'Seleksi berdasarkan prestasi akademik dan non-akademik', isPublished: true },
+      { name: 'SNBT (Seleksi Nasional Berdasarkan Tes)', description: 'Seleksi berdasarkan hasil tes tertulis UTBK-SNBT', isPublished: true },
+      { name: 'Seleksi Mandiri', description: 'Seleksi khusus melalui ujian masuk universitas', isPublished: true }
     ];
 
     for (const path of admissionPathwaysData) {
@@ -683,6 +689,81 @@ async function seedComprehensiveDatabase() {
     for (const wave of admissionWavesData) {
       await db.insert(admissionWaves).values({
         ...wave,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+    }
+
+
+
+    // Seed tabel syarat umum pendaftaran
+    console.log('Mengisi syarat pendaftaran...');
+    const requirementsData = [
+      "Warga Negara Indonesia (WNI)",
+      "Lulusan SMA/SMK/MA/Sederajat",
+      "Memiliki ijazah atau Surat Keterangan Lulus (SKL)",
+      "Memiliki rapor semester 1-6 dengan nilai memenuhi syarat",
+      "Sehat jasmani dan rohani",
+      "Tidak sedang terdaftar di perguruan tinggi lain"
+    ];
+
+    for (let i = 0; i < requirementsData.length; i++) {
+      await db.insert(admissionRequirements).values({
+        content: requirementsData[i],
+        order: i + 1,
+        isPublished: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+    }
+
+    // Seed tabel FAQ pendaftaran
+    console.log('Mengisi FAQ pendaftaran...');
+    const faqData = [
+      {
+        question: "Bagaimana cara mendaftar?",
+        answer: "Klik tombol 'Daftar Sekarang' di menu pendaftaran, isi formulir secara lengkap, unggah dokumen persyaratan, dan tunggu proses verifikasi."
+      },
+      {
+        question: "Berapa biaya pendaftaran?",
+        answer: "Biaya pendaftaran bervariasi sesuai dengan jalur masuk yang Anda pilih. Anda bisa melihat rincian lengkapnya pada halaman Biaya Pendidikan."
+      },
+      {
+        question: "Kapan pengumuman hasil seleksi?",
+        answer: "Pengumuman hasil seleksi biasanya dilakukan 1 sampai 2 minggu setelah penutupan masa pendaftaran pada gelombang yang bersangkutan."
+      },
+      {
+        question: "Apakah bisa mendaftar jika belum memiliki ijazah?",
+        answer: "Bisa, Anda dapat menggunakan Surat Keterangan Lulus (SKL) atau Surat Keterangan aktif di sekolah sebagai pengganti ijazah sementara."
+      }
+    ];
+
+    for (let i = 0; i < faqData.length; i++) {
+      await db.insert(admissionFaqs).values({
+        ...faqData[i],
+        order: i + 1,
+        isPublished: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+    }
+
+    // Seed tabel timeline pendaftaran
+    console.log('Mengisi timeline pendaftaran...');
+    const timelinesData = [
+      { event: "Pendaftaran Online", statusLabel: "Berlangsung", iconName: "UserPlus" },
+      { event: "Upload Dokumen", statusLabel: "Berlangsung", iconName: "FileText" },
+      { event: "Verifikasi Berkas", statusLabel: "Menunggu", iconName: "ShieldCheck" },
+      { event: "Ujian Seleksi", statusLabel: "Menunggu", iconName: "Zap" },
+      { event: "Pengumuman Hasil", statusLabel: "Menunggu", iconName: "CheckCircle" },
+      { event: "Daftar Ulang", statusLabel: "Menunggu", iconName: "Clock" }
+    ];
+
+    for (let i = 0; i < timelinesData.length; i++) {
+      await db.insert(admissionTimelines).values({
+        ...timelinesData[i],
+        order: i + 1,
+        isPublished: true,
         createdAt: new Date(),
         updatedAt: new Date()
       });

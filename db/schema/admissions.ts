@@ -5,14 +5,7 @@ import { studyPrograms } from "./academic";
 export const admissionPathways = pgTable("admission_pathways", {
     id: uuid("id").defaultRandom().primaryKey(),
     name: text("name").notNull(), // nama jalur masuk
-    slug: text("slug").notNull().unique(),
     description: text("description"),
-    requirements: text("requirements"), // persyaratan
-    registrationStart: timestamp("registration_start").notNull(),
-    registrationEnd: timestamp("registration_end").notNull(),
-    testDate: timestamp("test_date"), // tanggal tes
-    announcementDate: timestamp("announcement_date"), // tanggal pengumuman
-    registrationFee: decimal("registration_fee", { precision: 10, scale: 2 }).default('0'),
     isPublished: boolean("is_published").default(false).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -79,6 +72,39 @@ export const admissionWaves = pgTable("admission_waves", {
     startDate: timestamp("start_date").notNull(), // tanggal mulai
     endDate: timestamp("end_date").notNull(), // tanggal berakhir
     notes: text("notes"), // catatan khusus (e.g. "Termasuk seleksi beasiswa")
+    isPublished: boolean("is_published").default(false).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Tabel syarat umum pendaftaran
+export const admissionRequirements = pgTable("admission_requirements", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    content: text("content").notNull(),
+    order: integer("order").default(0).notNull(),
+    isPublished: boolean("is_published").default(false).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Tabel FAQ pendaftaran
+export const admissionFaqs = pgTable("admission_faqs", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    question: text("question").notNull(),
+    answer: text("answer").notNull(),
+    order: integer("order").default(0).notNull(),
+    isPublished: boolean("is_published").default(false).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Tabel timeline pendaftaran
+export const admissionTimelines = pgTable("admission_timelines", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    event: text("event").notNull(),
+    statusLabel: text("status_label").notNull(),
+    iconName: text("icon_name").default('Clock'),
+    order: integer("order").default(0).notNull(),
     isPublished: boolean("is_published").default(false).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
