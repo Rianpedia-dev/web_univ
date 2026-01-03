@@ -7,3 +7,5 @@ export * from './admissions';
 export * from './studentServices';
 export * from './partnerships';
 export * from './profiles';
+export * from './journals';
+export * from './analytics';

@@ -141,7 +141,8 @@ export default async function AgendaPage({ params }: { params: Promise<{ locale:
                 return (
                   <MotionDiv
                     key={agenda.id}
-                    className="group relative"
+                    id={`event-${agenda.id}`}
+                    className="group relative scroll-mt-24"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.05 * index }}

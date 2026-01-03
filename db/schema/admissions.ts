@@ -5,6 +5,7 @@ import { studyPrograms } from "./academic";
 export const admissionPathways = pgTable("admission_pathways", {
     id: uuid("id").defaultRandom().primaryKey(),
     name: text("name").notNull(), // nama jalur masuk
+    slug: text("slug").notNull().unique(),
     description: text("description"),
     isPublished: boolean("is_published").default(false).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),

@@ -619,11 +619,13 @@ export async function getPublishedEducationCosts() {
         studyProgramId: educationCosts.studyProgramId,
         studyProgramName: studyPrograms.name,
         classId: educationCosts.classId,
-        costType: sql<string>`CASE 
+        pathwayId: educationCosts.pathwayId,
+        costType: educationCosts.costType,
+        costTypeName: sql<string>`CASE 
           WHEN ${educationCosts.costType} = 'tuition' THEN 'UKT (Uang Kuliah Tunggal)'
           WHEN ${educationCosts.costType} = 'registration' THEN 'Biaya Pendaftaran'
           ELSE 'Biaya Lainnya'
-        END`.as('cost_type'),
+        END`.as('cost_type_name'),
         year: educationCosts.year,
         semester: educationCosts.semester,
         amount: educationCosts.amount,

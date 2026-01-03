@@ -18,12 +18,15 @@ import {
 } from "lucide-react";
 import { MotionDiv } from "@/components/motion-wrapper";
 import { Badge } from "@/components/ui/badge";
-import { getPublishedAcademicCalendar } from '@/lib/db';
+import { getPublishedAcademicCalendar, getPublishedUniversityProfile } from '@/lib/db';
+import { AcademicCalendarDownload } from "@/components/AcademicCalendarDownload";
 
 export default async function KalenderAkademikPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   // Ambil data dari database
   const calendarData = await getPublishedAcademicCalendar();
+  const universityProfileResult = await getPublishedUniversityProfile();
+  const universityLogo = universityProfileResult?.[0]?.logo || null;
 
   // Kelompokkan berdasarkan tahun akademik dan semester
   const groupedCalendar = calendarData.reduce((acc, item) => {
@@ -58,28 +61,7 @@ export default async function KalenderAkademikPage({ params }: { params: Promise
     return `${formatDate(startDate)} - ${formatDate(endDate)}`;
   };
 
-  // Fungsi untuk warna badge berdasarkan tipe event
-  const getEventTypeColor = (eventType: string | null) => {
-    switch (eventType?.toLowerCase()) {
-      case 'pendaftaran':
-      case 'registrasi':
-        return 'bg-green-500 hover:bg-green-600';
-      case 'perkuliahan':
-      case 'kuliah':
-        return 'bg-cyber-blue hover:bg-cyber-blue/80';
-      case 'ujian':
-      case 'uts':
-      case 'uas':
-        return 'bg-red-500 hover:bg-red-600';
-      case 'libur':
-      case 'cuti':
-        return 'bg-yellow-500 hover:bg-yellow-600';
-      case 'wisuda':
-        return 'bg-purple-500 hover:bg-purple-600';
-      default:
-        return 'bg-gray-500 hover:bg-gray-600';
-    }
-  };
+
 
   // Hitung statistik
   const totalEvents = calendarData.length;
@@ -179,10 +161,7 @@ export default async function KalenderAkademikPage({ params }: { params: Promise
         >
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold text-foreground">Jadwal Kegiatan Akademik</h2>
-            <Button variant="outline" className="border-cyber-blue text-cyber-blue hover:bg-cyber-blue/10">
-              <Download className="w-4 h-4 mr-2" />
-              Download Kalender
-            </Button>
+            <AcademicCalendarDownload calendarData={calendarData} universityLogo={universityLogo} />
           </div>
 
           {semesters.length > 0 ? (
@@ -223,11 +202,7 @@ export default async function KalenderAkademikPage({ params }: { params: Promise
                               <Clock className="w-4 h-4 text-electric-purple" />
                               <span>{formatDateRange(event.startDate, event.endDate)}</span>
                             </div>
-                            {event.eventType && (
-                              <Badge className={getEventTypeColor(event.eventType)}>
-                                {event.eventType}
-                              </Badge>
-                            )}
+
                           </div>
                         </div>
                       ))}

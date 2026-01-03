@@ -86,11 +86,12 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
       ]
     },
     {
-      title: locale === 'id' ? "Kerjasama" : "Partnership",
+      title: locale === 'id' ? "Riset & Kerjasama" : "Research & Partnership",
       href: `/${locale}/kerjasama/partnership`, // Redirect to first submenu
       icon: Handshake,
       submenu: [
         { title: locale === 'id' ? "Partnership" : "Partnership", href: `/${locale}/kerjasama/partnership` },
+        { title: locale === 'id' ? "Jurnal" : "Journal", href: `/${locale}/kerjasama/jurnal` },
       ]
     },
   ];

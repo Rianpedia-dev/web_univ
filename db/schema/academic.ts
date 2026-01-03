@@ -51,7 +51,7 @@ export const academicCalendar = pgTable("academic_calendar", {
             'finalterm', 'holiday', 'break', 'thesis_deadline',
             'graduation', 'other'
         ]
-    }).notNull(),
+    }),
     academicYear: text("academic_year").notNull(), // misalnya: 2023/2024
     semester: text("semester", { enum: ['Ganjil', 'Genap'] }).notNull(),
     isPublished: boolean("is_published").default(false).notNull(),

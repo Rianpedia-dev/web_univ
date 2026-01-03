@@ -18,6 +18,7 @@
     "db:dev-down": "docker compose --profile dev down postgres-dev",
     "db:reset": "drizzle-kit drop && drizzle-kit push",
     "db:seed": "tsx scripts/seed-comprehensive.ts",
+    "db:seed:journals": "tsx scripts/seed-journals.ts",
     "docker:build": "docker build -t codeguide-starter-fullstack .",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",

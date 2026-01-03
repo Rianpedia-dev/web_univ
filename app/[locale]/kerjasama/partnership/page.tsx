@@ -54,9 +54,6 @@ export default async function PartnershipPage() {
               }}>
                 Kemitraan & Kerjasama
               </h1>
-              <p className="text-lg md:text-xl text-foreground max-w-2xl mx-auto font-medium">
-                Kemitraan strategis dengan berbagai institusi dalam dan luar negeri
-              </p>
             </div>
           </div>
         </div>

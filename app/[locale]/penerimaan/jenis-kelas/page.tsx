@@ -63,6 +63,17 @@ export default async function JenisKelasPage({ params }: { params: Promise<{ loc
         }
     };
 
+    const getTargetLabel = (name: string) => {
+        if (name.toLowerCase().includes('pagi')) return 'Mahasiswa Fresh Graduate';
+        if (name.toLowerCase().includes('sore')) return 'Mahasiswa & Pekerja Part-time';
+        if (name.toLowerCase().includes('jumat-sabtu') || name.toLowerCase().includes('karyawan') || name.toLowerCase().includes('eksekutif')) return 'Profesional & Karyawan';
+        return 'Semua Kalangan';
+    };
+
+    const getModalityLabel = (type: string) => {
+        return type === 'online' ? 'Online/Hybrid' : 'Tatap Muka';
+    };
+
     return (
         <div className="min-h-screen bg-background overflow-hidden relative">
             {/* Animated background grid */}
@@ -206,35 +217,20 @@ export default async function JenisKelasPage({ params }: { params: Promise<{ loc
                                                         <Clock className="w-4 h-4 mr-2 text-cyber-blue" />
                                                         Jadwal
                                                     </span>
-                                                    <p className="font-semibold text-foreground">{kelasItem.schedule || 'Fleksibel'}</p>
+                                                    <p className="font-semibold text-foreground">
+                                                        {kelasItem.schedule?.split(', ')[0] || 'Fleksibel'}
+                                                    </p>
                                                 </div>
                                                 <div className="bg-muted/30 rounded-xl p-4">
                                                     <span className="text-sm text-muted-foreground flex items-center mb-1">
                                                         <Calendar className="w-4 h-4 mr-2 text-electric-purple" />
                                                         Durasi
                                                     </span>
-                                                    <p className="font-semibold text-foreground">Per Semester</p>
+                                                    <p className="font-semibold text-foreground">
+                                                        {kelasItem.schedule?.split(', ')[1] || 'Sesuai Jadwal'}
+                                                    </p>
                                                 </div>
                                             </div>
-
-                                            {kelasItem.requirements && (
-                                                <div className="mb-6">
-                                                    <h4 className="font-semibold text-foreground mb-3 flex items-center">
-                                                        <FileText className="w-4 h-4 mr-2 text-cyber-blue" />
-                                                        Keterangan:
-                                                    </h4>
-                                                    <ul className="space-y-2">
-                                                        {kelasItem.requirements.split('\n').map((syarat, idx) => (
-                                                            <li key={idx} className="flex items-start">
-                                                                <CheckCircle className="w-4 h-4 text-cyber-blue mt-0.5 mr-2 flex-shrink-0" />
-                                                                <span className="text-sm text-muted-foreground">{syarat}</span>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            )}
-
-
                                         </div>
                                     </MotionDiv>
                                 );
@@ -268,50 +264,33 @@ export default async function JenisKelasPage({ params }: { params: Promise<{ loc
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr className="border-b border-white/5 hover:bg-muted/30">
-                                    <td className="p-4">
-                                        <div className="flex items-center">
-                                            <Sun className="w-5 h-5 text-yellow-500 mr-2" />
-                                            <span className="font-medium text-foreground">Kelas Reguler Pagi</span>
-                                        </div>
-                                    </td>
-                                    <td className="p-4 text-muted-foreground">Senin - Jumat, 08:00 - 16:00</td>
-                                    <td className="p-4 text-muted-foreground">Mahasiswa Fresh Graduate</td>
-                                    <td className="p-4"><Badge variant="outline" className="border-green-500/50 text-green-400">Tatap Muka</Badge></td>
-                                </tr>
-                                <tr className="border-b border-white/5 hover:bg-muted/30">
-                                    <td className="p-4">
-                                        <div className="flex items-center">
-                                            <Moon className="w-5 h-5 text-purple-500 mr-2" />
-                                            <span className="font-medium text-foreground">Kelas Reguler Sore</span>
-                                        </div>
-                                    </td>
-                                    <td className="p-4 text-muted-foreground">Senin - Jumat, 16:00 - 21:00</td>
-                                    <td className="p-4 text-muted-foreground">Mahasiswa yang bekerja part-time</td>
-                                    <td className="p-4"><Badge variant="outline" className="border-green-500/50 text-green-400">Tatap Muka</Badge></td>
-                                </tr>
-                                <tr className="border-b border-white/5 hover:bg-muted/30">
-                                    <td className="p-4">
-                                        <div className="flex items-center">
-                                            <Briefcase className="w-5 h-5 text-orange-500 mr-2" />
-                                            <span className="font-medium text-foreground">Kelas Karyawan</span>
-                                        </div>
-                                    </td>
-                                    <td className="p-4 text-muted-foreground">Sabtu - Minggu, 08:00 - 16:00</td>
-                                    <td className="p-4 text-muted-foreground">Profesional & Karyawan</td>
-                                    <td className="p-4"><Badge variant="outline" className="border-green-500/50 text-green-400">Tatap Muka</Badge></td>
-                                </tr>
-                                <tr className="hover:bg-muted/30">
-                                    <td className="p-4">
-                                        <div className="flex items-center">
-                                            <Monitor className="w-5 h-5 text-blue-500 mr-2" />
-                                            <span className="font-medium text-foreground">Kelas Online/Hybrid</span>
-                                        </div>
-                                    </td>
-                                    <td className="p-4 text-muted-foreground">Fleksibel</td>
-                                    <td className="p-4 text-muted-foreground">Semua kalangan</td>
-                                    <td className="p-4"><Badge variant="outline" className="border-blue-500/50 text-blue-400">Online/Hybrid</Badge></td>
-                                </tr>
+                                {classesData.map((kelasItem) => {
+                                    const IconComponent = getClassIcon(kelasItem.type);
+                                    const modality = getModalityLabel(kelasItem.type);
+                                    return (
+                                        <tr key={kelasItem.id} className="border-b border-white/5 hover:bg-muted/30 transition-colors">
+                                            <td className="p-4">
+                                                <div className="flex items-center">
+                                                    <IconComponent className="w-5 h-5 text-cyber-blue mr-2" />
+                                                    <span className="font-medium text-foreground">{kelasItem.name}</span>
+                                                </div>
+                                            </td>
+                                            <td className="p-4 text-muted-foreground whitespace-nowrap">{kelasItem.schedule}</td>
+                                            <td className="p-4 text-muted-foreground">{getTargetLabel(kelasItem.name)}</td>
+                                            <td className="p-4">
+                                                <Badge
+                                                    variant="outline"
+                                                    className={modality === 'Tatap Muka'
+                                                        ? "border-green-500/50 text-green-400"
+                                                        : "border-blue-500/50 text-blue-400"
+                                                    }
+                                                >
+                                                    {modality}
+                                                </Badge>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>

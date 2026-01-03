@@ -15,6 +15,7 @@ const tableMap: Record<string, any> = {
     careerProspects: schema.careerProspects,
     academicCalendar: schema.academicCalendar,
     campusFacilities: schema.campusFacilities,
+    journals: schema.journals,
 
 
     // Admissions

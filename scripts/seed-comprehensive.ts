@@ -439,12 +439,82 @@ async function seedComprehensiveDatabase() {
         isPublished: true
       },
       {
-        title: 'Wisuda Periode I Tahun 2024',
-        description: 'Upacara pengukuhan lulusan universitas periode pertama.',
-        startDate: new Date('2024-05-25'),
-        endDate: new Date('2024-05-25'),
+        title: 'Awal Perkuliahan Semester Genap',
+        description: 'Hari pertama perkuliahan efektif semester genap.',
+        startDate: new Date('2025-02-17'),
+        endDate: new Date('2025-02-17'),
+        eventType: 'classes_start' as const,
+        academicYear: '2024/2025',
+        semester: 'Genap' as const,
+        isPublished: true
+      },
+      {
+        title: 'Ujian Tengah Semester (UTS) Genap',
+        description: 'Pelaksanaan evaluasi tengah semester genap.',
+        startDate: new Date('2025-04-14'),
+        endDate: new Date('2025-04-25'),
+        eventType: 'midterm' as const,
+        academicYear: '2024/2025',
+        semester: 'Genap' as const,
+        isPublished: true
+      },
+      {
+        title: 'Ujian Akhir Semester (UAS) Genap',
+        description: 'Pelaksanaan evaluasi akhir semester genap.',
+        startDate: new Date('2025-06-23'),
+        endDate: new Date('2025-07-04'),
+        eventType: 'finalterm' as const,
+        academicYear: '2024/2025',
+        semester: 'Genap' as const,
+        isPublished: true
+      },
+      {
+        title: 'Libur Semester Genap',
+        description: 'Masa libur akademik setelah pelaksanaan UAS Genap.',
+        startDate: new Date('2025-07-07'),
+        endDate: new Date('2025-08-15'),
+        eventType: 'break' as const,
+        academicYear: '2024/2025',
+        semester: 'Genap' as const,
+        isPublished: true
+      },
+      {
+        title: 'Batas Akhir Penyerahan Skripsi',
+        description: 'Batas akhir pengumpulan revisi skripsi untuk periode wisuda.',
+        startDate: new Date('2025-08-20'),
+        endDate: new Date('2025-08-20'),
+        eventType: 'thesis_deadline' as const,
+        academicYear: '2024/2025',
+        semester: 'Genap' as const,
+        isPublished: true
+      },
+      {
+        title: 'Praktek Kerja Lapangan (PKL)',
+        description: 'Periode pelaksanaan PKL bagi mahasiswa semester akhir.',
+        startDate: new Date('2025-07-14'),
+        endDate: new Date('2025-08-30'),
+        eventType: 'other' as const,
+        academicYear: '2024/2025',
+        semester: 'Genap' as const,
+        isPublished: true
+      },
+      {
+        title: 'Wisuda Periode I Tahun 2025',
+        description: 'Upacara pengukuhan lulusan universitas periode pertama tahun 2025.',
+        startDate: new Date('2025-05-24'),
+        endDate: new Date('2025-05-24'),
         eventType: 'graduation' as const,
-        academicYear: '2023/2024',
+        academicYear: '2024/2025',
+        semester: 'Genap' as const,
+        isPublished: true
+      },
+      {
+        title: 'Wisuda Periode II Tahun 2025',
+        description: 'Upacara pengukuhan lulusan universitas periode kedua tahun 2025.',
+        startDate: new Date('2025-11-29'),
+        endDate: new Date('2025-11-29'),
+        eventType: 'graduation' as const,
+        academicYear: '2024/2025',
         semester: 'Genap' as const,
         isPublished: true
       }
@@ -473,7 +543,8 @@ async function seedComprehensiveDatabase() {
         contactPerson: 'Dra. Siti Aminah, M.Lib.',
         contactPhone: '021-1234567-101',
         isAvailable: true,
-        isPublished: true
+        isPublished: true,
+        image: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=800&auto=format&fit=crop'
       },
       {
         name: 'Laboratorium Rekayasa Perangkat Lunak',
@@ -487,7 +558,8 @@ async function seedComprehensiveDatabase() {
         contactPerson: 'Eko Prasetyo, S.Kom.',
         contactPhone: '0812-9876-5432',
         isAvailable: true,
-        isPublished: true
+        isPublished: true,
+        image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=800&auto=format&fit=crop'
       },
       {
         name: 'Gedung Olahraga (GOR) Serbaguna',
@@ -501,7 +573,8 @@ async function seedComprehensiveDatabase() {
         contactPerson: 'Budi Darmawan, S.Pd.',
         contactPhone: '0813-1122-3344',
         isAvailable: true,
-        isPublished: true
+        isPublished: true,
+        image: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?q=80&w=800&auto=format&fit=crop'
       },
       {
         name: 'Asrama Mahasiswa (Wisma Ganesha)',
@@ -515,7 +588,8 @@ async function seedComprehensiveDatabase() {
         contactPerson: 'Hj. Rohaya',
         contactPhone: '0852-4455-6677',
         isAvailable: true,
-        isPublished: true
+        isPublished: true,
+        image: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?q=80&w=800&auto=format&fit=crop'
       },
       {
         name: 'Poliklinik Universitas',
@@ -529,7 +603,8 @@ async function seedComprehensiveDatabase() {
         contactPerson: 'dr. Hendra Saputra',
         contactPhone: '021-1234567-202',
         isAvailable: true,
-        isPublished: true
+        isPublished: true,
+        image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=800&auto=format&fit=crop'
       },
       {
         name: 'Auditorium Graha Cendekia',
@@ -543,14 +618,74 @@ async function seedComprehensiveDatabase() {
         contactPerson: 'Andini Putri, S.E.',
         contactPhone: '0878-0099-8877',
         isAvailable: true,
-        isPublished: true
+        isPublished: true,
+        image: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=800&auto=format&fit=crop'
+      },
+      {
+        name: 'Kantin Pusat & Food Court',
+        slug: 'kantin-pusat',
+        description: 'Area kuliner dengan berbagai pilihan makanan sehat dan ekonomis.',
+        type: 'other' as const,
+        location: 'Samping Gedung Perpustakaan',
+        capacity: 300,
+        facilities: 'Kios Makanan, Area Duduk Nyaman, Wastafel, TV Digital',
+        operatingHours: '07:00 - 17:00',
+        contactPerson: 'Pak Sugeng',
+        contactPhone: '0812-3344-5566',
+        isAvailable: true,
+        isPublished: true,
+        image: 'https://images.unsplash.com/photo-1567521464027-f127ff144326?q=80&w=800&auto=format&fit=crop'
+      },
+      {
+        name: 'Masjid Ulil Albab',
+        slug: 'masjid-kampus',
+        description: 'Pusat kegiatan keagamaan dan ibadah bagi civitas akademika muslim.',
+        type: 'other' as const,
+        location: 'Area Gerbang Selatan',
+        capacity: 2000,
+        facilities: 'Ruang Shalat Luas, Tempat Wudhu Bersih, Perpustakaan Islam, AC',
+        operatingHours: '24 Jam',
+        contactPerson: 'Ustadz Mansyur',
+        contactPhone: '0811-2233-4455',
+        isAvailable: true,
+        isPublished: true,
+        image: 'https://images.unsplash.com/photo-1564769662533-4f00a87b4056?q=80&w=800&auto=format&fit=crop'
+      },
+      {
+        name: 'Startup Hub & Coworking Space',
+        slug: 'startup-hub',
+        description: 'Inkubator bisnis dan ruang kolaborasi kreatif bagi mahasiswa.',
+        type: 'other' as const,
+        location: 'Gedung Inovasi Lantai 1',
+        capacity: 150,
+        facilities: 'High-speed Internet, Meeting Room, Bean Bags, Coffee Machine',
+        operatingHours: '08:00 - 22:00',
+        contactPerson: 'Rizky Fadilah',
+        contactPhone: '0857-1122-3344',
+        isAvailable: true,
+        isPublished: true,
+        image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format&fit=crop'
+      },
+      {
+        name: 'Taman Digital (Open Space)',
+        slug: 'taman-digital',
+        description: 'Taman terbuka hijau yang dilengkapi dengan akses internet cepat untuk belajar luar ruangan.',
+        type: 'other' as const,
+        location: 'Pusat Area Kampus',
+        capacity: 200,
+        facilities: 'Area Hijau, Bangku Taman, Outdoor WiFi, Solar Charging station',
+        operatingHours: '24 Jam',
+        contactPerson: 'Bp. Sumantri',
+        contactPhone: '0899-8877-6655',
+        isAvailable: true,
+        isPublished: true,
+        image: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=800&auto=format&fit=crop'
       }
     ];
 
     for (const item of campusFacilitiesData) {
       await db.insert(campusFacilities).values({
         ...item,
-        image: `https://api.dicebear.com/7.x/identicon/svg?seed=${item.slug}`,
         createdAt: new Date(),
         updatedAt: new Date()
       });
@@ -560,9 +695,8 @@ async function seedComprehensiveDatabase() {
     console.log('Mengisi jalur pendaftaran...');
     const admissionPathwayIds = [];
     const admissionPathwaysData = [
-      { name: 'SNBP (Seleksi Nasional Berdasarkan Prestasi)', description: 'Seleksi berdasarkan prestasi akademik dan non-akademik', isPublished: true },
-      { name: 'SNBT (Seleksi Nasional Berdasarkan Tes)', description: 'Seleksi berdasarkan hasil tes tertulis UTBK-SNBT', isPublished: true },
-      { name: 'Seleksi Mandiri', description: 'Seleksi khusus melalui ujian masuk universitas', isPublished: true }
+      { name: 'Mahasiswa Murni', slug: 'mahasiswa-murni', description: 'Jalur masuk untuk calon mahasiswa baru lulusan SMA/SMK/MA/Sederajat', isPublished: true },
+      { name: 'Mahasiswa Transisi', slug: 'mahasiswa-transisi', description: 'Jalur masuk untuk mahasiswa pindahan atau alih jenjang dari perguruan tinggi lain', isPublished: true }
     ];
 
     for (const path of admissionPathwaysData) {
@@ -578,9 +712,9 @@ async function seedComprehensiveDatabase() {
     console.log('Mengisi kelas pendaftaran...');
     const classIds = [];
     const classesData = [
-      { name: 'Reguler', slug: 'reguler', description: 'Kelas reguler untuk mahasiswa aktif', type: 'reguler' as const, schedule: 'Senin - Jumat, 08:00 - 16:00', requirements: 'Lulus seleksi masuk', quota: 200, isPublished: true },
-      { name: 'Karyawan', slug: 'karyawan', description: 'Kelas khusus untuk karyawan', type: 'executive' as const, schedule: 'Sabtu - Minggu, 08:00 - 16:00', requirements: 'Karyawan aktif, surat rekomendasi kerja', quota: 100, isPublished: true },
-      { name: 'Online', slug: 'online', description: 'Kelas online untuk mahasiswa jarak jauh', type: 'online' as const, schedule: 'Online, fleksibel', requirements: 'Akses internet stabil', quota: 150, isPublished: true }
+      { name: 'Kelas A Pagi', slug: 'kelas-a-pagi', description: 'Kelas reguler dengan jadwal perkuliahan pagi hari', type: 'reguler' as const, schedule: 'Senin - Jumat, 08:00 - 12:00', requirements: 'Lulus seleksi masuk', quota: 200, isPublished: true },
+      { name: 'Kelas A Sore', slug: 'kelas-a-sore', description: 'Kelas reguler dengan jadwal perkuliahan sore hari', type: 'reguler' as const, schedule: 'Senin - Jumat, 13:00 - 17:00', requirements: 'Lulus seleksi masuk', quota: 150, isPublished: true },
+      { name: 'Kelas B Jumat-Sabtu', slug: 'kelas-b-jumat-sabtu', description: 'Kelas khusus untuk mahasiswa yang bekerja dengan jadwal akhir pekan', type: 'executive' as const, schedule: 'Jumat 13:00 - 17:00, Sabtu 08:00 - 16:00', requirements: 'Lulus seleksi masuk', quota: 100, isPublished: true }
     ];
 
     for (const cls of classesData) {
@@ -594,23 +728,25 @@ async function seedComprehensiveDatabase() {
 
     // Seed tabel biaya pendidikan
     console.log('Mengisi biaya pendidikan...');
-    const costTypes = [
-      { type: 'tuition' as const, name: 'Uang Kuliah Tunggal (UKT)', baseAmount: 5000000 },
-      { type: 'registration' as const, name: 'Sumbangan Pengembangan Institusi (SPI)', baseAmount: 15000000 },
-      { type: 'other' as const, name: 'Biaya Kemahasiswaan & Praktikum', baseAmount: 1500000 },
-      { type: 'other' as const, name: 'Biaya Orientasi Mahasiswa (PKKMB)', baseAmount: 750000 },
-      { type: 'other' as const, name: 'Biaya Perpustakaan & Digital Library', baseAmount: 500000 },
-      { type: 'other' as const, name: 'Biaya Asuransi Kecelakaan Mahasiswa', baseAmount: 150000 },
-      { type: 'other' as const, name: 'Biaya Jaket Almamater & Atribut', baseAmount: 850000 },
-      { type: 'other' as const, name: 'Biaya Kartu Tanda Mahasiswa (KTM) RFID', baseAmount: 125000 }
+
+    // Biaya umum untuk semua jalur
+    const commonCostTypes = [
+      { type: 'registration' as const, name: 'Biaya Registrasi', baseAmount: 500000 },
+      { type: 'other' as const, name: 'Biaya PKKMB', baseAmount: 750000 },
+      { type: 'tuition' as const, name: 'Biaya UKT', baseAmount: 5000000 }
     ];
+
+    // Biaya khusus untuk Mahasiswa Transisi
+    const transitionCostType = { type: 'other' as const, name: 'Biaya Konversi', baseAmount: 1500000 };
 
     for (const studyProgramId of studyProgramIds) {
       for (const classId of classIds) {
-        for (const pathwayId of admissionPathwayIds) {
-          for (const item of costTypes) {
-            // Berikan variasi harga sedikit berdasarkan prodi dan kelas
-            const variation = faker.number.int({ min: -500000, max: 2000000, multipleOf: 100000 });
+        for (let pathwayIndex = 0; pathwayIndex < admissionPathwayIds.length; pathwayIndex++) {
+          const pathwayId = admissionPathwayIds[pathwayIndex];
+
+          // Masukkan biaya umum untuk semua jalur
+          for (const item of commonCostTypes) {
+            const variation = faker.number.int({ min: -200000, max: 500000, multipleOf: 100000 });
             await db.insert(educationCosts).values({
               studyProgramId,
               classId,
@@ -620,6 +756,24 @@ async function seedComprehensiveDatabase() {
               semester: item.type === 'tuition' ? 'Ganjil' : null,
               amount: (item.baseAmount + variation).toString(),
               description: `${item.name} TA 2026/2027`,
+              isPublished: true,
+              createdAt: new Date(),
+              updatedAt: new Date()
+            });
+          }
+
+          // Tambahkan Biaya Konversi hanya untuk jalur Mahasiswa Transisi (index 1)
+          if (pathwayIndex === 1) {
+            const variation = faker.number.int({ min: -200000, max: 500000, multipleOf: 100000 });
+            await db.insert(educationCosts).values({
+              studyProgramId,
+              classId,
+              pathwayId,
+              costType: transitionCostType.type,
+              year: '2026/2027',
+              semester: null,
+              amount: (transitionCostType.baseAmount + variation).toString(),
+              description: `${transitionCostType.name} TA 2026/2027`,
               isPublished: true,
               createdAt: new Date(),
               updatedAt: new Date()
@@ -934,7 +1088,7 @@ async function seedComprehensiveDatabase() {
       mission: 'Menyelenggarakan pendidikan, penelitian, dan pengabdian kepada masyarakat di bidang teknologi yang unggul dan berdaya saing global.',
       values: 'Integritas, Inovasi, Kolaborasi, Kemandirian',
       history: 'Berdiri sejak tahun 1995 dengan fokus pada pengembangan teknologi informasi dan komunikasi. Kini berkembang menjadi universitas teknologi terkemuka.',
-      logo: 'https://www.nicepng.com/png/full/912-9125490_yale-university-logo-png.png',
+      logo: '/images/logo_univ.png',
       establishedYear: 1995,
       motto: 'Menggapai Masa Depan dengan Akal Budi dan Kecerdasan Buatan Membangun Peradaban Digital yang Beretika, Inklusif, dan Berkelanjutan',
       colors: JSON.stringify({ primary: '#00f0ff', secondary: '#b376ff', accent: '#39ff14' }),

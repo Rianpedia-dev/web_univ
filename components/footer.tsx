@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { GraduationCap, MapPin, Phone, Mail, Globe, Facebook, Twitter, Instagram, Youtube, Zap, Shield, TrendingUp } from "lucide-react";
 import { SimpleThemeToggle } from "@/components/theme-toggle";
+import { VisitorCounter } from "@/components/visitor-counter";
 
 export function Footer({ locale = 'id' }: { locale?: string }) {
   const quickLinks = [
@@ -131,18 +132,7 @@ export function Footer({ locale = 'id' }: { locale?: string }) {
               </p>
             </div>
             <div className="flex items-center gap-6 text-sm text-foreground/50">
-              <Link href={`/${locale}/privacy-policy`} className="hover:text-cyber-blue transition-colors">
-                Kebijakan Privasi
-              </Link>
-              <Link href={`/${locale}/terms-of-service`} className="hover:text-cyber-blue transition-colors">
-                Syarat Layanan
-              </Link>
-              <Link href={`/${locale}/sitemap`} className="hover:text-cyber-blue transition-colors">
-                Peta Situs
-              </Link>
-              <Link href="/sign-in" className="hover:text-cyber-blue transition-colors font-medium">
-                Admin Login
-              </Link>
+              <VisitorCounter />
             </div>
           </div>
         </div>
