@@ -38,7 +38,8 @@ import {
   studentServiceContacts,
   admissionRequirements,
   admissionFaqs,
-  admissionTimelines
+  admissionTimelines,
+  admissionStaff
 } from '@/db/schema';
 import { eq, and, or, sql } from 'drizzle-orm';
 
@@ -1151,6 +1152,24 @@ export async function getPublishedAdmissionTimelines() {
     return result;
   } catch (error) {
     console.error('Error fetching admission timelines:', error);
+    return [];
+  }
+}
+
+/**
+ * Fungsi untuk mengambil data Tim PMB yang dipublikasikan
+ */
+export async function getPublishedAdmissionStaff() {
+  try {
+    const result = await db
+      .select()
+      .from(admissionStaff)
+      .where(eq(admissionStaff.isPublished, true))
+      .orderBy(sql`${admissionStaff.order} ASC`);
+
+    return result;
+  } catch (error) {
+    console.error('Error fetching admission staff:', error);
     return [];
   }
 }

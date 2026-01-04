@@ -38,6 +38,7 @@ import {
   admissionRequirements,
   admissionFaqs,
   admissionTimelines,
+  admissionStaff,
 
 
   // Tabel kemahasiswaan
@@ -120,6 +121,7 @@ async function seedComprehensiveDatabase() {
     await db.delete(socialMediaLinks);
     await db.delete(careerProspects);
     await db.delete(studentServiceContacts);
+    await db.delete(admissionStaff);
 
 
     // Seed tabel user (hanya admin tetap)
@@ -852,18 +854,49 @@ async function seedComprehensiveDatabase() {
 
     // Seed tabel syarat umum pendaftaran
     console.log('Mengisi syarat pendaftaran...');
-    const requirementsData = [
+
+    // Syarat untuk Mahasiswa Murni (Fresh Graduate)
+    const requirementsMurni = [
       "Warga Negara Indonesia (WNI)",
       "Lulusan SMA/SMK/MA/Sederajat",
       "Memiliki ijazah atau Surat Keterangan Lulus (SKL)",
       "Memiliki rapor semester 1-6 dengan nilai memenuhi syarat",
       "Sehat jasmani dan rohani",
-      "Tidak sedang terdaftar di perguruan tinggi lain"
+      "Tidak sedang terdaftar di perguruan tinggi lain",
+      "Pas foto berwarna terbaru ukuran 3x4 (2 lembar)",
+      "Fotokopi Kartu Keluarga (KK)",
+      "Fotokopi KTP atau Kartu Pelajar"
     ];
 
-    for (let i = 0; i < requirementsData.length; i++) {
+    for (let i = 0; i < requirementsMurni.length; i++) {
       await db.insert(admissionRequirements).values({
-        content: requirementsData[i],
+        type: 'murni' as const,
+        content: requirementsMurni[i],
+        order: i + 1,
+        isPublished: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+    }
+
+    // Syarat untuk Mahasiswa Transisi (Pindahan/Alih Jenjang)
+    const requirementsTransisi = [
+      "Warga Negara Indonesia (WNI)",
+      "Terdaftar sebagai mahasiswa aktif di perguruan tinggi asal",
+      "Surat pengantar pindah dari perguruan tinggi asal",
+      "Transkrip nilai sementara dengan minimal 20 SKS dan IPK >= 2.50",
+      "Fotokopi ijazah SMA/SMK/MA/Sederajat yang telah dilegalisir",
+      "Silabus mata kuliah yang telah ditempuh (untuk konversi SKS)",
+      "Surat keterangan bebas masalah administrasi dari PT asal",
+      "Pas foto berwarna terbaru ukuran 3x4 (2 lembar)",
+      "Fotokopi Kartu Keluarga (KK)",
+      "Fotokopi KTP"
+    ];
+
+    for (let i = 0; i < requirementsTransisi.length; i++) {
+      await db.insert(admissionRequirements).values({
+        type: 'transisi' as const,
+        content: requirementsTransisi[i],
         order: i + 1,
         isPublished: true,
         createdAt: new Date(),
@@ -1085,7 +1118,8 @@ async function seedComprehensiveDatabase() {
       slug: 'universitas-rianpedia',
       shortName: 'UR',
       vision: 'Menjadi universitas teknologi terkemuka di Asia Tenggara yang berkontribusi dalam kemajuan ilmu pengetahuan dan teknologi.',
-      mission: 'Menyelenggarakan pendidikan, penelitian, dan pengabdian kepada masyarakat di bidang teknologi yang unggul dan berdaya saing global.',
+      mission: 'Menyelenggarakan pendidikan tinggi berkualitas global untuk menghasilkan lulusan kompeten.\nMelaksanakan penelitian inovatif yang memberikan kontribusi nyata bagi masyarakat.\nMengimplementasikan pengabdian masyarakat berbasis teknologi tepat guna.\nMembangun kerjasama strategis dengan industri dan institusi internasional.',
+      objectives: 'Universitas bertujuan untuk menghasilkan lulusan yang unggul, inovatif, dan berintegritas tinggi serta mampu memberikan solusi bagi tantangan global di masa depan.',
       values: 'Integritas, Inovasi, Kolaborasi, Kemandirian',
       history: 'Berdiri sejak tahun 1995 dengan fokus pada pengembangan teknologi informasi dan komunikasi. Kini berkembang menjadi universitas teknologi terkemuka.',
       logo: '/images/logo_univ.png',
@@ -1475,6 +1509,42 @@ async function seedComprehensiveDatabase() {
     for (const contact of studentServiceContactsData) {
       await db.insert(studentServiceContacts).values({
         ...contact,
+        isPublished: true,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      });
+    }
+
+    // Seed tabel Tim PMB
+    console.log('Mengisi data tim PMB...');
+    const admissionStaffData = [
+      {
+        name: 'Siska Amanda, S.Kom.',
+        position: 'Admin PMB Utama',
+        whatsapp: '081234567890',
+        email: 'siska.amanda@university.ac.id',
+        order: 1
+      },
+      {
+        name: 'Andi Wijaya, M.M.',
+        position: 'Koordinator Pendaftaran',
+        whatsapp: '082345678901',
+        email: 'andi.wijaya@university.ac.id',
+        order: 2
+      },
+      {
+        name: 'Rina Putri, S.Pd.',
+        position: 'Staf Layanan Informasi',
+        whatsapp: '083456789012',
+        email: 'rina.putri@university.ac.id',
+        order: 3
+      }
+    ];
+
+    for (const staff of admissionStaffData) {
+      await db.insert(admissionStaff).values({
+        ...staff,
+        image: `https://api.dicebear.com/7.x/avataaars/svg?seed=${staff.name}`,
         isPublished: true,
         createdAt: new Date(),
         updatedAt: new Date()

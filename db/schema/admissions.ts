@@ -64,8 +64,19 @@ export const scholarships = pgTable("scholarships", {
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-
-
+// Tabel Tim PMB
+export const admissionStaff = pgTable("admission_staff", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    name: text("name").notNull(),
+    position: text("position").notNull(),
+    image: text("image"),
+    whatsapp: text("whatsapp"),
+    email: text("email"),
+    order: integer("order").default(0).notNull(),
+    isPublished: boolean("is_published").default(false).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
 // Tabel gelombang pendaftaran
 export const admissionWaves = pgTable("admission_waves", {
     id: uuid("id").defaultRandom().primaryKey(),
@@ -81,6 +92,7 @@ export const admissionWaves = pgTable("admission_waves", {
 // Tabel syarat umum pendaftaran
 export const admissionRequirements = pgTable("admission_requirements", {
     id: uuid("id").defaultRandom().primaryKey(),
+    type: text("type", { enum: ['murni', 'transisi'] }).default('murni').notNull(), // Jenis: mahasiswa murni atau transisi (pindahan)
     content: text("content").notNull(),
     order: integer("order").default(0).notNull(),
     isPublished: boolean("is_published").default(false).notNull(),

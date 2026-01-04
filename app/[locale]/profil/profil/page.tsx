@@ -41,6 +41,7 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
     shortName: "UMD",
     vision: "Menjadi universitas kelas dunia yang unggul dalam teknologi dan kewirausahaan.",
     mission: "Menyelenggarakan pendidikan berkualitas, riset inovatif, dan pengabdian masyarakat.",
+    objectives: "Mewujudkan pendidikan yang berkelanjutan, inovatif, dan berdampak bagi masyarakat luas.",
     values: "Integritas, Inovasi, Inklusivitas",
     history: "Didirikan pada tahun 1990...",
     logo: "/images/logo_univ.png",
@@ -240,7 +241,7 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
                 <div className="space-y-2">
                   <h2 className="text-xs md:text-sm font-black text-emerald-500 dark:text-emerald-400 tracking-[0.6em] uppercase flex items-center justify-center gap-4">
                     <span className="h-px w-8 bg-emerald-500/30 hidden sm:block"></span>
-                    Moto Universitas
+                    Motto Universitas
                     <span className="h-px w-8 bg-emerald-500/30 hidden sm:block"></span>
                   </h2>
                   <div className="w-32 h-0.5 bg-gradient-to-r from-transparent via-emerald-500 to-transparent mx-auto"></div>
@@ -272,38 +273,32 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
             viewport={{ once: true }}
             className="glass-card p-12 md:p-16 rounded-[4rem] border border-white/10 relative overflow-hidden group shadow-[0_0_80px_rgba(147,51,234,0.1)]"
           >
-            {/* Ambient background glows */}
-            <div className="absolute -top-32 -right-32 w-96 h-96 bg-electric-purple/10 rounded-full blur-[120px] -z-10 animate-pulse"></div>
-            <div className="absolute -bottom-32 -left-32 w-80 h-80 bg-cyber-blue/10 rounded-full blur-[100px] -z-10"></div>
+            {/* Premium Background gradients */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-electric-purple/5 rounded-full blur-[120px] -z-10"></div>
 
-            <div className="relative z-10">
-              <div className="flex flex-col md:flex-row gap-10 md:gap-16 items-center md:items-start text-center md:text-left">
-                <div className="flex-shrink-0">
-                  <div className="relative group/icon">
-                    <div className="absolute -inset-4 bg-blue-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div className="w-24 h-24 rounded-[2rem] bg-blue-600 flex items-center justify-center shadow-2xl shadow-blue-500/20 transform group-hover:rotate-6 group-hover:scale-110 transition-all duration-500 border border-white/20 relative z-10">
-                      <History className="w-12 h-12" style={{ color: 'white' }} />
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-8 flex-1">
-                  <div className="space-y-3">
-                    <h3 className="text-3xl md:text-4xl font-extrabold text-foreground dark:text-white tracking-tight">
-                      Sejarah Singkat
-                    </h3>
-                    <div className="w-20 h-1.5 bg-gradient-cyber rounded-full mx-auto md:mx-0"></div>
-                  </div>
+            <div className="relative z-10 text-center max-w-4xl mx-auto space-y-10">
+              <div className="space-y-4">
+                <h3 className="text-3xl md:text-5xl font-extrabold text-foreground dark:text-white tracking-tight">
+                  Sejarah Singkat
+                </h3>
+                <div className="w-24 h-2 bg-gradient-to-r from-transparent via-electric-purple to-transparent rounded-full mx-auto"></div>
+              </div>
 
-                  <div className="text-base md:text-lg text-foreground/70 dark:text-white/70 leading-relaxed space-y-6 font-medium">
-                    {profile.history?.split('\n').map((para, i) => (
-                      para.trim() && (
-                        <p key={i} className="relative pl-0 md:pl-6 md:border-l border-foreground/10 dark:border-white/10">
-                          {para}
-                        </p>
-                      )
-                    )) || <p>{profile.history}</p>}
-                  </div>
-                </div>
+              <div className="text-xl md:text-2xl text-foreground/80 dark:text-white/80 leading-relaxed font-medium space-y-6">
+                {profile.history?.split('\n').map((para, i) => (
+                  para.trim() && (
+                    <p key={i}>
+                      {para}
+                    </p>
+                  )
+                )) || <p>{profile.history}</p>}
+              </div>
+
+              {/* Cyberpunk accent symbols */}
+              <div className="flex justify-center items-center gap-3 pt-4 opacity-40">
+                <div className="w-1.5 h-1.5 rounded-full bg-electric-purple animate-pulse"></div>
+                <div className="w-1 h-1 rounded-full bg-electric-purple/60"></div>
+                <div className="w-1 h-1 rounded-full bg-electric-purple/30"></div>
               </div>
             </div>
           </MotionDiv>
@@ -384,6 +379,42 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
             </div>
           </MotionDiv>
         </div>
+
+        {/* Tujuan Universitas Section */}
+        {profile.objectives && (
+          <MotionDiv
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="mb-24 px-4 sm:px-0"
+          >
+            <div className="glass-card p-12 md:p-16 rounded-[4rem] border border-white/10 relative overflow-hidden group shadow-[0_0_80px_rgba(16,185,129,0.05)]">
+              {/* Premium Background gradients */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-emerald-500/5 rounded-full blur-[120px] -z-10"></div>
+
+              <div className="relative z-10 text-center max-w-4xl mx-auto space-y-10">
+                <div className="space-y-4">
+                  <h3 className="text-3xl md:text-5xl font-extrabold text-foreground dark:text-white tracking-tight">
+                    Tujuan Universitas
+                  </h3>
+                  <div className="w-24 h-2 bg-gradient-to-r from-transparent via-emerald-500 to-transparent rounded-full mx-auto"></div>
+                </div>
+
+                <p className="text-xl md:text-2xl text-foreground/80 dark:text-white/80 leading-relaxed font-medium">
+                  {profile.objectives}
+                </p>
+
+                {/* Cyberpunk accent symbols */}
+                <div className="flex justify-center items-center gap-3 pt-4 opacity-40">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                  <div className="w-1 h-1 rounded-full bg-emerald-400"></div>
+                  <div className="w-1 h-1 rounded-full bg-emerald-300"></div>
+                </div>
+              </div>
+            </div>
+          </MotionDiv>
+        )}
 
         {/* Nilai-Nilai Dasar */}
         <div className="mb-24">

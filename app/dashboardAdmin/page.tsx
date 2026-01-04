@@ -311,8 +311,9 @@ const tableConfigurations = {
       },
       admissionRequirements: {
         label: "Syarat Pendaftaran",
-        description: "Kelola syarat umum pendaftaran",
+        description: "Kelola syarat pendaftaran untuk mahasiswa murni dan transisi",
         fields: [
+          { key: "type", label: "Jenis Mahasiswa", type: "select", options: ["murni", "transisi"], required: true },
           { key: "content", label: "Syarat", type: "text", required: true },
           { key: "order", label: "Urutan", type: "number" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
@@ -335,6 +336,19 @@ const tableConfigurations = {
           { key: "event", label: "Kegiatan", type: "text", required: true },
           { key: "statusLabel", label: "Status (Teks)", type: "text", required: true },
           { key: "iconName", label: "Nama Icon Lucide", type: "text" },
+          { key: "order", label: "Urutan", type: "number" },
+          { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
+        ],
+      },
+      admissionStaff: {
+        label: "Tim PMB",
+        description: "Kelola data tim penerimaan mahasiswa baru",
+        fields: [
+          { key: "name", label: "Nama", type: "text", required: true },
+          { key: "position", label: "Jabatan", type: "text", required: true },
+          { key: "image", label: "Foto URL", type: "text" },
+          { key: "whatsapp", label: "WhatsApp", type: "text" },
+          { key: "email", label: "Email", type: "email" },
           { key: "order", label: "Urutan", type: "number" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
         ],
@@ -530,6 +544,7 @@ const tableConfigurations = {
           { key: "shortName", label: "Nama Singkat", type: "text" },
           { key: "vision", label: "Visi", type: "textarea" },
           { key: "mission", label: "Misi", type: "textarea" },
+          { key: "objectives", label: "Tujuan", type: "textarea" },
           { key: "values", label: "Nilai", type: "textarea" },
           { key: "history", label: "Sejarah", type: "textarea" },
           { key: "logo", label: "Logo URL", type: "image" },
@@ -1075,7 +1090,7 @@ function DataTableView({
 
   // Get display columns: Filter out long/technical fields for a cleaner table view
   const displayFields = tableConfig.fields
-    .filter(f => !["content", "slug", "description", "requirements", "procedure", "vision", "mission", "history"].includes(f.key))
+    .filter(f => !["slug", "description", "requirements", "procedure", "vision", "mission", "objectives", "history"].includes(f.key))
     .filter(f => f.type !== "textarea")
     .slice(0, 6)
 

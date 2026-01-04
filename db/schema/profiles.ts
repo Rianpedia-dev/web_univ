@@ -10,6 +10,7 @@ export const universityProfiles = pgTable("university_profiles", {
     shortName: text("short_name"), // nama singkat
     vision: text("vision"), // visi universitas
     mission: text("mission"), // misi universitas
+    objectives: text("objectives"), // tujuan universitas
     values: text("values"), // nilai-nilai universitas
     history: text("history"), // sejarah universitas
     logo: text("logo"), // URL logo universitas

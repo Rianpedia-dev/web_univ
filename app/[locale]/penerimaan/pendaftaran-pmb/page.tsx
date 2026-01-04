@@ -1,4 +1,5 @@
 import React from "react";
+export const dynamic = "force-dynamic";
 import { Button } from "@/components/ui/button";
 import {
   Calendar,
@@ -26,16 +27,20 @@ import {
   getPublishedEducationCosts,
   getPublishedFaculties,
   getPublishedUniversityAccreditations,
-  getPublishedCampusFacilities
+  getPublishedCampusFacilities,
+  getPublishedAdmissionStaff,
+  getPublishedSocialMediaLinks,
+  getPublishedContactInformation
 } from '@/lib/db';
 import AdmissionTimeline from "@/components/admissions/AdmissionTimeline";
 import AdmissionBrochureDownload from "@/components/admissions/AdmissionBrochureDownload";
+import AdmissionStaff from "@/components/admissions/AdmissionStaff";
 
 export default async function PendaftaranPMBPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
 
   // Ambil data dari database
-  const [jalurMasuk, jenisKelas, programStudi, gelombangData, syaratData, faqsData, timelinesData, universityProfile, costsData, facultiesData, accreditationData, facilitiesData] = await Promise.all([
+  const [jalurMasuk, jenisKelas, programStudi, gelombangData, syaratData, faqsData, timelinesData, universityProfile, costsData, facultiesData, accreditationData, facilitiesData, staffData, socialMediaData, contactInfoData] = await Promise.all([
     getPublishedAdmissionPathways(),
     getPublishedAdmissionClasses(),
     getPublishedStudyPrograms(),
@@ -47,7 +52,10 @@ export default async function PendaftaranPMBPage({ params }: { params: Promise<{
     getPublishedEducationCosts(),
     getPublishedFaculties(),
     getPublishedUniversityAccreditations(),
-    getPublishedCampusFacilities()
+    getPublishedCampusFacilities(),
+    getPublishedAdmissionStaff(),
+    getPublishedSocialMediaLinks(),
+    getPublishedContactInformation()
   ]);
 
   // Tentukan gelombang aktif
@@ -140,6 +148,9 @@ export default async function PendaftaranPMBPage({ params }: { params: Promise<{
             faculties={facultiesData}
             accreditation={accreditationData[0]}
             facilities={facilitiesData}
+            staff={staffData}
+            socialMedia={socialMediaData}
+            contactInfo={contactInfoData}
           />
         </MotionDiv>
 
@@ -280,21 +291,53 @@ export default async function PendaftaranPMBPage({ params }: { params: Promise<{
               </div>
             </div>
 
-            {/* Syarat Umum */}
+            {/* Syarat Pendaftaran */}
             <div className="space-y-6">
               <h2 className="text-2xl font-black text-foreground flex items-center gap-3">
                 <ShieldCheck className="w-6 h-6 text-cyber-blue" />
-                Syarat Umum
+                Syarat Pendaftaran
               </h2>
-              <div className="glass-card rounded-2xl p-6 border border-white/5 space-y-4">
-                {syaratData.map((syarat: any) => (
-                  <div key={syarat.id} className="flex items-start gap-3 group">
-                    <div className="mt-1 w-4 h-4 rounded-full bg-cyber-blue/10 flex items-center justify-center flex-shrink-0 group-hover:bg-cyber-blue/20 transition-colors">
-                      <CheckCircle className="w-3 h-3 text-cyber-blue" />
-                    </div>
-                    <span className="text-muted-foreground text-xs leading-relaxed">{syarat.content}</span>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Syarat Mahasiswa Murni */}
+                <div className="glass-card rounded-2xl p-6 border border-cyber-blue/20 bg-cyber-blue/5 space-y-4">
+                  <div className="flex items-center gap-2 mb-4">
+                    <GraduationCap className="w-5 h-5 text-cyber-blue" />
+                    <h3 className="font-bold text-foreground">Mahasiswa Murni</h3>
                   </div>
-                ))}
+                  {syaratData.filter((s: any) => s.type === 'murni').length > 0 ? (
+                    syaratData.filter((s: any) => s.type === 'murni').map((syarat: any) => (
+                      <div key={syarat.id} className="flex items-start gap-3 group">
+                        <div className="mt-1 w-4 h-4 rounded-full bg-cyber-blue/10 flex items-center justify-center flex-shrink-0 group-hover:bg-cyber-blue/20 transition-colors">
+                          <CheckCircle className="w-3 h-3 text-cyber-blue" />
+                        </div>
+                        <span className="text-muted-foreground text-xs leading-relaxed">{syarat.content}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-muted-foreground text-xs italic">Belum ada syarat untuk kategori ini.</p>
+                  )}
+                </div>
+
+                {/* Syarat Mahasiswa Transisi */}
+                <div className="glass-card rounded-2xl p-6 border border-electric-purple/20 bg-electric-purple/5 space-y-4">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Users className="w-5 h-5 text-electric-purple" />
+                    <h3 className="font-bold text-foreground">Mahasiswa Transisi</h3>
+                  </div>
+                  {syaratData.filter((s: any) => s.type === 'transisi').length > 0 ? (
+                    syaratData.filter((s: any) => s.type === 'transisi').map((syarat: any) => (
+                      <div key={syarat.id} className="flex items-start gap-3 group">
+                        <div className="mt-1 w-4 h-4 rounded-full bg-electric-purple/10 flex items-center justify-center flex-shrink-0 group-hover:bg-electric-purple/20 transition-colors">
+                          <CheckCircle className="w-3 h-3 text-electric-purple" />
+                        </div>
+                        <span className="text-muted-foreground text-xs leading-relaxed">{syarat.content}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-muted-foreground text-xs italic">Belum ada syarat untuk kategori ini.</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -322,6 +365,11 @@ export default async function PendaftaranPMBPage({ params }: { params: Promise<{
             ))}
           </div>
         </MotionDiv>
+
+        {/* Tim PMB Section */}
+        <div className="mb-24">
+          <AdmissionStaff staff={staffData} />
+        </div>
 
       </div>
     </div>
