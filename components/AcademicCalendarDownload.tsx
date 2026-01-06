@@ -142,15 +142,14 @@ export function AcademicCalendarDownload({ calendarData, universityLogo }: Props
     return (
         <>
             <Button
-                variant="outline"
-                className="border-cyber-blue text-cyber-blue hover:bg-cyber-blue/10"
                 onClick={handleDownload}
                 disabled={isGenerating}
+                className="rounded-full px-8 h-11 font-bold group shadow-lg hover:scale-105 transition-all duration-300"
             >
                 {isGenerating ? (
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 ) : (
-                    <Download className="w-4 h-4 mr-2" />
+                    <Download className="w-4 h-4 mr-2 transition-transform group-hover:translate-y-1" />
                 )}
                 {isGenerating ? 'Menyiapkan...' : 'Download Kalender'}
             </Button>

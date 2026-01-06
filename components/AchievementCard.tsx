@@ -141,12 +141,11 @@ export function AchievementCard({ prestasi, index, universityName, universityLog
 
                     <div className="flex gap-2">
                         <Button
-                            variant="secondary"
-                            className="flex-1 w-full"
                             onClick={() => setIsShareOpen(true)}
+                            className="flex-1 rounded-full h-11 font-bold group shadow-lg hover:scale-105 transition-all duration-300"
                         >
-                            <Share2 className="w-4 h-4 mr-2" />
-                            Bagikan
+                            <Share2 className="w-4 h-4 mr-2 transition-transform group-hover:rotate-12" />
+                            Bagikan Prestasi
                         </Button>
                     </div>
                 </div>

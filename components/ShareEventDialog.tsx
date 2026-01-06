@@ -11,7 +11,8 @@ import {
     Link2,
     Calendar,
     MapPin,
-    Share2
+    Share2,
+    Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -535,67 +536,62 @@ export function ShareEventDialog({
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const ShareButton = ({ icon: Icon, label, onClick, color, disabled, active }: any) => (
+    const ActionButton = ({ icon: Icon, label, onClick, disabled, variant }: any) => (
         <Button
-            variant="outline"
-            className={cn(
-                "w-full justify-center gap-2 border-opacity-30 relative overflow-hidden group hover:bg-opacity-10 transition-all duration-300",
-                color === 'cyan' ? "border-cyan-400 text-cyan-400 hover:bg-cyan-400" :
-                    "border-gray-500 text-gray-300 hover:bg-gray-500",
-                active && "bg-opacity-10"
-            )}
+            variant={variant}
+            className="w-full h-12 rounded-full font-bold tracking-wider group shadow-lg hover:scale-105 transition-all duration-300"
             onClick={onClick}
             disabled={disabled}
         >
-            <Icon className="w-4 h-4" />
-            <span className="font-bold tracking-wider">{label}</span>
+            {disabled && label.includes("Gambar") ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+                <Icon className={cn("w-4 h-4 mr-2 transition-transform", !label.includes("Tersalin") && "group-hover:rotate-12")} />
+            )}
+            {label}
         </Button>
     );
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="max-w-md bg-background border border-cyan-500/30 p-0 overflow-hidden">
+            <DialogContent className="max-w-md bg-background border border-border p-0 overflow-hidden">
                 <DialogTitle className="sr-only">Share Event</DialogTitle>
                 <div className="relative p-6">
                     {/* Background */}
-                    <div className="absolute inset-0 bg-[#09090b] z-0"></div>
-                    <div className="absolute inset-0 z-0 pointer-events-none" style={{
-                        backgroundImage: `linear-gradient(to right, rgba(6, 182, 212, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(6, 182, 212, 0.05) 1px, transparent 1px)`,
-                        backgroundSize: '40px 40px'
-                    }}></div>
+                    <div className="absolute inset-0 bg-background z-0"></div>
+                    {/* Removed cyano-centric grid for standard background */}
 
                     {/* Header */}
-                    <div className="relative z-10 flex items-center justify-between mb-6 border-b border-cyan-500/20 pb-4">
-                        <div className="flex items-center gap-2 text-cyan-400">
+                    <div className="relative z-10 flex items-center justify-between mb-6 border-b border-border pb-4">
+                        <div className="flex items-center gap-2 text-foreground">
                             <Share2 className="w-5 h-5" />
                             <span className="font-bold tracking-wider">SHARE EVENT</span>
                         </div>
                     </div>
 
                     {/* Preview Card */}
-                    {/* Preview Card */}
-                    <div className="relative bg-black border border-cyan-900 rounded-xl overflow-hidden mb-6 shadow-2xl">
+                    <div className="relative bg-card border border-border rounded-2xl overflow-hidden mb-6 shadow-xl">
                         {/* Poster */}
-                        <div className="h-48 bg-gray-900 relative overflow-hidden">
+                        <div className="h-48 bg-muted relative overflow-hidden">
                             {event.poster ? (
                                 <img src={event.poster} alt={event.title} className="w-full h-full object-cover" />
                             ) : (
-                                <div className="flex items-center justify-center h-full text-gray-700">No Image</div>
+                                <div className="flex items-center justify-center h-full text-muted-foreground italic">No Poster Available</div>
                             )}
                             {event.categoryName && (
-                                <div className="absolute bottom-0 right-0 bg-cyan-400 text-black text-[10px] font-bold px-3 py-1">
+                                <div className="absolute bottom-0 right-0 bg-foreground text-background text-[10px] font-bold px-3 py-1">
                                     {event.categoryName}
                                 </div>
                             )}
                         </div>
-                        <div className="p-4">
-                            <h3 className="text-white font-bold mb-3 line-clamp-2">{event.title}</h3>
+                        <div className="p-4 bg-card">
+                            <h3 className="text-card-foreground font-bold mb-3 line-clamp-2">{event.title}</h3>
                             <div className="space-y-2">
-                                <div className="flex items-center gap-2 text-cyan-400 text-xs">
+                                <div className="flex items-center gap-2 text-muted-foreground text-xs">
                                     <Calendar className="w-3 h-3" />
                                     <span>{formatDate(event.startDate)}</span>
                                 </div>
-                                <div className="flex items-center gap-2 text-purple-400 text-xs">
+                                <div className="flex items-center gap-2 text-muted-foreground text-xs">
                                     <MapPin className="w-3 h-3" />
                                     <span className="truncate">{event.venue || event.location}</span>
                                 </div>
@@ -604,20 +600,19 @@ export function ShareEventDialog({
                     </div>
 
                     {/* Actions */}
-                    <div className="grid grid-cols-2 gap-3 relative z-10">
-                        <ShareButton
+                    <div className="grid grid-cols-2 gap-4 relative z-10">
+                        <ActionButton
                             icon={Link2}
-                            label={copied ? "Copied" : "Copy Link"}
+                            label={copied ? "Tersalin!" : "Salin Link"}
                             onClick={handleCopyLink}
-                            color="gray"
+                            variant="default"
                         />
-                        <ShareButton
+                        <ActionButton
                             icon={Download}
-                            label={isGenerating ? "Generating..." : "Save Image"}
+                            label={isGenerating ? "Proses..." : "Simpan Gambar"}
                             onClick={handleDownload}
-                            color="cyan"
+                            variant="default"
                             disabled={isGenerating}
-                            active
                         />
                     </div>
                 </div>

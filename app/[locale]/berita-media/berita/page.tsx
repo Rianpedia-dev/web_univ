@@ -1,15 +1,8 @@
-import { Button } from "@/components/ui/button";
 import {
-  User,
-  Clock,
-  Eye,
-  Search,
-  ArrowRight
-} from "lucide-react";
+  getLatestNewsWithCategory,
+  getUniversityProfile
+} from '@/lib/db';
 import { MotionDiv } from "@/components/motion-wrapper";
-import { Badge } from "@/components/ui/badge";
-import { getLatestNewsWithCategory, getUniversityProfile } from '@/lib/db';
-import Image from 'next/image';
 import { NewsList } from '@/components/NewsList';
 
 export default async function BeritaPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -20,19 +13,6 @@ export default async function BeritaPage({ params }: { params: Promise<{ locale:
     getLatestNewsWithCategory(10),
     getUniversityProfile()
   ]);
-
-  // Data kategori tetap menggunakan data statis untuk sementara
-  const kategori = [
-    { id: 1, nama: "Semua", slug: "all" },
-    { id: 2, nama: "Akademik", slug: "akademik" },
-    { id: 3, nama: "Kemahasiswaan", slug: "kemahasiswaan" },
-    { id: 4, nama: "Penelitian", slug: "penelitian" },
-    { id: 5, nama: "Event", slug: "event" }
-  ];
-
-  // Berita utama (berita terbaru)
-  const beritaUtama = allNews[0];
-  const beritaLainnya = allNews.slice(1);
 
   return (
     <div className="min-h-screen bg-background overflow-hidden relative">
@@ -67,49 +47,13 @@ export default async function BeritaPage({ params }: { params: Promise<{ locale:
               }}>
                 Berita & Media
               </h1>
-              <p className="text-lg text-foreground max-w-2xl mx-auto font-medium bg-black/40 backdrop-blur-sm p-4 rounded-xl border border-white/10">
-                Update terbaru mengenai kegiatan, prestasi, dan informasi penting dari lingkungan kampus
-              </p>
             </MotionDiv>
           </div>
         </div>
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-
-        {/* Category Buttons */}
-        <MotionDiv
-          className="flex flex-wrap justify-center gap-2 mb-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          {kategori.map((cat) => (
-            <Button
-              key={cat.id}
-              variant={cat.slug === "all" ? "default" : "outline"}
-              className={`rounded-full px-6 ${cat.slug === "all"
-                ? "bg-gradient-cyber shadow-[0_0_15px_rgba(0,240,255,0.4)]"
-                : "border-white/10 hover:border-cyber-blue/50"
-                }`}
-            >
-              {cat.nama}
-            </Button>
-          ))}
-        </MotionDiv>
-
         <NewsList initialNews={allNews} uniProfile={uniProfile} />
-
-        {/* Pagination/Load More */}
-        <MotionDiv
-          className="text-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          <Button className="bg-transparent border border-cyber-blue text-cyber-blue hover:bg-cyber-blue/10 px-8 py-6 rounded-full font-bold text-lg">
-            Muat Lebih Banyak Berita
-          </Button>
-        </MotionDiv>
       </div>
     </div>
   );

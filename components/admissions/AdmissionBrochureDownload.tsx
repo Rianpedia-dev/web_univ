@@ -181,18 +181,15 @@ export default function AdmissionBrochureDownload({
             <Button
                 onClick={handleDownload}
                 disabled={isDownloading}
-                className="group relative overflow-hidden bg-[#ffcc00] hover:bg-[#e6b800] text-[#004080] font-black px-12 py-10 rounded-2xl flex items-center gap-5 transition-all hover:scale-105 active:scale-95 shadow-[0_10px_40px_rgba(255,204,0,0.3)] border-b-4 border-[#cca300]"
+                variant="default"
+                className="h-14 px-10 rounded-full font-extrabold text-lg shadow-xl hover:scale-105 transition-all duration-300 group"
             >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                 {isDownloading ? (
-                    <Loader2 className="w-8 h-8 animate-spin" />
+                    <Loader2 className="w-5 h-5 animate-spin mr-3" />
                 ) : (
-                    <Download className="w-8 h-8" />
+                    <Download className="w-5 h-5 mr-3 group-hover:bounce" />
                 )}
-                <div className="flex flex-col items-start">
-                    <span className="text-xl tracking-tighter uppercase leading-none">UNDUH BROSUR PMB</span>
-
-                </div>
+                UNDUH BROSUR PMB
             </Button>
 
             {/* RENDER ENGINE (HIDDEN) */}

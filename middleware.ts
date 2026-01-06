@@ -2,7 +2,7 @@ import createMiddleware from 'next-intl/middleware';
 
 export default createMiddleware({
   // Daftar locale yang didukung
-  locales: ['id', 'en'],
+  locales: ['id'],
   // Default locale saat tidak bisa mendeteksi
   defaultLocale: 'id',
   // Opsi untuk prefix locale

@@ -213,12 +213,12 @@ export default function JurnalPage() {
                                                     DOI: 10.1234/journal.{journal.journalAbbr?.toLowerCase()}.{journal.year}
                                                 </div>
                                                 <Button
-                                                    className="bg-gradient-to-r from-cyber-blue to-[#00d2ff] hover:shadow-[0_0_20px_rgba(0,240,255,0.4)] text-white font-bold rounded-xl h-11 px-6 group transition-all"
+                                                    className="rounded-full h-11 font-bold group shadow-lg hover:scale-105 transition-all duration-300 px-8"
                                                     asChild
                                                 >
                                                     <Link href={journal.link || "#"}>
                                                         Lihat Jurnal
-                                                        <ExternalLink className="w-4 h-4 ml-2 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                                                        <ExternalLink className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                                                     </Link>
                                                 </Button>
                                             </div>
@@ -239,7 +239,7 @@ export default function JurnalPage() {
                     >
                         <Button
                             variant="outline"
-                            className="rounded-xl px-8"
+                            className="rounded-full px-8 h-11 font-bold shadow-md hover:scale-105 transition-all duration-300"
                             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                             disabled={currentPage === 1}
                         >
@@ -247,7 +247,7 @@ export default function JurnalPage() {
                         </Button>
                         <Button
                             variant="outline"
-                            className={`rounded-xl px-8 ${currentPage < Math.ceil(journalsData.length / itemsPerPage) ? "border-cyber-blue/30 text-cyber-blue hover:bg-cyber-blue/5" : ""}`}
+                            className="rounded-full px-8 h-11 font-bold shadow-md hover:scale-105 transition-all duration-300 border-foreground/30"
                             onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(journalsData.length / itemsPerPage)))}
                             disabled={currentPage >= Math.ceil(journalsData.length / itemsPerPage)}
                         >

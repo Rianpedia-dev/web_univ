@@ -20,8 +20,10 @@ import {
     Zap,
     Star,
     Shield,
-    Share2
+    Share2,
+    Loader2
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Achievement {
     id: string;
@@ -770,21 +772,27 @@ export function ShareAchievementDialog({
                     </div>
 
                     {/* --- ACTIONS --- */}
-                    <div className="grid grid-cols-2 gap-3 relative z-10 pt-4">
-                        <ShareButton
-                            icon={Link2}
-                            label={copied ? "Copied" : "Copy"}
+                    <div className="grid grid-cols-2 gap-4 relative z-10 pt-4">
+                        <Button
+                            variant="outline"
+                            className="rounded-full h-12 font-bold group shadow-md hover:scale-105 transition-all duration-300"
                             onClick={handleCopyLink}
-                            color="gray"
-                        />
-                        <ShareButton
-                            icon={Download}
-                            label={isGenerating ? "..." : "Save"}
+                        >
+                            <Link2 className="w-4 h-4 mr-2 transition-transform group-hover:rotate-12" />
+                            {copied ? "Tersalin!" : "Salin Link"}
+                        </Button>
+                        <Button
+                            className="rounded-full h-12 font-bold group shadow-lg hover:scale-105 transition-all duration-300"
                             onClick={handleDownload}
-                            color="cyan"
                             disabled={isGenerating}
-                            active
-                        />
+                        >
+                            {isGenerating ? (
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            ) : (
+                                <Download className="w-4 h-4 mr-2 transition-transform group-hover:translate-y-1" />
+                            )}
+                            {isGenerating ? "Menyiapkan..." : "Simpan JPG"}
+                        </Button>
                     </div>
                 </div>
             </DialogContent>
@@ -792,27 +800,3 @@ export function ShareAchievementDialog({
     );
 }
 
-function ShareButton({ icon: Icon, label, onClick, color, disabled, active }: any) {
-    const colors: any = {
-        gray: "hover:border-gray-400 hover:text-gray-400",
-        cyan: "border-cyan-500/50 text-cyan-400 bg-cyan-950/30 hover:bg-cyan-900/50 hover:border-cyan-400 box-shadow-cyan",
-        green: "hover:border-green-400 hover:text-green-400",
-        sky: "hover:border-sky-400 hover:text-sky-400",
-    };
-
-    return (
-        <button
-            onClick={onClick}
-            disabled={disabled}
-            className={`
-                flex flex-col items-center justify-center gap-2 p-3 rounded-none border transition-all duration-300 group
-                border-white/10 bg-black/50 backdrop-blur-sm
-                ${colors[color]}
-                ${active ? 'ring-1 ring-cyan-500' : ''}
-            `}
-        >
-            <Icon className={`w-5 h-5 transition-transform group-hover:scale-110`} />
-            <span className="text-[10px] tracking-wider uppercase font-mono">{label}</span>
-        </button>
-    );
-}

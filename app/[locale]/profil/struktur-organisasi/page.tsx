@@ -104,21 +104,21 @@ export default async function ProfilStrukturOrganisasiPage({ params }: { params:
                   animate={{ opacity: 1, y: 0 }}
                   className="max-w-sm w-full"
                 >
-                  <div className="glass-card p-8 text-center rounded-[2.5rem] border border-white/10 hover:border-cyber-blue/50 group transition-all duration-500 hover:shadow-[0_0_40px_rgba(0,240,255,0.2)] bg-gradient-to-b from-white/5 to-transparent h-full flex flex-col">
-                    <div className="w-56 aspect-[3/4] mx-auto mb-8 p-2 rounded-[2rem] bg-gradient-to-br from-emerald-500/30 to-emerald-400/30 group-hover:from-emerald-500 group-hover:to-emerald-400 transition-all duration-700 mt-2 relative">
-                      <div className="absolute inset-0 bg-emerald-500/20 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="glass-card p-8 text-center rounded-[2.5rem] border border-white/10 hover:border-foreground/50 group transition-all duration-500 hover:shadow-[0_0_40px_rgba(255,255,255,0.1)] bg-gradient-to-b from-white/5 to-transparent h-full flex flex-col">
+                    <div className="w-56 aspect-[3/4] mx-auto mb-8 p-2 rounded-[2rem] bg-foreground/20 group-hover:bg-foreground/40 transition-all duration-700 mt-2 relative">
+                      <div className="absolute inset-0 bg-foreground/10 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
                       <div className="w-full h-full bg-background rounded-[1.8rem] overflow-hidden relative z-10 border-2 border-white/5">
                         {item.photo ? (
                           <img src={item.photo} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                         ) : (
-                          <div className="flex items-center justify-center h-full bg-emerald-500/10">
-                            <Users className="w-20 h-20 text-emerald-500/30" />
+                          <div className="flex items-center justify-center h-full bg-foreground/5">
+                            <Users className="w-20 h-20 text-foreground/30" />
                           </div>
                         )}
                       </div>
                     </div>
-                    <h4 className="text-xl font-bold text-foreground mb-2 group-hover:text-emerald-400 transition-colors leading-tight">{item.name}</h4>
-                    <Badge variant="outline" className="mb-4 border-emerald-500/30 text-emerald-400 bg-emerald-500/5 self-center">
+                    <h4 className="text-xl font-bold text-foreground mb-2 group-hover:text-foreground transition-colors leading-tight">{item.name}</h4>
+                    <Badge variant="outline" className="mb-4 border-foreground/30 text-foreground bg-foreground/5 self-center">
                       {item.positionName}
                     </Badge>
                     <div className="pt-4 border-t border-white/5 text-left flex-1">
@@ -129,7 +129,7 @@ export default async function ProfilStrukturOrganisasiPage({ params }: { params:
                         <p className="text-xs text-muted-foreground/60 italic font-medium text-center">Periode: {item.period || '-'}</p>
                         {item.responsibilities && (
                           <div className="flex items-start gap-2 text-xs text-muted-foreground/60">
-                            <Briefcase className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                            <Briefcase className="w-3.5 h-3.5 text-foreground/60 shrink-0 mt-0.5" />
                             <span className="line-clamp-2 italic">{item.responsibilities}</span>
                           </div>
                         )}
@@ -158,21 +158,21 @@ export default async function ProfilStrukturOrganisasiPage({ params }: { params:
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <div className="glass-card p-10 text-center rounded-[3rem] border border-white/10 hover:border-electric-purple/50 group transition-all duration-500 hover:shadow-[0_0_40px_rgba(147,51,234,0.2)] bg-gradient-to-b from-white/5 to-transparent h-full flex flex-col">
-                    <div className="w-48 aspect-[3/4] mx-auto mb-8 p-2 rounded-[2rem] bg-gradient-to-br from-emerald-500/30 to-emerald-400/30 group-hover:from-emerald-500 group-hover:to-emerald-400 transition-all duration-700 mt-2 relative">
-                      <div className="absolute inset-0 bg-emerald-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="glass-card p-10 text-center rounded-[3rem] border border-white/10 hover:border-foreground/30 group transition-all duration-500 hover:shadow-[0_0_40px_rgba(255,255,255,0.05)] bg-gradient-to-b from-white/5 to-transparent h-full flex flex-col">
+                    <div className="w-48 aspect-[3/4] mx-auto mb-8 p-2 rounded-[2rem] bg-foreground/10 group-hover:bg-foreground/20 transition-all duration-700 mt-2 relative">
+                      <div className="absolute inset-0 bg-foreground/5 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
                       <div className="w-full h-full bg-background rounded-[1.8rem] overflow-hidden relative z-10 border-2 border-white/5">
                         {item.photo ? (
                           <img src={item.photo} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                         ) : (
-                          <div className="flex items-center justify-center h-full bg-emerald-500/5">
-                            <Users className="w-16 h-16 text-emerald-500/30" />
+                          <div className="flex items-center justify-center h-full bg-foreground/5">
+                            <Users className="w-16 h-16 text-foreground/30" />
                           </div>
                         )}
                       </div>
                     </div>
-                    <h4 className="text-xl font-bold text-foreground mb-2 group-hover:text-emerald-400 transition-colors leading-tight">{item.name}</h4>
-                    <Badge variant="outline" className="mb-4 border-emerald-500/30 text-emerald-400 bg-emerald-500/5 self-center">
+                    <h4 className="text-xl font-bold text-foreground mb-2 group-hover:text-foreground transition-colors leading-tight">{item.name}</h4>
+                    <Badge variant="outline" className="mb-4 border-foreground/30 text-foreground bg-foreground/5 self-center">
                       {item.positionName}
                     </Badge>
                     <div className="pt-4 border-t border-white/5 text-left flex-1">
@@ -181,7 +181,7 @@ export default async function ProfilStrukturOrganisasiPage({ params }: { params:
                       </p>
                       {item.responsibilities && (
                         <div className="flex items-start gap-2 text-xs text-muted-foreground/60 mt-auto pt-2">
-                          <Briefcase className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                          <Briefcase className="w-3.5 h-3.5 text-foreground/60 shrink-0 mt-0.5" />
                           <span className="line-clamp-2 italic">{item.responsibilities}</span>
                         </div>
                       )}
@@ -209,21 +209,21 @@ export default async function ProfilStrukturOrganisasiPage({ params }: { params:
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.05 }}
                 >
-                  <div className="glass-card p-10 text-center rounded-[3rem] border border-white/10 hover:border-neon-green/50 group transition-all duration-500 hover:shadow-[0_0_40px_rgba(52,211,153,0.2)] bg-gradient-to-b from-white/5 to-transparent h-full flex flex-col">
-                    <div className="w-44 aspect-[3/4] mx-auto mb-8 p-2 rounded-3xl bg-gradient-to-br from-emerald-500/30 to-emerald-400/30 group-hover:from-emerald-500 group-hover:to-emerald-400 transition-all duration-700 mt-2 relative">
-                      <div className="absolute inset-0 bg-emerald-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="glass-card p-10 text-center rounded-[3rem] border border-white/10 hover:border-foreground/30 group transition-all duration-500 hover:shadow-[0_0_40px_rgba(255,255,255,0.05)] bg-gradient-to-b from-white/5 to-transparent h-full flex flex-col">
+                    <div className="w-44 aspect-[3/4] mx-auto mb-8 p-2 rounded-3xl bg-foreground/10 group-hover:bg-foreground/20 transition-all duration-700 mt-2 relative">
+                      <div className="absolute inset-0 bg-foreground/5 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
                       <div className="w-full h-full bg-background rounded-[1.5rem] overflow-hidden relative z-10 border-2 border-white/5">
                         {item.photo ? (
                           <img src={item.photo} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                         ) : (
-                          <div className="flex items-center justify-center h-full bg-emerald-500/5">
-                            <UserCheck className="w-14 h-14 text-emerald-500/40" />
+                          <div className="flex items-center justify-center h-full bg-foreground/5">
+                            <UserCheck className="w-14 h-14 text-foreground/30" />
                           </div>
                         )}
                       </div>
                     </div>
-                    <h4 className="text-lg font-bold text-foreground mb-2 group-hover:text-emerald-400 transition-colors leading-tight">{item.name}</h4>
-                    <Badge variant="outline" className="mb-4 border-emerald-500/30 text-emerald-400 bg-emerald-500/5 self-center text-[10px] uppercase font-bold tracking-wider">
+                    <h4 className="text-lg font-bold text-foreground mb-2 group-hover:text-foreground transition-colors leading-tight">{item.name}</h4>
+                    <Badge variant="outline" className="mb-4 border-foreground/30 text-foreground bg-foreground/5 self-center text-[10px] uppercase font-bold tracking-wider">
                       {item.positionName}
                     </Badge>
                     <div className="pt-4 border-t border-white/5 text-left flex-1">
@@ -231,7 +231,7 @@ export default async function ProfilStrukturOrganisasiPage({ params }: { params:
                         Periode: {item.period || '-'}
                       </p>
                       {item.description && (
-                        <p className="text-[11px] text-muted-foreground/60 line-clamp-3 leading-relaxed border-l-2 border-neon-green/20 pl-3">
+                        <p className="text-[11px] text-muted-foreground/60 line-clamp-3 leading-relaxed border-l-2 border-foreground/20 pl-3">
                           {item.description}
                         </p>
                       )}

@@ -253,9 +253,14 @@ export default async function BeasiswaPage({ params }: { params: Promise<{ local
                           {item.applicationEnd && ` - ${formatDate(item.applicationEnd)}`}
                         </div>
                       </div>
-                      <Button asChild className="bg-gradient-cyber hover:shadow-[0_0_20px_rgba(0,240,255,0.5)]">
+                      <Button
+                        asChild
+                        variant="default"
+                        className="rounded-full h-11 px-8 font-bold shadow-lg hover:scale-105 transition-all duration-300 group/btn"
+                      >
                         <Link href="https://forms.google.com" target="_blank">
-                          Daftar <ArrowRight className="w-4 h-4 ml-2" />
+                          Daftar Sekarang
+                          <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover/btn:translate-x-1" />
                         </Link>
                       </Button>
                     </div>

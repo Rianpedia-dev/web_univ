@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { auth } from '../lib/auth';
 import { db } from '../db';
-import { user, account } from '../db/schema/auth';
+import { user, account, session, verification } from '../db/schema/auth';
 import { eq } from 'drizzle-orm';
 
 async function createAdminUser() {
@@ -17,7 +17,9 @@ async function createAdminUser() {
 
         if (existingUser.length > 0) {
             console.log('⚠️  User dengan email ini sudah ada, menghapus...');
+            await db.delete(session).where(eq(session.userId, existingUser[0].id));
             await db.delete(account).where(eq(account.userId, existingUser[0].id));
+            await db.delete(verification).where(eq(verification.identifier, email));
             await db.delete(user).where(eq(user.id, existingUser[0].id));
             console.log('🗑️  User lama dihapus\n');
         }

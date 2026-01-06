@@ -4,10 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { LanguageToggle } from "@/components/language-toggle";
 import { Button } from "@/components/ui/button";
 import { Menu, X, GraduationCap, BookOpen, Users, Newspaper, Award, Handshake } from "lucide-react";
-import { AuthButtons } from "@/components/auth-buttons";
 
 // Main Navbar component for the application
 export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
@@ -77,12 +75,12 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
     },
     {
       title: locale === 'id' ? "Kemahasiswaan" : "Student Affairs",
-      href: `/${locale}/kemahasiswaan/layanan-mahasiswa`, // Redirect to first submenu
+      href: `/${locale}/kemahasiswaan/prestasi-mahasiswa`, // Redirect to first submenu
       icon: Users,
       submenu: [
-        { title: locale === 'id' ? "Layanan Mahasiswa" : "Student Services", href: `/${locale}/kemahasiswaan/layanan-mahasiswa` },
-        { title: locale === 'id' ? "UKM & Organisasi" : "Clubs & Organizations", href: `/${locale}/kemahasiswaan/ukm-organisasi` },
         { title: locale === 'id' ? "Prestasi Mahasiswa" : "Student Achievements", href: `/${locale}/kemahasiswaan/prestasi-mahasiswa` },
+        { title: locale === 'id' ? "UKM & Organisasi" : "Clubs & Organizations", href: `/${locale}/kemahasiswaan/ukm-organisasi` },
+        { title: locale === 'id' ? "Layanan Mahasiswa" : "Student Services", href: `/${locale}/kemahasiswaan/layanan-mahasiswa` },
       ]
     },
     {
@@ -177,14 +175,11 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
             {/* Desktop controls */}
             <div className="hidden sm:flex items-center gap-2">
               <ThemeToggle />
-              <LanguageToggle />
-              <AuthButtons />
             </div>
 
             {/* Mobile controls - including Theme and Language toggles alongside menu button */}
             <div className="flex items-center gap-2 md:hidden">
               <ThemeToggle />
-              <LanguageToggle />
               <Button
                 variant="ghost"
                 size="icon"
@@ -237,10 +232,7 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
                 </div>
               ))}
 
-              {/* Sign In Button for Mobile */}
-              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-center">
-                <AuthButtons />
-              </div>
+              {/* Mobile Menu Items */}
             </nav>
           </div>
         )}

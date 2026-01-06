@@ -133,9 +133,9 @@ export default async function ProfilAkreditasiPage({ params }: { params: Promise
 
               {latestUnivAcc.documentFile && (
                 <div className="flex justify-center">
-                  <Button asChild className="bg-gradient-cyber hover:shadow-[0_0_30px_rgba(0,240,255,0.6)] transition-all font-black px-10 py-6 rounded-2xl group text-lg transform hover:-translate-y-1 active:scale-95 duration-300">
+                  <Button asChild className="rounded-full px-10 h-14 font-bold group shadow-2xl hover:scale-105 transition-all duration-300 text-lg">
                     <a href={latestUnivAcc.documentFile} target="_blank" rel="noopener noreferrer" className="flex items-center">
-                      <FileText className="w-6 h-6 mr-3 group-hover:rotate-12 transition-transform" />
+                      <FileText className="w-6 h-6 mr-3 transition-transform group-hover:rotate-12" />
                       Lihat Sertifikat Digital
                     </a>
                   </Button>

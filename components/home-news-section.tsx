@@ -36,13 +36,12 @@ export function HomeNewsSection({ latestNews, locale, uniProfile }: HomeNewsSect
                     <h2 className="text-4xl font-bold text-foreground mb-4">Berita Terbaru</h2>
                     <div className="w-24 h-1 bg-gradient-cyber rounded-full"></div>
                 </div>
-                <Link href={`/${locale}/berita-media/berita`}>
-                    <Button variant="outline" className="border-cyber-blue/30 text-cyber-blue hover:bg-cyber-blue/10 rounded-full px-8 relative overflow-hidden group">
-                        <span className="relative z-10">Lihat Semua Berita</span>
-                        <ChevronRight className="w-4 h-4 ml-2 relative z-10 transition-transform group-hover:translate-x-1" />
-                        <div className="absolute inset-0 bg-gradient-cyber opacity-0 group-hover:opacity-5 transition-opacity -z-10"></div>
-                    </Button>
-                </Link>
+                <Button asChild className="rounded-full px-8 h-11 font-bold group shadow-xl hover:scale-105 transition-all duration-300">
+                    <Link href={`/${locale}/berita-media/berita`}>
+                        Lihat Semua Berita
+                        <ChevronRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                </Button>
             </MotionDiv>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -88,7 +87,7 @@ export function HomeNewsSection({ latestNews, locale, uniProfile }: HomeNewsSect
                             </p>
 
                             <div className="mt-auto">
-                                <Button variant="ghost" className="p-0 h-auto text-cyber-blue hover:text-cyber-blue/80 font-bold flex items-center group/btn" onClick={(e: React.MouseEvent) => {
+                                <Button className="w-full rounded-full h-11 font-bold group/btn shadow-md hover:scale-[1.02] transition-all duration-300" onClick={(e: React.MouseEvent) => {
                                     e.stopPropagation();
                                     handleOpenDetail(news);
                                 }}>

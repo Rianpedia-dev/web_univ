@@ -316,7 +316,7 @@ export async function getCampusStatisticsByYear(year: number) {
 /**
  * Fungsi untuk mengambil berita terbaru dengan detail kategori
  */
-export async function getLatestNewsWithCategory(limit: number = 5) {
+export async function getLatestNewsWithCategory(limit: number = 5, offset: number = 0) {
   try {
     const result = await db
       .select({
@@ -339,7 +339,8 @@ export async function getLatestNewsWithCategory(limit: number = 5) {
       .leftJoin(newsCategories, eq(news.categoryId, newsCategories.id))
       .where(eq(news.isPublished, true))
       .orderBy(sql`${news.publishedAt} DESC`)
-      .limit(limit);
+      .limit(limit)
+      .offset(offset);
 
     return result;
   } catch (error) {

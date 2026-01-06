@@ -260,30 +260,30 @@ export default async function AgendaPage({ params }: { params: Promise<{ locale:
                             </span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <EventShareButton
-                            event={agenda}
-                            universityName={universityProfile?.name || 'Universitas Teknokrat Indonesia'}
-                            universityLogo={universityProfile?.logo}
-                          />
-                          {agenda.registrationUrl ? (
-                            <a
-                              href={agenda.registrationUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex-1"
-                            >
-                              <Button variant="outline" className="w-full h-11 rounded-xl font-bold uppercase tracking-[0.1em] text-[10px] border-primary/10 bg-primary/5 hover:border-cyber-blue hover:bg-cyber-blue hover:text-cyber-blue-foreground transition-all duration-300 group/btn">
-                                Daftar
-                                <ArrowRight className="w-3 h-3 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                          <div className="flex items-center gap-3">
+                            <EventShareButton
+                              event={agenda}
+                              universityName={universityProfile?.name || 'Universitas Teknokrat Indonesia'}
+                              universityLogo={universityProfile?.logo}
+                            />
+                            {agenda.registrationUrl ? (
+                              <a
+                                href={agenda.registrationUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex-[2]"
+                              >
+                                <Button className="w-full h-11 rounded-full font-bold uppercase tracking-wider text-[10px] shadow-lg hover:scale-105 transition-all duration-300 group/btn">
+                                  Daftar Sekarang
+                                  <ArrowRight className="w-3.5 h-3.5 ml-2 transition-transform group-hover/btn:translate-x-1" />
+                                </Button>
+                              </a>
+                            ) : (
+                              <Button variant="secondary" disabled className="flex-[2] h-11 rounded-full font-bold uppercase tracking-wider text-[10px] opacity-40">
+                                PENDAFTARAN DITUTUP
                               </Button>
-                            </a>
-                          ) : (
-                            <Button variant="secondary" disabled className="flex-1 h-11 rounded-xl font-bold uppercase tracking-[0.1em] text-[10px] opacity-40">
-                              CLOSED
-                            </Button>
-                          )}
-                        </div>
+                            )}
+                          </div>
                       </div>
                     </div>
                   </MotionDiv>

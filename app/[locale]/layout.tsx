@@ -6,7 +6,7 @@ import { getPublishedUniversityProfile } from '@/lib/db';
 import type { Metadata } from "next";
 
 // Valid locales
-const validLocales = ['id', 'en'];
+const validLocales = ['id'];
 
 // Data dummy translations
 const translations = {
@@ -14,12 +14,6 @@ const translations = {
     HomePage: {
       heroTitle: "Universitas - Kampus Unggulan Masa Depan",
       heroSubtitle: "Universitas unggulan dengan pendidikan berkualitas, fasilitas modern, dan lingkungan akademik yang mendukung kemajuan",
-    }
-  },
-  en: {
-    HomePage: {
-      heroTitle: "University - Leading Campus of The Future",
-      heroSubtitle: "A leading university with quality education, modern facilities, and an academic environment that supports advancement",
     }
   }
 };

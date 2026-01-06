@@ -271,20 +271,20 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             viewport={{ once: true }}
-            className="glass-card p-12 md:p-16 rounded-[4rem] border border-white/10 relative overflow-hidden group shadow-[0_0_80px_rgba(147,51,234,0.1)]"
+            className="glass-card p-12 md:pb-8 md:pt-16 rounded-[4rem] border border-white/10 relative overflow-hidden group shadow-[0_0_80px_rgba(147,51,234,0.1)]"
           >
             {/* Premium Background gradients */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-electric-purple/5 rounded-full blur-[120px] -z-10"></div>
 
-            <div className="relative z-10 text-center max-w-4xl mx-auto space-y-10">
+            <div className="relative z-10 text-center max-w-6xl mx-auto space-y-10">
               <div className="space-y-4">
                 <h3 className="text-3xl md:text-5xl font-extrabold text-foreground dark:text-white tracking-tight">
                   Sejarah Singkat
                 </h3>
-                <div className="w-24 h-2 bg-gradient-to-r from-transparent via-electric-purple to-transparent rounded-full mx-auto"></div>
+                <div className="w-24 h-2 bg-gradient-to-r from-transparent via-emerald-500 to-transparent rounded-full mx-auto"></div>
               </div>
 
-              <div className="text-xl md:text-2xl text-foreground/80 dark:text-white/80 leading-relaxed font-medium space-y-6">
+              <div className="text-base md:text-lg text-foreground/80 dark:text-white/80 leading-[1.8] md:leading-[2.2] font-medium space-y-10 text-justify tracking-wide">
                 {profile.history?.split('\n').map((para, i) => (
                   para.trim() && (
                     <p key={i}>
@@ -295,7 +295,7 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
               </div>
 
               {/* Cyberpunk accent symbols */}
-              <div className="flex justify-center items-center gap-3 pt-4 opacity-40">
+              <div className="flex justify-center items-center gap-3 pt-2 opacity-40">
                 <div className="w-1.5 h-1.5 rounded-full bg-electric-purple animate-pulse"></div>
                 <div className="w-1 h-1 rounded-full bg-electric-purple/60"></div>
                 <div className="w-1 h-1 rounded-full bg-electric-purple/30"></div>

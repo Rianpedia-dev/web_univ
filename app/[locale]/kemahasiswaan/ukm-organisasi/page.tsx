@@ -162,21 +162,19 @@ export default async function UKMOrganisasiPage() {
                         </div>
 
                         <Button
-                          className={`w-full h-10 transition-all duration-300 rounded-lg ${org.isRegistrationOpen
-                            ? "bg-[linear-gradient(135deg,#00f0ff_0%,#b376ff_100%)] hover:shadow-[0_0_15px_rgba(0,240,255,0.4)] text-black font-bold hover:scale-[1.02] active:scale-[0.98]"
-                            : "bg-muted text-muted-foreground cursor-not-allowed border-none font-medium"
-                            }`}
+                          className="w-full h-11 rounded-full font-bold shadow-lg hover:scale-105 transition-all duration-300 group"
                           asChild={org.isRegistrationOpen as boolean}
+                          variant={org.isRegistrationOpen ? "default" : "secondary"}
                           disabled={!org.isRegistrationOpen}
                         >
                           {org.isRegistrationOpen ? (
-                            <a href={org.registrationLink || '#'} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-full h-full">
-                              <Rocket className="w-4 h-4 mr-2" />
-                              Bergabung
+                            <a href={org.registrationLink || '#'} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
+                              <Rocket className="w-4 h-4 mr-2 group-hover:animate-bounce" />
+                              Bergabung Sekarang
                             </a>
                           ) : (
-                            <div className="flex items-center justify-center w-full h-full">
-                              Pendaftaran ditutup
+                            <div className="flex items-center justify-center">
+                              Pendaftaran Ditutup
                             </div>
                           )}
                         </Button>

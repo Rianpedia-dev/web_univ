@@ -59,9 +59,9 @@ export default function GalleryGrid({ mediaItems, kategori }: { mediaItems: Medi
                         key={cat.id}
                         variant={cat.slug === activeFilter ? "default" : "outline"}
                         onClick={() => setActiveFilter(cat.slug)}
-                        className={`rounded-full px-6 transition-all duration-300 ${cat.slug === activeFilter
-                            ? "bg-gradient-cyber shadow-[0_0_15px_rgba(0,240,255,0.4)]"
-                            : "border-white/10 hover:border-cyber-blue/50"
+                        className={`rounded-full px-8 h-11 font-bold transition-all duration-300 ${cat.slug === activeFilter
+                            ? "shadow-lg scale-105"
+                            : "hover:border-foreground/50 border-white/10"
                             }`}
                     >
                         {cat.nama}
@@ -145,12 +145,12 @@ export default function GalleryGrid({ mediaItems, kategori }: { mediaItems: Medi
                                         {media.description || "Dokumentasi kegiatan kampus."}
                                     </p>
                                     <div className="flex items-center justify-between">
-                                        <Badge variant="outline" className="border-white/10 text-muted-foreground">
-                                            {media.mediaType === 'video' ? 'Video' : 'Foto'}
+                                        <Badge variant="secondary" className="bg-foreground/5 text-foreground/60 border-none font-bold">
+                                            {media.mediaType === 'video' ? 'VIDEO' : 'FOTO'}
                                         </Badge>
-                                        <div className="flex items-center text-cyber-blue font-bold group-hover:translate-x-1 transition-transform">
-                                            Lihat Detail
-                                        </div>
+                                        <Button variant="default" className="rounded-full h-9 px-5 text-xs font-bold shadow-md hover:scale-105 transition-all duration-300">
+                                            Detail
+                                        </Button>
                                     </div>
                                 </div>
                             </MotionDiv>
@@ -171,12 +171,12 @@ export default function GalleryGrid({ mediaItems, kategori }: { mediaItems: Medi
 
                     <div className="relative w-full h-full flex items-center justify-center bg-black">
                         <Button
-                            variant="ghost"
+                            variant="secondary"
                             size="icon"
-                            className="fixed lg:absolute -top-12 lg:-top-2 lg:-right-12 z-[100] rounded-full bg-white text-black hover:bg-cyber-blue hover:text-white w-10 h-10 shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300 pointer-events-auto"
+                            className="fixed lg:absolute -top-12 lg:-top-2 lg:-right-12 z-[100] rounded-full w-10 h-10 shadow-2xl hover:scale-110 transition-all duration-300 pointer-events-auto border border-white/20"
                             onClick={() => setSelectedMedia(null)}
                         >
-                            <X className="w-6 h-6 stroke-[3px]" />
+                            <X className="w-5 h-5" />
                         </Button>
 
                         {/* Media Section - Full Width Minimalist */}

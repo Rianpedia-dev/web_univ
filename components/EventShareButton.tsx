@@ -40,12 +40,12 @@ export function EventShareButton({ event, universityName, universityLogo }: Even
     return (
         <>
             <Button
-                variant="outline"
-                className="flex-1 h-11 rounded-xl font-bold uppercase tracking-[0.1em] text-[10px] border-primary/10 hover:border-cyber-blue/50 hover:bg-cyber-blue/5 transition-all duration-300"
+                variant="default"
+                className="flex-1 h-11 rounded-full font-bold uppercase tracking-wider text-[10px] shadow-lg hover:scale-105 transition-all duration-300 group"
                 onClick={handleOpen}
             >
                 Bagikan
-                <Share2 className="w-3.5 h-3.5 ml-2" />
+                <Share2 className="w-3.5 h-3.5 ml-2 transition-transform group-hover:rotate-12" />
             </Button>
 
             <ShareEventDialog

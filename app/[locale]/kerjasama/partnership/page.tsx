@@ -177,17 +177,19 @@ export default async function PartnershipPage() {
                         <div className="flex gap-2 pt-2">
                           <PartnershipDetailDialog partner={partner} />
                           <Button
-                            className="flex-1 bg-gradient-to-r from-cyber-blue to-electric-purple hover:shadow-[0_0_20px_rgba(0,240,255,0.4)] transition-all duration-300 h-11 rounded-xl font-bold text-xs uppercase group text-white border-none"
+                            className="flex-1 rounded-full h-11 font-bold text-xs uppercase group shadow-lg hover:scale-105 transition-all duration-300"
                             asChild={!!partner.agreementFile}
+                            variant={partner.agreementFile ? "default" : "secondary"}
+                            disabled={!partner.agreementFile}
                           >
                             {partner.agreementFile ? (
                               <a href={partner.agreementFile} target="_blank" rel="noopener noreferrer">
-                                <Eye className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform text-white" />
+                                <Eye className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
                                 DOKUMEN MOU
                               </a>
                             ) : (
                               <span className="flex items-center opacity-50 cursor-not-allowed">
-                                <Eye className="w-4 h-4 mr-2 text-white/70" />
+                                <Eye className="w-4 h-4 mr-2" />
                                 DOKUMEN MOU
                               </span>
                             )}

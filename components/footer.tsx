@@ -1,28 +1,71 @@
 import Link from "next/link";
-import { GraduationCap, MapPin, Phone, Mail, Globe, Facebook, Twitter, Instagram, Youtube, Zap, Shield, TrendingUp } from "lucide-react";
+import { GraduationCap, MapPin, Phone, Mail, Globe, Zap, Shield, TrendingUp } from "lucide-react";
 import { SimpleThemeToggle } from "@/components/theme-toggle";
 import { VisitorCounter } from "@/components/visitor-counter";
+import { getPublishedSocialMediaLinks, getPublishedContactInformation, getPublishedUniversityProfile } from '@/lib/db';
+import * as LucideIcons from "lucide-react";
 
-export function Footer({ locale = 'id' }: { locale?: string }) {
+export async function Footer({ locale = 'id' }: { locale?: string }) {
+  // Ambil data dari database
+  const [dbSocialLinks, dbContactInfo, dbProfiles] = await Promise.all([
+    getPublishedSocialMediaLinks(),
+    getPublishedContactInformation(),
+    getPublishedUniversityProfile()
+  ]);
+
+  const profile = dbProfiles[0];
+
+  // Ambil kontak utama
+  const mainContact = dbContactInfo.find(c => c.type === 'main_campus') || dbContactInfo[0];
+
   const quickLinks = [
-    { title: "Profil", href: `/${locale}/profil` },
-    { title: "Akademik", href: `/${locale}/akademik` },
-    { title: "Penerimaan", href: `/${locale}/penerimaan` },
+    { title: "Profil", href: `/${locale}/profil/profil` },
+    { title: "Akademik", href: `/${locale}/akademik/program-studi` },
+    { title: "Penerimaan", href: `/${locale}/penerimaan/pendaftaran-pmb` },
     { title: "Berita", href: `/${locale}/berita-media/berita` },
   ];
 
   const contactInfo = [
-    { icon: MapPin, text: "Jl. Pendidikan No. 1, Kota Pendidikan, Indonesia" },
-    { icon: Phone, text: "(021) 12345678" },
-    { icon: Mail, text: "info@university.ac.id" },
-    { icon: Globe, text: "www.university.ac.id" },
+    {
+      icon: MapPin,
+      text: mainContact ? `${mainContact.address}, ${mainContact.city}, ${mainContact.province}` : "Jl. Pendidikan No. 1, Kota Pendidikan, Indonesia"
+    },
+    {
+      icon: Phone,
+      text: mainContact?.phone || "(021) 12345678"
+    },
+    {
+      icon: Mail,
+      text: mainContact?.email || "info@university.ac.id"
+    },
+    {
+      icon: Globe,
+      text: mainContact?.website || "www.university.ac.id"
+    },
   ];
 
-  const socialMedia = [
-    { icon: Facebook, href: "#", label: "Facebook" },
-    { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Instagram, href: "#", label: "Instagram" },
-    { icon: Youtube, href: "#", label: "YouTube" },
+  // Helper untuk mendapatkan ikon Lucide atau brand kustom
+  const getIcon = (iconName: string) => {
+    if (iconName === 'X' || iconName === 'Twitter') {
+      return (props: any) => (
+        <svg viewBox="0 0 24 24" {...props} fill="currentColor">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+        </svg>
+      );
+    }
+    const IconComponent = (LucideIcons as any)[iconName] || LucideIcons.Globe;
+    return IconComponent;
+  };
+
+  const socialMedia = dbSocialLinks.length > 0 ? dbSocialLinks.map(item => ({
+    icon: getIcon(item.icon),
+    href: item.url,
+    label: item.platform
+  })) : [
+    { icon: LucideIcons.Facebook, href: "#", label: "Facebook" },
+    { icon: LucideIcons.X, href: "#", label: "Twitter" },
+    { icon: LucideIcons.Instagram, href: "#", label: "Instagram" },
+    { icon: LucideIcons.Youtube, href: "#", label: "YouTube" },
   ];
 
   return (
@@ -32,11 +75,22 @@ export function Footer({ locale = 'id' }: { locale?: string }) {
           {/* Logo dan Deskripsi */}
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-lg bg-gradient-cyber flex items-center justify-center shadow-[0_0_20px_rgba(0,240,255,0.3)]">
-                <GraduationCap className="w-7 h-7 text-foreground/90" suppressHydrationWarning />
+              <div className="w-12 h-12 flex items-center justify-center">
+                {profile?.logo ? (
+                  <img
+                    suppressHydrationWarning
+                    src={profile.logo}
+                    alt="Logo"
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-lg bg-gradient-cyber flex items-center justify-center shadow-[0_0_20px_rgba(0,240,255,0.3)]">
+                    <GraduationCap className="w-7 h-7 text-foreground/90" suppressHydrationWarning />
+                  </div>
+                )}
               </div>
               <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-cyber">
-                University
+                {profile?.name || "University"}
               </span>
             </div>
             <p className="text-foreground/70 mb-6 max-w-sm">
@@ -128,7 +182,7 @@ export function Footer({ locale = 'id' }: { locale?: string }) {
             <div className="flex flex-col items-center md:flex-row md:items-center gap-4">
               <SimpleThemeToggle />
               <p className="text-foreground/60">
-                © {new Date().getFullYear()} University. Hak Cipta Dilindungi.
+                © {new Date().getFullYear()} {profile?.name || "University"}. Hak Cipta Dilindungi.
               </p>
             </div>
             <div className="flex items-center gap-6 text-sm text-foreground/50">

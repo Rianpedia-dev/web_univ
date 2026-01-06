@@ -147,18 +147,18 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                 </p>
 
                 <div className="grid grid-cols-2 sm:flex sm:flex-row gap-3 sm:gap-4">
-                  <Link href="#stats-section" className="w-full sm:w-auto">
-                    <Button className="w-full sm:w-auto rounded-full px-4 sm:px-8 h-10 sm:h-11 bg-slate-900/90 border border-blue-500/50 hover:border-blue-400 text-white hover:bg-slate-900 transition-all duration-500 font-bold text-xs sm:text-base group">
-                      {heroData?.buttonText || "Mulai"}
-                      <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2 transition-transform group-hover:translate-x-1" />
-                    </Button>
-                  </Link>
-                  <Link href="penerimaan/pendaftaran-pmb" className="w-full sm:w-auto">
-                    <Button className="w-full sm:w-auto rounded-full px-4 sm:px-8 h-10 sm:h-11 bg-slate-900/90 border border-blue-500/50 hover:border-blue-400 text-white hover:bg-slate-900 transition-all duration-500 font-bold text-xs sm:text-base group">
+                  <Button asChild size="lg" className="w-full sm:w-auto rounded-full px-10 h-12 font-bold group shadow-2xl hover:scale-105 transition-all duration-300">
+                    <Link href={`/${locale}/profil/profil`}>
+                      {heroData?.buttonText || "Mulai Menjelajah"}
+                      <ChevronRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  </Button>
+                  <Button asChild size="lg" className="w-full sm:w-auto rounded-full px-10 h-12 font-bold group shadow-2xl hover:scale-105 transition-all duration-300">
+                    <Link href="penerimaan/pendaftaran-pmb">
                       Pendaftaran
-                      <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1 sm:ml-2 transition-transform group-hover:translate-x-1" />
-                    </Button>
-                  </Link>
+                      <ChevronRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  </Button>
                 </div>
               </MotionDiv>
 
@@ -196,7 +196,6 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                           >
                             <Play className="w-8 h-8 text-white fill-white ml-1" />
                           </MotionDiv>
-                          <p className="text-white font-bold tracking-[0.2em] uppercase text-[10px] md:text-xs">Discover Our Campus</p>
                         </div>
                       </div>
                     )}
@@ -285,7 +284,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
 
       {/* Kata Sambutan Rektor */}
       <div className="container mx-auto px-4 pt-8 pb-20 md:py-20 relative z-10">
-        <div className="max-w-6xl mx-auto text-center">
+        <div className="text-center">
           <MotionDiv
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -365,13 +364,12 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             <h2 className="text-4xl font-bold text-foreground mb-4">Events Mendatang</h2>
             <div className="w-24 h-1 bg-gradient-to-r from-electric-purple to-cyber-blue rounded-full"></div>
           </div>
-          <Link href={`/${locale}/berita-media/events`}>
-            <Button variant="outline" className="border-electric-purple/30 text-electric-purple hover:bg-electric-purple/10 rounded-full px-8 relative overflow-hidden group">
-              <span className="relative z-10">Lihat Semua Events</span>
-              <ChevronRight className="w-4 h-4 ml-2 relative z-10 transition-transform group-hover:translate-x-1" />
-              <div className="absolute inset-0 bg-gradient-to-r from-electric-purple/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity -z-10"></div>
-            </Button>
-          </Link>
+          <Button asChild className="rounded-full px-8 h-11 font-bold group shadow-xl hover:scale-105 transition-all duration-300">
+            <Link href={`/${locale}/berita-media/events`}>
+              Lihat Semua Events
+              <ChevronRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+            </Link>
+          </Button>
         </MotionDiv>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -422,12 +420,12 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                 </p>
 
                 <div className="mt-auto">
-                  <Link href={`/${locale}/berita-media/events#event-${event.id}`}>
-                    <Button variant="ghost" className="p-0 h-auto text-electric-purple hover:text-electric-purple/80 font-bold flex items-center group/btn">
+                  <Button asChild className="w-full rounded-full h-11 font-bold group/btn shadow-md hover:scale-[1.02] transition-all duration-300">
+                    <Link href={`/${locale}/berita-media/events#event-${event.id}`}>
                       Lihat Detail Events
                       <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover/btn:translate-x-1" />
-                    </Button>
-                  </Link>
+                    </Link>
+                  </Button>
                 </div>
               </div>
             </MotionDiv>

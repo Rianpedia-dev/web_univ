@@ -233,10 +233,10 @@ export default function BiayaPendidikanView({
                                 {/* ... other badges ... */}
                             </div>
                             <Button
-                                variant="ghost"
+                                variant="secondary"
                                 size="sm"
                                 onClick={resetFilters}
-                                className="text-muted-foreground hover:text-foreground text-[10px] h-7 px-2"
+                                className="rounded-full text-[10px] h-7 px-4 font-bold"
                             >
                                 Reset Filter
                             </Button>
@@ -395,7 +395,8 @@ export default function BiayaPendidikanView({
                                 <div className="flex justify-center pt-8">
                                     <Button
                                         onClick={() => setShowAll(true)}
-                                        className="bg-transparent border border-cyber-blue/50 text-cyber-blue hover:bg-cyber-blue/10 px-10 py-7 rounded-2xl font-bold text-lg group"
+                                        variant="outline"
+                                        className="rounded-full px-10 h-14 font-extrabold text-lg shadow-xl hover:scale-105 transition-all duration-300 border-foreground/20 hover:border-foreground/50 bg-background/50 backdrop-blur-sm group"
                                     >
                                         Lihat Pilihan Biaya Lainnya <ArrowRight className="w-6 h-6 ml-2 group-hover:translate-x-1 transition-transform" />
                                     </Button>
@@ -464,10 +465,16 @@ export default function BiayaPendidikanView({
                                     Tim konsultan pendidikan kami siap membantu memberikan simulasi biaya yang paling sesuai dengan kebutuhan dan kualifikasi Anda.
                                 </p>
                                 <div className="flex flex-wrap justify-center gap-6">
-                                    <Button className="bg-cyber-blue hover:bg-cyber-blue/80 text-white font-bold h-14 px-10 rounded-2xl shadow-xl transition-all hover:-translate-y-1">
+                                    <Button
+                                        variant="default"
+                                        className="h-14 px-10 rounded-full font-bold shadow-xl hover:scale-105 transition-all duration-300"
+                                    >
                                         <MessageSquare className="w-5 h-5 mr-3" /> Chat WhatsApp
                                     </Button>
-                                    <Button variant="outline" className="h-14 px-10 rounded-2xl border-white/10 bg-white/5 hover:bg-white/10 font-bold transition-all hover:-translate-y-1">
+                                    <Button
+                                        variant="outline"
+                                        className="h-14 px-10 rounded-full border-foreground/10 bg-background/50 backdrop-blur-sm font-bold shadow-lg hover:scale-105 transition-all duration-300"
+                                    >
                                         <Mail className="w-5 h-5 mr-3" /> Email Pertanyaan
                                     </Button>
                                 </div>

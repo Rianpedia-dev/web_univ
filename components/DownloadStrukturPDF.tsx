@@ -81,14 +81,14 @@ export function DownloadStrukturPDF({ employees, title }: Props) {
             <Button
                 onClick={handleDownload}
                 disabled={isGenerating}
-                className="bg-gradient-cyber hover:shadow-cyan-500/50 transition-all font-extrabold px-10 py-8 rounded-2xl text-lg group"
+                className="rounded-full px-10 h-14 font-bold group shadow-2xl hover:scale-105 transition-all duration-300 text-lg"
             >
                 {isGenerating ? (
                     <Loader2 className="w-6 h-6 mr-3 animate-spin" />
                 ) : (
-                    <Download className="w-6 h-6 mr-3 group-hover:bounce" />
+                    <Download className="w-6 h-6 mr-3 transition-transform group-hover:translate-y-1" />
                 )}
-                {isGenerating ? 'Mengecilkan & Menyiapkan...' : 'Unduh Bagan Struktur Organisasi (PDF)'}
+                {isGenerating ? 'Menyiapkan Dokumen...' : 'Unduh Bagan Struktur Organisasi (PDF)'}
             </Button>
 
             {/* Area Render PDF yang dioptimalkan (Compact Mode) */}

@@ -14,15 +14,40 @@ interface NewsListProps {
 }
 
 export function NewsList({ initialNews, uniProfile }: NewsListProps) {
+    const [news, setNews] = useState<any[]>(initialNews);
     const [selectedNews, setSelectedNews] = useState<any>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [hasMore, setHasMore] = useState(initialNews.length >= 10);
+    const [offset, setOffset] = useState(initialNews.length);
 
-    const beritaUtama = initialNews[0];
-    const beritaLainnya = initialNews.slice(1);
+    const beritaUtama = news[0];
+    const beritaLainnya = news.slice(1);
 
-    const handleOpenDetail = (news: any) => {
-        setSelectedNews(news);
+    const handleOpenDetail = (newsItem: any) => {
+        setSelectedNews(newsItem);
         setIsDialogOpen(true);
+    };
+
+    const handleLoadMore = async () => {
+        if (loading || !hasMore) return;
+
+        setLoading(true);
+        try {
+            const response = await fetch(`/api/news?limit=9&offset=${offset}`);
+            const newNews = await response.json();
+
+            if (newNews.length < 9) {
+                setHasMore(false);
+            }
+
+            setNews((prev) => [...prev, ...newNews]);
+            setOffset((prev) => prev + newNews.length);
+        } catch (error) {
+            console.error("Error loading more news:", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -79,8 +104,12 @@ export function NewsList({ initialNews, uniProfile }: NewsListProps) {
                                         </div>
                                         <span className="text-foreground font-medium">Humas Universitas</span>
                                     </div>
-                                    <Button variant="ghost" className="text-cyber-blue group/btn">
-                                        Baca Selengkapnya <ArrowRight className="ml-2 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                                    <Button
+                                        variant="default"
+                                        className="rounded-full h-11 px-8 font-bold shadow-lg hover:scale-105 transition-all duration-300 group/btn"
+                                    >
+                                        Baca Selengkapnya
+                                        <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
                                     </Button>
                                 </div>
                             </div>
@@ -97,7 +126,7 @@ export function NewsList({ initialNews, uniProfile }: NewsListProps) {
                         className="glass-card rounded-[2rem] overflow-hidden border border-white/10 group hover:shadow-[0_0_30px_rgba(0,240,255,0.1)] transition-all flex flex-col h-full cursor-pointer"
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
+                        transition={{ delay: (index % 3) * 0.1 }}
                         onClick={() => handleOpenDetail(berita)}
                     >
                         <div className="relative h-56 overflow-hidden">
@@ -127,14 +156,35 @@ export function NewsList({ initialNews, uniProfile }: NewsListProps) {
                             <p className="text-muted-foreground text-sm line-clamp-3 mb-6 flex-grow">
                                 {berita.excerpt || berita.content?.substring(0, 150).replace(/<[^>]*>/g, '') + '...'}
                             </p>
-                            <Button variant="link" className="text-cyber-blue p-0 h-auto justify-start hover:no-underline group/link">
+                            <Button
+                                variant="default"
+                                className="w-full rounded-full h-11 font-bold shadow-lg hover:scale-105 transition-all duration-300 group/link"
+                            >
                                 Baca Selengkapnya
-                                <ArrowRight className="ml-2 w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
+                                <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover/link:translate-x-1" />
                             </Button>
                         </div>
                     </MotionDiv>
                 ))}
             </div>
+
+            {/* Pagination/Load More */}
+            {hasMore && (
+                <MotionDiv
+                    className="text-center mt-12 mb-16"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                >
+                    <Button
+                        variant="outline"
+                        className="rounded-full px-12 h-14 font-extrabold text-lg shadow-xl hover:scale-105 transition-all duration-300 border-foreground/20 hover:border-foreground/50 bg-background/50 backdrop-blur-sm"
+                        onClick={handleLoadMore}
+                        disabled={loading}
+                    >
+                        {loading ? "Memuat..." : "Muat Lebih Banyak Berita"}
+                    </Button>
+                </MotionDiv>
+            )}
 
             <NewsDetailDialog
                 news={selectedNews}

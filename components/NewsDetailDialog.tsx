@@ -345,12 +345,8 @@ export function NewsDetailDialog({ news, isOpen, onOpenChange, uniProfile }: New
 
     return (
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent showCloseButton={false} className="sm:max-w-[95vw] lg:max-w-5xl h-[90vh] p-0 flex flex-col glass-card border-cyber-blue/30 bg-background/95 backdrop-blur-3xl gap-0 overflow-hidden shadow-2xl rounded-3xl">
-                {/* Decorative corner accents */}
-                <div className="absolute top-0 left-0 w-32 h-32 border-t border-l border-cyber-blue/30 rounded-tl-3xl pointer-events-none z-20" />
-                <div className="absolute bottom-0 right-0 w-32 h-32 border-b border-r border-electric-purple/30 rounded-br-3xl pointer-events-none z-20" />
-
-                {/* Header Section */}
+            <DialogContent showCloseButton={false} className="sm:max-w-[95vw] lg:max-w-5xl h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-2xl shadow-xl border-border">
+                {/* Header Section (Image) */}
                 <div className="flex-shrink-0 relative">
                     <div
                         className="h-64 md:h-96 w-full relative overflow-hidden cursor-zoom-in group/img"
@@ -362,21 +358,11 @@ export function NewsDetailDialog({ news, isOpen, onOpenChange, uniProfile }: New
                             fill
                             className="object-cover group-hover/img:scale-105 transition-transform duration-700"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
-
-                        <div className="absolute bottom-6 left-6 right-6 z-10">
-
-                            <DialogTitle className="text-3xl md:text-5xl font-black text-white leading-tight tracking-tighter drop-shadow-2xl">
-                                {news.title}
-                            </DialogTitle>
-                        </div>
-
                         <div className="absolute top-4 left-4 z-20 opacity-0 group-hover/img:opacity-100 transition-opacity">
                             <Badge variant="outline" className="bg-black/60 backdrop-blur-md border-white/20 text-white text-[10px] uppercase font-black tracking-widest px-3 py-1">
                                 Klik untuk perbesar
                             </Badge>
                         </div>
-
                         <Button
                             variant="ghost"
                             size="icon"
@@ -394,14 +380,16 @@ export function NewsDetailDialog({ news, isOpen, onOpenChange, uniProfile }: New
                 {/* Content Area */}
                 <ScrollArea className="flex-1 min-h-0">
                     <div className="p-6 md:p-10">
+                        <DialogTitle className="text-2xl md:text-3xl font-bold text-foreground leading-tight tracking-tight mb-6">
+                            {news.title}
+                        </DialogTitle>
+
                         <DialogDescription className="sr-only">Detail berita: {news.title}</DialogDescription>
 
-                        <div className="flex flex-wrap items-center gap-4 mb-4">
-                            <div className="flex items-center gap-2.5 bg-white/5 border border-white/5 px-3 py-1.5 rounded-xl">
-                                <div className="w-8 h-8 rounded-full bg-gradient-cyber p-[2px] shadow-[0_0_15px_rgba(0,240,255,0.2)]">
-                                    <div className="w-full h-full rounded-full bg-background flex items-center justify-center">
-                                        <User className="w-4 h-4 text-cyber-blue" />
-                                    </div>
+                        <div className="flex flex-wrap items-center gap-4 mb-8">
+                            <div className="flex items-center gap-2.5 bg-muted/50 border border-border px-3 py-1.5 rounded-xl">
+                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                    <User className="w-4 h-4 text-primary" />
                                 </div>
                                 <div className="flex flex-col">
                                     <span className="text-[8px] text-muted-foreground uppercase font-black tracking-widest opacity-60">Penulis Berita</span>
@@ -409,9 +397,9 @@ export function NewsDetailDialog({ news, isOpen, onOpenChange, uniProfile }: New
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-2.5 bg-white/5 border border-white/5 px-3 py-1.5 rounded-xl">
-                                <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
-                                    <Tag className="w-4 h-4 text-amber-500" />
+                            <div className="flex items-center gap-2.5 bg-muted/50 border border-border px-3 py-1.5 rounded-xl">
+                                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                                    <Tag className="w-4 h-4 text-primary" />
                                 </div>
                                 <div className="flex flex-col">
                                     <span className="text-[8px] text-muted-foreground uppercase font-black tracking-widest opacity-60">Kategori Berita</span>
@@ -419,14 +407,14 @@ export function NewsDetailDialog({ news, isOpen, onOpenChange, uniProfile }: New
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-2.5 bg-white/5 border border-white/5 px-3 py-1.5 rounded-xl ml-auto md:ml-0">
-                                <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
-                                    <Clock className="w-4 h-4 text-electric-purple" />
+                            <div className="flex items-center gap-2.5 bg-muted/50 border border-border px-3 py-1.5 rounded-xl ml-auto md:ml-0">
+                                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                                    <Clock className="w-4 h-4 text-primary" />
                                 </div>
                                 <div className="flex flex-col">
                                     <span className="text-[8px] text-muted-foreground uppercase font-black tracking-widest opacity-60">Waktu Publikasi</span>
                                     <span className="text-xs font-black text-foreground uppercase tracking-tighter">
-                                        {dateOnly} <span className="text-electric-purple ml-1">• {timeOnly} WIB</span>
+                                        {dateOnly} <span className="text-primary ml-1">• {timeOnly} WIB</span>
                                     </span>
                                 </div>
                             </div>
@@ -441,36 +429,34 @@ export function NewsDetailDialog({ news, isOpen, onOpenChange, uniProfile }: New
                 </ScrollArea>
 
                 {/* Action Footer */}
-                <div className="flex-shrink-0 p-6 border-t border-white/10 bg-background/60 backdrop-blur-3xl flex flex-col sm:flex-row items-center justify-between gap-6 relative z-30">
+                <div className="flex-shrink-0 p-6 border-t border-border bg-card flex flex-col sm:flex-row items-center justify-between gap-6 relative z-30">
                     <div className="text-center sm:text-left">
                         <p className="text-[10px] text-muted-foreground uppercase tracking-[0.3em] font-black opacity-50 mb-1">DIBAGIKAN MELALUI</p>
                         <div className="flex gap-2">
                             <Button
                                 variant="outline"
-                                size="sm"
-                                className="rounded-full border-cyan-500/30 hover:bg-cyan-500/10 text-cyan-400 gap-2 h-9"
+                                className="rounded-full h-9 px-5 font-bold shadow-sm hover:scale-105 transition-all duration-300 gap-2 border-foreground/10 hover:border-foreground/30"
                                 onClick={handleWhatsAppShare}
                             >
-                                <MessageCircle className="w-4 h-4" />
-                                <span className="text-xs font-bold">WhatsApp</span>
+                                <MessageCircle className="w-4 h-4 text-green-500" />
+                                <span className="text-xs">WhatsApp</span>
                             </Button>
                             <Button
                                 variant="outline"
-                                size="sm"
-                                className={`rounded-full gap-2 h-9 transition-all duration-300 ${isCopied
-                                    ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-400"
-                                    : "border-purple-500/30 hover:bg-purple-500/10 text-purple-400"}`}
+                                className={`rounded-full h-9 px-5 font-bold shadow-sm hover:scale-105 transition-all duration-300 gap-2 border-foreground/10 hover:border-foreground/30 ${isCopied ? "border-emerald-500/50 bg-emerald-500/10" : ""
+                                    }`}
                                 onClick={handleCopyLink}
                             >
-                                {isCopied ? <Check className="w-4 h-4" /> : <Link2 className="w-4 h-4" />}
-                                <span className="text-xs font-bold">{isCopied ? "Tersalin!" : "Salin Link"}</span>
+                                {isCopied ? <Check className="w-4 h-4 text-emerald-500" /> : <Link2 className="w-4 h-4 text-purple-500" />}
+                                <span className="text-xs">{isCopied ? "Tersalin!" : "Salin Link"}</span>
                             </Button>
                         </div>
                     </div>
 
                     <div className="flex gap-3 w-full sm:w-auto">
                         <Button
-                            className="flex-1 sm:flex-none h-11 px-8 bg-gradient-to-r from-cyber-blue to-electric-purple hover:shadow-[0_0_20px_rgba(0,240,255,0.5)] border-none text-white rounded-xl font-black group transition-all duration-300 gap-2 text-[11px] uppercase"
+                            variant="default"
+                            className="flex-1 sm:flex-none h-11 px-8 rounded-full font-black shadow-lg hover:scale-105 transition-all duration-300 gap-2 text-[11px] uppercase group"
                             onClick={handleDownload}
                             disabled={isDownloading}
                         >
@@ -482,12 +468,16 @@ export function NewsDetailDialog({ news, isOpen, onOpenChange, uniProfile }: New
                             {isDownloading ? "Menyiapkan..." : "Download Berita"}
                         </Button>
                         <DialogClose asChild>
-                            <Button variant="secondary" className="flex-1 sm:flex-none h-11 px-8 rounded-xl font-black tracking-[0.2em] text-[11px] uppercase hover:bg-white hover:text-black transition-all">
+                            <Button
+                                variant="secondary"
+                                className="flex-1 sm:flex-none h-11 px-8 rounded-full font-black tracking-[0.2em] text-[11px] uppercase transition-all shadow-md hover:shadow-lg hover:bg-foreground hover:text-background"
+                            >
                                 TUTUP
                             </Button>
                         </DialogClose>
                     </div>
                 </div>
+
                 {/* Full Image Dialog (Lightbox) */}
                 <Dialog open={showFullImage} onOpenChange={setShowFullImage}>
                     <DialogContent showCloseButton={false} className="max-w-[95vw] max-h-[95vh] p-0 bg-transparent border-none shadow-none flex items-center justify-center">
