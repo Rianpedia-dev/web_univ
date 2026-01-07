@@ -1491,9 +1491,9 @@ export default function AdminDashboardPage() {
 
   // Set default table when module changes
   useEffect(() => {
-    const module = tableConfigurations[activeModule as keyof typeof tableConfigurations] as ModuleConfig
-    if (module) {
-      const firstTable = Object.keys(module.tables)[0]
+    const moduleConfig = tableConfigurations[activeModule as keyof typeof tableConfigurations] as ModuleConfig
+    if (moduleConfig) {
+      const firstTable = Object.keys(moduleConfig.tables)[0]
       setActiveTable(firstTable)
     }
   }, [activeModule])
