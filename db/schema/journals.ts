@@ -13,6 +13,7 @@ export const journals = pgTable("journals", {
     number: text("number"),
     keywords: text("keywords"), // Disimpan sebagai string koma-terpisah atau teks bebas
     link: text("link"),
+    pdfUrl: text("pdf_url"),
     isPublished: boolean("is_published").default(false).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),

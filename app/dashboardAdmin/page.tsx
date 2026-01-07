@@ -33,6 +33,7 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+import { uploadFile, getPublicUrl } from "@/lib/storage"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -105,7 +106,7 @@ const tableConfigurations = {
           { key: "name", label: "Nama", type: "text", required: true },
           { key: "role", label: "Peran/Jabatan", type: "text", required: true },
           { key: "content", label: "Isi Testimoni", type: "textarea", required: true },
-          { key: "image", label: "Foto URL", type: "text" },
+          { key: "image", label: "Foto", type: "image", bucket: "images" },
           { key: "rating", label: "Rating (1-5)", type: "number" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
         ],
@@ -117,7 +118,7 @@ const tableConfigurations = {
           { key: "name", label: "Nama Rektor", type: "text", required: true },
           { key: "position", label: "Jabatan", type: "text", required: true },
           { key: "message", label: "Isi Sambutan", type: "textarea", required: true },
-          { key: "photo", label: "Foto URL", type: "text" },
+          { key: "photo", label: "Foto", type: "image", bucket: "images" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
         ],
       },
@@ -139,7 +140,7 @@ const tableConfigurations = {
           { key: "title", label: "Judul Utama", type: "text", required: true },
           { key: "subtitle", label: "Sub-judul", type: "textarea", required: true },
           { key: "videoUrl", label: "Video URL (Youtube/Embed)", type: "text" },
-          { key: "imageUrl", label: "Background Image URL", type: "text" },
+          { key: "imageUrl", label: "Background Image", type: "image", bucket: "images" },
           { key: "buttonText", label: "Teks Tombol", type: "text" },
           { key: "buttonLink", label: "Link Tombol", type: "text" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
@@ -166,7 +167,7 @@ const tableConfigurations = {
           { key: "contactPhone", label: "Telepon", type: "text" },
           { key: "address", label: "Alamat", type: "textarea" },
           { key: "accreditation", label: "Akreditasi", type: "select", options: ["A", "B", "C", "Unggul", "Baik"] },
-          { key: "logo", label: "Logo Fakultas (URL)", type: "image" },
+          { key: "logo", label: "Logo Fakultas", type: "image", bucket: "images" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
         ],
       },
@@ -183,7 +184,7 @@ const tableConfigurations = {
           { key: "headOfProgram", label: "Ketua Program Studi", type: "text" },
           { key: "contactEmail", label: "Email Prodi", type: "text" },
           { key: "contactPhone", label: "Kontak/WhatsApp Prodi", type: "text" },
-          { key: "logo", label: "Logo Prodi (URL)", type: "image" },
+          { key: "logo", label: "Logo Prodi", type: "image", bucket: "images" },
           { key: "totalStudents", label: "Jumlah Mahasiswa Aktif", type: "number" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
         ],
@@ -226,7 +227,7 @@ const tableConfigurations = {
           { key: "location", label: "Lokasi", type: "text" },
           { key: "capacity", label: "Kapasitas", type: "number" },
           { key: "operatingHours", label: "Jam Operasional", type: "text" },
-          { key: "image", label: "Gambar URL", type: "text" },
+          { key: "image", label: "Gambar", type: "image", bucket: "images" },
           { key: "isAvailable", label: "Tersedia", type: "boolean" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
         ],
@@ -346,14 +347,23 @@ const tableConfigurations = {
         fields: [
           { key: "name", label: "Nama", type: "text", required: true },
           { key: "position", label: "Jabatan", type: "text", required: true },
-          { key: "image", label: "Foto URL", type: "text" },
+          { key: "image", label: "Foto", type: "image", bucket: "images" },
           { key: "whatsapp", label: "WhatsApp", type: "text" },
           { key: "email", label: "Email", type: "email" },
           { key: "order", label: "Urutan", type: "number" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
         ],
       },
-
+      admissionBrochures: {
+        label: "Brosur Pendaftaran",
+        description: "Kelola file brosur pendaftaran (PDF)",
+        fields: [
+          { key: "title", label: "Judul Brosur", type: "text", required: true },
+          { key: "description", label: "Deskripsi", type: "textarea" },
+          { key: "fileUrl", label: "File PDF Brosur", type: "file", bucket: "documents", required: true },
+          { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
+        ],
+      },
     },
   },
 
@@ -381,7 +391,7 @@ const tableConfigurations = {
           { key: "slug", label: "Slug", type: "text", required: true },
           { key: "content", label: "Konten", type: "textarea", required: true },
           { key: "excerpt", label: "Ringkasan", type: "textarea" },
-          { key: "featuredImage", label: "Gambar Utama", type: "text" },
+          { key: "featuredImage", label: "Gambar Utama", type: "image", bucket: "images" },
           { key: "viewCount", label: "Jumlah Dilihat", type: "number" },
           { key: "authorName", label: "Nama Penulis", type: "text" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
@@ -414,7 +424,7 @@ const tableConfigurations = {
           { key: "title", label: "Judul", type: "text", required: true },
           { key: "description", label: "Deskripsi", type: "text", required: true },
           { key: "content", label: "Konten", type: "textarea" },
-          { key: "poster", label: "Poster URL", type: "text" },
+          { key: "poster", label: "Poster", type: "image", bucket: "images" },
           { key: "startDate", label: "Tanggal Mulai", type: "datetime", required: true },
           { key: "endDate", label: "Tanggal Selesai", type: "datetime" },
           { key: "location", label: "Lokasi", type: "text", required: true },
@@ -454,7 +464,7 @@ const tableConfigurations = {
           { key: "categoryId", label: "Kategori", type: "select", referenceTable: "galleryCategories", referenceLabel: "name" },
           { key: "title", label: "Judul", type: "text", required: true },
           { key: "description", label: "Deskripsi", type: "textarea" },
-          { key: "filePath", label: "Url Image/vidio", type: "text", required: true },
+          { key: "filePath", label: "File Media", type: "image", bucket: "images" },
           { key: "mediaType", label: "Tipe Media", type: "select", options: ["image", "video"], required: true },
           { key: "isPublic", label: "Publik", type: "boolean" },
           { key: "isFeatured", label: "Unggulan", type: "boolean" },
@@ -483,10 +493,10 @@ const tableConfigurations = {
           { key: "contactPerson", label: "Kontak Person", type: "text" },
           { key: "contactEmail", label: "Email", type: "email" },
           { key: "website", label: "Website", type: "text" },
-          { key: "logo", label: "Logo URL", type: "text" },
+          { key: "logo", label: "Logo Mitra", type: "image", bucket: "images" },
 
           { key: "agreementNumber", label: "Nomor MOU/MOA", type: "text" },
-          { key: "agreementFile", label: "File MOU (URL)", type: "text" },
+          { key: "agreementFile", label: "File MOU/Kerjasama", type: "file", bucket: "documents" },
           { key: "startDate", label: "Tanggal Mulai", type: "datetime" },
           { key: "endDate", label: "Tanggal Selesai", type: "datetime" },
           { key: "isActive", label: "Aktif", type: "boolean" },
@@ -521,8 +531,9 @@ const tableConfigurations = {
           { key: "volume", label: "Volume", type: "text" },
           { key: "number", label: "Nomor", type: "text" },
           { key: "keywords", label: "Kata Kunci (Koma-terpisah)", type: "text" },
-          { key: "imageUrl", label: "URL Gambar", type: "text" },
+          { key: "imageUrl", label: "Gambar Sampul", type: "image", bucket: "images" },
           { key: "link", label: "Link Jurnal (URL)", type: "text" },
+          { key: "pdfUrl", label: "File PDF Jurnal", type: "file", bucket: "documents" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
         ],
       },
@@ -547,7 +558,7 @@ const tableConfigurations = {
           { key: "objectives", label: "Tujuan", type: "textarea" },
           { key: "values", label: "Nilai", type: "textarea" },
           { key: "history", label: "Sejarah", type: "textarea" },
-          { key: "logo", label: "Logo URL", type: "image" },
+          { key: "logo", label: "Logo Universitas", type: "image", bucket: "images" },
           { key: "establishedYear", label: "Tahun Berdiri", type: "number" },
           { key: "motto", label: "Moto", type: "text" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
@@ -559,7 +570,7 @@ const tableConfigurations = {
         fields: [
           { key: "element", label: "Elemen Logo", type: "text", required: true },
           { key: "meaning", label: "Makna", type: "textarea", required: true },
-          { key: "image", label: "Gambar Elemen (URL)", type: "image" },
+          { key: "image", label: "Gambar Elemen", type: "image", bucket: "images" },
           { key: "order", label: "Urutan", type: "number" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
         ],
@@ -592,7 +603,7 @@ const tableConfigurations = {
           { key: "accreditationLevel", label: "Tingkat", type: "select", options: ["A", "B", "C", "Unggul", "Baik", "Baik Sekali"], required: true },
           { key: "accreditationDate", label: "Tanggal Akreditasi", type: "datetime" },
           { key: "accreditationExpired", label: "Tanggal Kadaluarsa", type: "datetime" },
-          { key: "documentFile", label: "File Dokumen", type: "text" },
+          { key: "documentFile", label: "File Sertifikat Akreditasi", type: "file", bucket: "documents" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
         ],
       },
@@ -620,7 +631,7 @@ const tableConfigurations = {
           { key: "title", label: "Judul", type: "text", required: true },
           { key: "slug", label: "Slug", type: "text", required: true },
           { key: "description", label: "Deskripsi", type: "textarea" },
-          { key: "structureFile", label: "File Struktur", type: "text" },
+          { key: "structureFile", label: "File Struktur Organisasi", type: "file", bucket: "documents" },
           { key: "effectiveDate", label: "Tanggal Berlaku", type: "datetime" },
           { key: "isCurrent", label: "Struktur Saat Ini", type: "boolean" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
@@ -641,7 +652,7 @@ const tableConfigurations = {
           { key: "positionLevel", label: "Tingkat jabatan", type: "number", required: true },
           { key: "positionOrder", label: "Urutan", type: "number" },
           { key: "period", label: "Masa Jabatan", type: "text" },
-          { key: "photo", label: "Foto URL", type: "text" },
+          { key: "photo", label: "Foto Pegawai", type: "image", bucket: "images" },
           { key: "description", label: "Deskripsi", type: "textarea" },
           { key: "responsibilities", label: "Tanggung Jawab", type: "textarea" },
           { key: "authority", label: "Wewenang", type: "textarea" },
@@ -723,7 +734,7 @@ const tableConfigurations = {
           { key: "contactPhone", label: "WhatsApp/Telepon", type: "text" },
           { key: "registrationLink", label: "Link Bergabung", type: "text" },
           { key: "isRegistrationOpen", label: "Status Pendaftaran Terbuka", type: "boolean" },
-          { key: "logo", label: "Logo URL", type: "image" },
+          { key: "logo", label: "Logo Organisasi", type: "image", bucket: "images" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
         ],
       },
@@ -737,7 +748,7 @@ const tableConfigurations = {
           { key: "title", label: "Judul Prestasi", type: "text", required: true },
           { key: "description", label: "Deskripsi", type: "textarea" },
           { key: "achievementType", label: "Jenis", type: "select", options: ["non_academic", "competition", "community_service", "other"], required: true },
-          { key: "image", label: "Foto Prestasi (URL)", type: "text" },
+          { key: "image", label: "Foto Prestasi", type: "image", bucket: "images" },
           { key: "achievementLevel", label: "Tingkat", type: "select", options: ["local", "regional", "national", "international"], required: true },
           { key: "achievementCategory", label: "Kategori", type: "select", options: ["first", "second", "third", "champion", "participation", "other"], required: true },
           { key: "eventName", label: "Nama Kegiatan", type: "text", required: true },
@@ -766,11 +777,12 @@ const tableConfigurations = {
 type FieldConfig = {
   key: string
   label: string
-  type: "text" | "textarea" | "number" | "email" | "datetime" | "boolean" | "select"
+  type: "text" | "textarea" | "number" | "email" | "datetime" | "boolean" | "select" | "image" | "file"
   required?: boolean
   options?: string[]
   referenceTable?: string
   referenceLabel?: string
+  bucket?: string
 }
 
 type TableConfig = {
@@ -897,16 +909,58 @@ function DynamicForm({
                 ) : null}
               </SelectContent>
             </Select>
-          ) : field.type === "image" ? (
+          ) : field.type === "image" || field.type === "file" ? (
             <div className="space-y-3">
-              <Input
-                id={field.key}
-                type="text"
-                value={data[field.key] || ""}
-                onChange={(e) => onChange(field.key, e.target.value)}
-                placeholder={`Masukkan URL gambar untuk ${field.label.toLowerCase()}`}
-              />
-              {data[field.key] && (
+              <div className="flex gap-2">
+                <Input
+                  id={field.key}
+                  type="text"
+                  value={data[field.key] || ""}
+                  onChange={(e) => onChange(field.key, e.target.value)}
+                  placeholder={`Masukkan URL atau unggah ${field.label.toLowerCase()}`}
+                  className="flex-1"
+                />
+                <div className="relative">
+                  <input
+                    type="file"
+                    id={`file-${field.key}`}
+                    className="hidden"
+                    accept={field.type === "image" ? "image/*" : "application/pdf"}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0]
+                      if (!file) return
+
+                      const loadingToast = toast.loading(`Mengunggah ${field.label}...`)
+                      try {
+                        const bucket = field.bucket || (field.type === "image" ? "images" : "documents")
+                        const folder = field.key
+                        const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`
+                        const path = `${folder}/${fileName}`
+
+                        const uploadedPath = await uploadFile(file, bucket, path)
+                        const publicUrl = getPublicUrl(bucket, uploadedPath)
+
+                        onChange(field.key, publicUrl)
+                        toast.success(`${field.label} berhasil diunggah`, { id: loadingToast })
+                      } catch (error: any) {
+                        console.error("Upload error:", error)
+                        toast.error(`Gagal mengunggah: ${error.message || "Terjadi kesalahan"}`, { id: loadingToast })
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => document.getElementById(`file-${field.key}`)?.click()}
+                    className="gap-2"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Unggah
+                  </Button>
+                </div>
+              </div>
+
+              {data[field.key] && field.type === "image" && (
                 <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-white/10 bg-white/5 flex items-center justify-center group">
                   <img
                     src={data[field.key]}
@@ -919,6 +973,23 @@ function DynamicForm({
                   <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-md px-2 py-1 rounded text-[10px] text-white opacity-0 group-hover:opacity-100 transition-opacity">
                     Preview
                   </div>
+                </div>
+              )}
+
+              {data[field.key] && field.type === "file" && (
+                <div className="flex items-center gap-2 p-2 rounded-lg border border-white/10 bg-white/5">
+                  <FileText className="w-4 h-4 text-primary" />
+                  <span className="text-xs truncate flex-1">{data[field.key].split('/').pop()}</span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    asChild
+                  >
+                    <a href={data[field.key]} target="_blank" rel="noopener noreferrer">
+                      Lihat
+                    </a>
+                  </Button>
                 </div>
               )}
             </div>

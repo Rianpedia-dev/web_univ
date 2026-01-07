@@ -123,4 +123,13 @@ export const admissionTimelines = pgTable("admission_timelines", {
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-
+// Tabel brosur pendaftaran
+export const admissionBrochures = pgTable("admission_brochures", {
+    id: uuid("id").defaultRandom().primaryKey(),
+    title: text("title").notNull(), // judul brosur (misal: "Brosur PMB 2024/2025")
+    description: text("description"),
+    fileUrl: text("file_url").notNull(), // URL file PDF di Supabase Storage
+    isPublished: boolean("is_published").default(true).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
