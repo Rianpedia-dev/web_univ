@@ -102,12 +102,12 @@ export default async function AgendaPage({ params }: { params: Promise<{ locale:
               transition={{ duration: 0.6 }}
             >
               <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight transform transition-all duration-300 hover:scale-105" style={{
-                background: 'linear-gradient(to right, #10b981, #34d399)',
+                background: 'linear-gradient(to right, #fefce8, #fef08a, #fbbf24)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
-                WebkitTextStroke: '1px black',
-                textShadow: '0 0 5px rgba(16, 185, 129, 0.5), 0 0 10px rgba(52, 211, 153, 0.5), 0 0 20px rgba(16, 185, 129, 0.3)'
+                WebkitTextStroke: '1px #92400e',
+                textShadow: '0 2px 2px rgba(0,0,0,0.5)'
               }}>
                 Agenda & Event
               </h1>
@@ -260,30 +260,30 @@ export default async function AgendaPage({ params }: { params: Promise<{ locale:
                             </span>
                           </div>
                         </div>
-                          <div className="flex items-center gap-3">
-                            <EventShareButton
-                              event={agenda}
-                              universityName={universityProfile?.name || 'Universitas Teknokrat Indonesia'}
-                              universityLogo={universityProfile?.logo}
-                            />
-                            {agenda.registrationUrl ? (
-                              <a
-                                href={agenda.registrationUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex-[2]"
-                              >
-                                <Button className="w-full h-11 rounded-full font-bold uppercase tracking-wider text-[10px] shadow-lg hover:scale-105 transition-all duration-300 group/btn">
-                                  Daftar Sekarang
-                                  <ArrowRight className="w-3.5 h-3.5 ml-2 transition-transform group-hover/btn:translate-x-1" />
-                                </Button>
-                              </a>
-                            ) : (
-                              <Button variant="secondary" disabled className="flex-[2] h-11 rounded-full font-bold uppercase tracking-wider text-[10px] opacity-40">
-                                PENDAFTARAN DITUTUP
+                        <div className="flex items-center gap-3">
+                          <EventShareButton
+                            event={agenda}
+                            universityName={universityProfile?.name || 'Universitas Teknokrat Indonesia'}
+                            universityLogo={universityProfile?.logo}
+                          />
+                          {agenda.registrationUrl ? (
+                            <a
+                              href={agenda.registrationUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-[2]"
+                            >
+                              <Button className="w-full h-11 rounded-full font-bold uppercase tracking-wider text-[10px] shadow-lg hover:scale-105 transition-all duration-300 group/btn">
+                                Daftar Sekarang
+                                <ArrowRight className="w-3.5 h-3.5 ml-2 transition-transform group-hover/btn:translate-x-1" />
                               </Button>
-                            )}
-                          </div>
+                            </a>
+                          ) : (
+                            <Button variant="secondary" disabled className="flex-[2] h-11 rounded-full font-bold uppercase tracking-wider text-[10px] opacity-40">
+                              PENDAFTARAN DITUTUP
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </MotionDiv>

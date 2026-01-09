@@ -60,7 +60,9 @@ export default async function LocaleLayout({
   const profile = profiles.length > 0 ? profiles[0] : null;
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div
+      className="flex flex-col min-h-screen"
+    >
       <Navbar locale={locale} profile={profile} />
       <main className="flex-grow pt-16">
         {children}

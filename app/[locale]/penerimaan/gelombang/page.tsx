@@ -70,12 +70,12 @@ export default async function GelombangPage({ params }: { params: Promise<{ loca
                             transition={{ duration: 0.6 }}
                         >
                             <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight transform transition-all duration-300 hover:scale-105" style={{
-                                background: 'linear-gradient(to right, #10b981, #34d399)',
+                                background: 'linear-gradient(to right, #fefce8, #fef08a, #fbbf24)',
                                 WebkitBackgroundClip: 'text',
                                 WebkitTextFillColor: 'transparent',
                                 backgroundClip: 'text',
-                                WebkitTextStroke: '1px black',
-                                textShadow: '0 0 5px rgba(16, 185, 129, 0.5), 0 0 10px rgba(52, 211, 153, 0.5), 0 0 20px rgba(16, 185, 129, 0.3)'
+                                WebkitTextStroke: '1px #92400e',
+                                textShadow: '0 2px 2px rgba(0,0,0,0.5)'
                             }}>
                                 Gelombang Pendaftaran
                             </h1>
@@ -145,8 +145,8 @@ export default async function GelombangPage({ params }: { params: Promise<{ loca
                                     <MotionDiv
                                         key={gelombang.id}
                                         className={`glass-card rounded-2xl border overflow-hidden transition-all duration-300 ${waveStatus.status === 'active'
-                                                ? 'border-green-500/50 shadow-[0_0_30px_rgba(34,197,94,0.2)]'
-                                                : 'hover:shadow-[0_0_30px_rgba(0,240,255,0.1)]'
+                                            ? 'border-green-500/50 shadow-[0_0_30px_rgba(34,197,94,0.2)]'
+                                            : 'hover:shadow-[0_0_30px_rgba(0,240,255,0.1)]'
                                             }`}
                                         initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
                                         animate={{ opacity: 1, x: 0 }}
@@ -157,26 +157,26 @@ export default async function GelombangPage({ params }: { params: Promise<{ loca
                                                 {/* Left: Info Gelombang */}
                                                 <div className="flex items-start gap-6">
                                                     <div className={`w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0 ${waveStatus.status === 'active'
-                                                            ? 'bg-green-500/20 border-2 border-green-500/50'
-                                                            : waveStatus.status === 'upcoming'
-                                                                ? 'bg-blue-500/20 border-2 border-blue-500/50'
-                                                                : 'bg-gray-500/20 border-2 border-gray-500/50'
+                                                        ? 'bg-green-500/20 border-2 border-green-500/50'
+                                                        : waveStatus.status === 'upcoming'
+                                                            ? 'bg-blue-500/20 border-2 border-blue-500/50'
+                                                            : 'bg-gray-500/20 border-2 border-gray-500/50'
                                                         }`}>
                                                         <Flag className={`w-8 h-8 ${waveStatus.status === 'active'
-                                                                ? 'text-green-500'
-                                                                : waveStatus.status === 'upcoming'
-                                                                    ? 'text-blue-500'
-                                                                    : 'text-gray-500'
+                                                            ? 'text-green-500'
+                                                            : waveStatus.status === 'upcoming'
+                                                                ? 'text-blue-500'
+                                                                : 'text-gray-500'
                                                             }`} />
                                                     </div>
                                                     <div>
                                                         <div className="flex items-center gap-3 mb-2">
                                                             <h3 className="text-2xl font-bold text-foreground">{gelombang.name}</h3>
                                                             <Badge className={`${waveStatus.status === 'active'
-                                                                    ? 'bg-green-500/20 text-green-400 border-green-500/30'
-                                                                    : waveStatus.status === 'upcoming'
-                                                                        ? 'bg-blue-500/20 text-blue-400 border-blue-500/30'
-                                                                        : 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+                                                                ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                                                                : waveStatus.status === 'upcoming'
+                                                                    ? 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+                                                                    : 'bg-gray-500/20 text-gray-400 border-gray-500/30'
                                                                 }`}>
                                                                 {waveStatus.icon} {waveStatus.label}
                                                             </Badge>

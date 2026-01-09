@@ -39,21 +39,20 @@ export default async function PrestasiMahasiswaPage({ params }: { params: Promis
           <div className="relative z-10 py-44 px-4 sm:px-6">
             <div className="container mx-auto max-w-6xl">
               <div className="text-center">
-                <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight transform transition-all duration-300 hover:scale-105" style={{
-                  background: 'linear-gradient(to right, #10b981, #34d399)',
+                <h1 className="text-4xl md:text-6xl font-extrabold mb-4 leading-tight transform transition-all duration-300 hover:scale-105" style={{
+                  background: 'linear-gradient(to right, #fefce8, #fef08a, #fbbf24)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
-                  WebkitTextStroke: '1px black',
-                  textShadow: '0 0 5px rgba(16, 185, 129, 0.5), 0 0 10px rgba(52, 211, 153, 0.5), 0 0 20px rgba(16, 185, 129, 0.3)'
+                  WebkitTextStroke: '1px #92400e',
+                  textShadow: '0 2px 2px rgba(0,0,0,0.5)'
                 }}>
                   Prestasi <span style={{
-                    background: 'linear-gradient(to right, #10b981, #34d399)',
+                    background: 'linear-gradient(to right, #fefce8, #fef08a, #fbbf24)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',
-                    WebkitTextStroke: '1px black',
-                    textShadow: '0 0 5px rgba(16, 185, 129, 0.5), 0 0 10px rgba(52, 211, 153, 0.5), 0 0 20px rgba(16, 185, 129, 0.3)'
+                    textShadow: '0 2px 2px rgba(0,0,0,0.5)'
                   }}>Mahasiswa</span>
                 </h1>
               </div>

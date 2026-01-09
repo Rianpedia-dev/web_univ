@@ -124,7 +124,7 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
             </div>
             <span
               suppressHydrationWarning
-              className="text-lg sm:text-xl lg:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 block whitespace-nowrap"
+              className="text-lg sm:text-xl lg:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-yellow-100 via-yellow-200 to-amber-400 bg-[length:200%_auto] animate-gradient-x drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)] [-webkit-text-stroke:1px_#92400e] block whitespace-nowrap"
             >
               {profile?.name || "University"}
             </span>

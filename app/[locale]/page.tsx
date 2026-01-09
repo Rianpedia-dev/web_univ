@@ -122,52 +122,37 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
 
       <div className="container mx-auto px-4 pt-4 pb-8 relative z-10">
         {/* Hero Section */}
-        <div className="relative pt-4 pb-6 md:pt-20 md:pb-32 overflow-hidden z-10">
+        <div className="relative pt-12 pb-6 md:pt-20 md:pb-32 overflow-hidden z-10">
           {/* Background Abstract Effects */}
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyber-blue/10 rounded-full blur-[120px] -z-10 animate-pulse"></div>
           <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-electric-purple/10 rounded-full blur-[120px] -z-10"></div>
 
           <div className="container mx-auto px-4">
-            <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start">
               <MotionDiv
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.8 }}
-                className="relative z-10 text-left"
+                className="relative z-10 text-left lg:h-auto"
               >
 
 
-                <h1 className="text-5xl md:text-7xl font-extrabold text-foreground mb-8 leading-[1.1] tracking-tight">
-                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-[length:200%_auto] animate-gradient-x">
+                <h1 className="text-4xl md:text-7xl font-extrabold text-white mb-8 leading-[1.1] tracking-tight line-clamp-2">
+                  <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-100 via-yellow-200 to-amber-400 bg-[length:200%_auto] animate-gradient-x drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)] [-webkit-text-stroke:1px_#92400e]">
                     {heroData?.title || "Selamat Datang di Universitas"}
                   </span>
                 </h1>
 
-                <p className="text-xl text-foreground/60 mb-10 max-w-xl leading-relaxed">
+                <p className="text-xl text-foreground/60 mb-8 max-w-xl leading-relaxed">
                   {heroData?.subtitle || "Membangun generasi unggul dan berdaya saing global melalui pendidikan berkualitas tinggi dengan kurikulum berbasis industri dan teknologi masa depan."}
                 </p>
-
-                <div className="grid grid-cols-2 sm:flex sm:flex-row gap-3 sm:gap-4">
-                  <Button asChild size="lg" className="w-full sm:w-auto rounded-full px-10 h-12 font-bold group shadow-2xl hover:scale-105 transition-all duration-300">
-                    <Link href={`/${locale}/profil/profil`}>
-                      {heroData?.buttonText || "Mulai Menjelajah"}
-                      <ChevronRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
-                    </Link>
-                  </Button>
-                  <Button asChild size="lg" className="w-full sm:w-auto rounded-full px-10 h-12 font-bold group shadow-2xl hover:scale-105 transition-all duration-300">
-                    <Link href="penerimaan/pendaftaran-pmb">
-                      Pendaftaran
-                      <ChevronRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
-                    </Link>
-                  </Button>
-                </div>
               </MotionDiv>
 
               <MotionDiv
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 1, delay: 0.2 }}
-                className="relative z-10"
+                className="relative z-10 lg:row-span-2"
               >
                 <div className="relative group">
                   {/* Decorative Frames & Glow */}
@@ -201,6 +186,28 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                       </div>
                     )}
                   </div>
+                </div>
+              </MotionDiv>
+
+              <MotionDiv
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+                className="relative z-10 text-left lg:col-start-1 lg:row-start-2"
+              >
+                <div className="grid grid-cols-2 sm:flex sm:flex-row gap-3 sm:gap-4 mt-4 lg:mt-0">
+                  <Button asChild size="lg" className="w-full sm:w-auto rounded-full px-10 h-12 font-bold group shadow-2xl hover:scale-105 transition-all duration-300">
+                    <Link href={`/${locale}/profil/profil`}>
+                      {heroData?.buttonText || "Mulai Menjelajah"}
+                      <ChevronRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  </Button>
+                  <Button asChild size="lg" className="w-full sm:w-auto rounded-full px-10 h-12 font-bold group shadow-2xl hover:scale-105 transition-all duration-300">
+                    <Link href="penerimaan/pendaftaran-pmb">
+                      Pendaftaran
+                      <ChevronRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  </Button>
                 </div>
               </MotionDiv>
             </div>

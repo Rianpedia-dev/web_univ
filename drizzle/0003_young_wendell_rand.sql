@@ -1,2 +1,0 @@
-ALTER TABLE "education_costs" ADD COLUMN "pathway_id" uuid;--> statement-breakpoint
-ALTER TABLE "education_costs" ADD CONSTRAINT "education_costs_pathway_id_admission_pathways_id_fk" FOREIGN KEY ("pathway_id") REFERENCES "public"."admission_pathways"("id") ON DELETE set null ON UPDATE no action;
