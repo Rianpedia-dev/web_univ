@@ -98,96 +98,94 @@ export default async function ProgramStudiPage({ params }: { params: Promise<{ l
                 {/* Glow Effect */}
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-cyber-blue to-electric-purple rounded-[2.5rem] blur opacity-10 group-hover:opacity-30 transition duration-500" />
 
-                <div className="glass-card relative rounded-[2.5rem] border border-white/10 overflow-hidden bg-black/40 backdrop-blur-xl h-full flex flex-col">
+                <div className="glass-card relative rounded-[2.5rem] border border-foreground/10 overflow-hidden bg-background/40 backdrop-blur-xl h-full flex flex-col">
                   {/* Card Header */}
-                  <div className="p-8 pb-4">
-                    <div className="flex justify-between items-start mb-4">
-                      <div className="flex items-center gap-4">
+                  <div className="p-6 sm:p-8 pb-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
+                      <div className="flex items-center gap-3 sm:gap-4">
                         {prodi.logo ? (
-                          <div className="w-14 h-14 rounded-xl bg-white/5 border border-white/10 p-2 flex items-center justify-center overflow-hidden shrink-0 group-hover:border-cyber-blue/50 transition-colors">
+                          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-foreground/5 border border-foreground/10 p-2 flex items-center justify-center overflow-hidden shrink-0 group-hover:border-cyber-blue/50 transition-colors">
                             <img src={prodi.logo} alt={prodi.name} className="w-full h-full object-contain" />
                           </div>
                         ) : (
-                          <div className="w-14 h-14 rounded-xl bg-cyber-blue/10 border border-cyber-blue/20 flex items-center justify-center shrink-0">
-                            <GraduationCap className="w-8 h-8 text-cyber-blue" />
+                          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-cyber-blue/10 border border-cyber-blue/20 flex items-center justify-center shrink-0">
+                            <GraduationCap className="w-6 h-6 sm:w-8 sm:h-8 text-cyber-blue" />
                           </div>
                         )}
-                        <div className="space-y-1">
-                          <h3 className="text-2xl font-black text-white tracking-tight group-hover:text-cyber-blue transition-colors">
+                        <div className="space-y-1 min-w-0">
+                          <h3 className="text-lg sm:text-2xl font-black text-foreground tracking-tight group-hover:text-cyber-blue transition-colors line-clamp-2">
                             {prodi.name}
                           </h3>
-                          <p className="text-sm font-bold text-cyber-blue uppercase tracking-widest flex items-center">
-                            <Building2 className="w-4 h-4 mr-2 opacity-70" />
-                            {prodi.facultyName}
+                          <p className="text-xs sm:text-sm font-bold text-cyber-blue uppercase tracking-widest flex items-center">
+                            <Building2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 opacity-70 shrink-0" />
+                            <span className="truncate">{prodi.facultyName}</span>
                           </p>
                         </div>
                       </div>
-                      <Badge className={`px-4 py-1.5 rounded-full font-black text-xs shadow-lg flex items-center gap-1.5 ${prodi.accreditation === 'A' || prodi.accreditation === 'Unggul'
+                      <Badge className={`px-3 py-1 sm:px-4 sm:py-1.5 rounded-full font-black text-[10px] sm:text-xs shadow-lg flex items-center gap-1 sm:gap-1.5 shrink-0 ${prodi.accreditation === 'A' || prodi.accreditation === 'Unggul'
                         ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                         : 'bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/30'
                         }`}>
-                        <Award className="w-3.5 h-3.5" />
+                        <Award className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                         {prodi.accreditation}
                       </Badge>
                     </div>
-                    <p className="text-muted-foreground/80 text-sm leading-relaxed line-clamp-2 italic">
+                    <p className="text-muted-foreground/80 text-xs sm:text-sm leading-relaxed italic">
                       {prodi.description || `Program studi ${prodi.name} fokus pada pengembangan keahlian dan kompetensi profesional dibidangnya.`}
                     </p>
                   </div>
 
                   {/* Main Info Grid */}
-                  <div className="px-8 py-6 grid grid-cols-2 gap-8 bg-white/5 border-y border-white/5">
+                  <div className="px-6 sm:px-8 py-4 sm:py-6 grid grid-cols-2 gap-4 sm:gap-8 bg-foreground/5 border-y border-foreground/5">
                     <div className="space-y-1">
-                      <span className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground/60 flex items-center">
-                        <Target className="w-3 h-3 mr-2 text-cyber-blue" />
-                        Jenjang Pendidikan
+                      <span className="text-[9px] sm:text-[10px] uppercase font-black tracking-[0.15em] sm:tracking-[0.2em] text-muted-foreground/60 flex items-center">
+                        <Target className="w-3 h-3 mr-1 sm:mr-2 text-cyber-blue shrink-0" />
+                        <span className="truncate">Jenjang</span>
                       </span>
-                      <p className="text-lg font-black text-white">{prodi.level}</p>
+                      <p className="text-base sm:text-lg font-black text-foreground">{prodi.level}</p>
                     </div>
                     <div className="space-y-1">
-                      <span className="text-[10px] uppercase font-black tracking-[0.2em] text-muted-foreground/60 flex items-center">
-                        <Users className="w-3 h-3 mr-2 text-emerald-400" />
-                        Mahasiswa Aktif
+                      <span className="text-[9px] sm:text-[10px] uppercase font-black tracking-[0.15em] sm:tracking-[0.2em] text-muted-foreground/60 flex items-center">
+                        <Users className="w-3 h-3 mr-1 sm:mr-2 text-emerald-400 shrink-0" />
+                        <span className="truncate">Mahasiswa</span>
                       </span>
-                      <p className="text-lg font-black text-white">{prodi.totalStudents?.toLocaleString('id-ID') || '0'}</p>
+                      <p className="text-base sm:text-lg font-black text-foreground">{prodi.totalStudents?.toLocaleString('id-ID') || '0'}</p>
                     </div>
                   </div>
 
-                  {/* Koordinator & Tanggal */}
-                  <div className="p-8 pt-6 space-y-6 flex-grow">
-                    <div className="flex items-center justify-between gap-4 group/coord">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-cyber p-[1px]">
-                          <div className="w-full h-full rounded-xl bg-black flex items-center justify-center">
-                            <Users className="w-5 h-5 text-cyber-blue" />
-                          </div>
-                        </div>
-                        <div>
-                          <p className="text-[10px] uppercase font-black tracking-widest text-muted-foreground/60">Ketua Program Studi</p>
-                          <p className="text-sm font-bold text-white group-hover/coord:text-cyber-blue transition-colors">
-                            {prodi.headOfProgram || 'Dr. Tenaga Pendidik Terpilih'}
-                          </p>
-                        </div>
+                  {/* Footer: Koordinator & Kontak */}
+                  <div className="p-6 sm:p-8 pt-4 sm:pt-6 flex-grow">
+                    {/* Ketua Program Studi */}
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-cyber-blue/20 to-electric-purple/20 border border-foreground/10 flex items-center justify-center shrink-0">
+                        <Users className="w-4 h-4 sm:w-5 sm:h-5 text-cyber-blue" />
                       </div>
+                      <div className="min-w-0">
+                        <p className="text-[9px] sm:text-[10px] uppercase font-black tracking-widest text-muted-foreground/60">Ketua Prodi</p>
+                        <p className="text-xs sm:text-sm font-bold text-foreground truncate">
+                          {prodi.headOfProgram || 'Dr. Tenaga Pendidik'}
+                        </p>
+                      </div>
+                    </div>
 
-                      <div className="flex flex-col items-end gap-2">
+                    {/* Kontak */}
+                    {(prodi.contactEmail || prodi.contactPhone) && (
+                      <div className="flex flex-col gap-2">
                         {prodi.contactEmail && (
-                          <div className="flex items-center text-[13px] font-medium text-muted-foreground/90 hover:text-cyber-blue transition-colors bg-white/5 px-3 py-1.5 rounded-xl border border-white/10">
-                            <Mail className="w-3.5 h-3.5 mr-2 text-cyber-blue/80" />
-                            {prodi.contactEmail}
+                          <div className="flex items-center text-[11px] sm:text-xs font-medium text-muted-foreground/90 hover:text-cyber-blue transition-colors bg-foreground/5 px-3 py-2 rounded-xl border border-foreground/10">
+                            <Mail className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-2 text-cyber-blue/80 shrink-0" />
+                            <span className="truncate">{prodi.contactEmail}</span>
                           </div>
                         )}
                         {prodi.contactPhone && (
-                          <div className="flex items-center text-[13px] font-medium text-muted-foreground/90 hover:text-cyber-blue transition-colors bg-white/5 px-3 py-1.5 rounded-xl border border-white/10">
-                            <Phone className="w-3.5 h-3.5 mr-2 text-emerald-400/80" />
-                            {prodi.contactPhone}
+                          <div className="flex items-center text-[11px] sm:text-xs font-medium text-muted-foreground/90 hover:text-emerald-400 transition-colors bg-foreground/5 px-3 py-2 rounded-xl border border-foreground/10">
+                            <Phone className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-2 text-emerald-400/80 shrink-0" />
+                            <span className="truncate">{prodi.contactPhone}</span>
                           </div>
                         )}
                       </div>
-                    </div>
+                    )}
                   </div>
-
-
                 </div>
               </MotionDiv>
             ))}

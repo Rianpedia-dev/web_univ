@@ -15,12 +15,16 @@ import {
 } from "lucide-react";
 import { MotionDiv } from "@/components/motion-wrapper";
 import { Badge } from "@/components/ui/badge";
-import { getPublishedAdmissionClasses } from '@/lib/db';
+import { getPublishedAdmissionClasses, getPublishedAdmissionStaff } from '@/lib/db';
+import AdmissionStaff from "@/components/admissions/AdmissionStaff";
 
 export default async function JenisKelasPage({ params }: { params: Promise<{ locale: string }> }) {
     const { locale } = await params;
     // Ambil data dari database
-    const classesData = await getPublishedAdmissionClasses();
+    const [classesData, staffData] = await Promise.all([
+        getPublishedAdmissionClasses(),
+        getPublishedAdmissionStaff()
+    ]);
 
     // Hitung statistik
     const totalClasses = classesData.length;
@@ -107,63 +111,12 @@ export default async function JenisKelasPage({ params }: { params: Promise<{ loc
                             }}>
                                 Jenis Kelas
                             </h1>
-                            <p className="text-lg md:text-xl text-foreground max-w-2xl mx-auto font-medium">
-                                Pilihan format perkuliahan yang sesuai dengan kebutuhan dan kondisi Anda
-                            </p>
                         </MotionDiv>
                     </div>
                 </div>
             </div>
 
             <div className="container mx-auto px-4 relative z-10">
-
-                {/* Statistik Kelas */}
-                <MotionDiv
-                    className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                >
-                    <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(0,240,255,0.1)] transition-all duration-300">
-                        <div className="w-12 h-12 bg-gradient-cyber rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(0,240,255,0.3)]">
-                            <Building2 className="w-6 h-6 text-foreground" />
-                        </div>
-                        <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-cyber mb-2">
-                            {totalClasses}
-                        </div>
-                        <div className="text-muted-foreground text-sm">Jenis Kelas</div>
-                    </div>
-
-                    <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(179,118,255,0.1)] transition-all duration-300">
-                        <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
-                            <Users className="w-6 h-6 text-foreground" />
-                        </div>
-                        <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-emerald-600 mb-2">
-                            {totalQuota > 0 ? totalQuota.toLocaleString('id-ID') : '∞'}
-                        </div>
-                        <div className="text-muted-foreground text-sm">Kuota Total</div>
-                    </div>
-
-                    <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(179,118,255,0.1)] transition-all duration-300">
-                        <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(192,132,252,0.3)]">
-                            <Clock className="w-6 h-6 text-foreground" />
-                        </div>
-                        <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-600 mb-2">
-                            {classTypes.length}
-                        </div>
-                        <div className="text-muted-foreground text-sm">Tipe Kelas</div>
-                    </div>
-
-                    <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(179,118,255,0.1)] transition-all duration-300">
-                        <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
-                            <GraduationCap className="w-6 h-6 text-foreground" />
-                        </div>
-                        <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-blue-600 mb-2">
-                            100%
-                        </div>
-                        <div className="text-muted-foreground text-sm">Akreditasi</div>
-                    </div>
-                </MotionDiv>
 
                 {/* Daftar Jenis Kelas */}
                 <MotionDiv
@@ -332,6 +285,11 @@ export default async function JenisKelasPage({ params }: { params: Promise<{ loc
                         ))}
                     </div>
                 </MotionDiv>
+
+                {/* Tim PMB Section */}
+                <div className="py-24">
+                    <AdmissionStaff staff={staffData} />
+                </div>
             </div>
         </div>
     );

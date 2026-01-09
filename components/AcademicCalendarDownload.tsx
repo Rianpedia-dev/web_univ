@@ -25,9 +25,10 @@ interface GroupedCalendar {
 interface Props {
     calendarData: CalendarEvent[];
     universityLogo?: string | null;
+    universityName?: string | null;
 }
 
-export function AcademicCalendarDownload({ calendarData, universityLogo }: Props) {
+export function AcademicCalendarDownload({ calendarData, universityLogo, universityName }: Props) {
     const printRef = useRef<HTMLDivElement>(null);
     const [isGenerating, setIsGenerating] = useState(false);
 
@@ -207,7 +208,7 @@ export function AcademicCalendarDownload({ calendarData, universityLogo }: Props
                             marginTop: '8px',
                             fontWeight: '600'
                         }}>
-                            UNIVERSITAS RIANPEDIA
+                            {universityName || "UNIVERSITAS RIANPEDIA"}
                         </p>
                         <p style={{
                             fontSize: '14px',
@@ -307,7 +308,7 @@ export function AcademicCalendarDownload({ calendarData, universityLogo }: Props
                     </div>
 
                     <div data-pdf-block style={{ textAlign: 'center', marginTop: '40px', fontSize: '10px', color: '#666666', width: '100%' }}>
-                        Dokumen ini dihasilkan secara otomatis oleh Portal Akademik Universitas Rianpedia.
+                        Dokumen ini dihasilkan secara otomatis oleh Portal Akademik {universityName || "Universitas Rianpedia"}.
                     </div>
                 </div>
             </div>

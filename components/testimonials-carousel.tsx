@@ -12,6 +12,12 @@ import {
 import { MotionDiv } from "@/components/motion-wrapper"
 import { Quote, Star } from "lucide-react"
 import { cn } from "@/lib/utils"
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 
 interface Testimonial {
     id: string
@@ -30,6 +36,8 @@ export function TestimonialsCarousel({ testimonials }: TestimonialsCarouselProps
     const plugin = React.useRef(
         Autoplay({ delay: 3000, stopOnInteraction: true })
     )
+
+    const [selectedImage, setSelectedImage] = React.useState<{ url: string, name: string } | null>(null)
 
     return (
         <div className="relative px-12">
@@ -57,7 +65,7 @@ export function TestimonialsCarousel({ testimonials }: TestimonialsCarouselProps
                                     <Quote className="w-16 h-16 text-cyber-blue rotate-180" suppressHydrationWarning />
                                 </div>
 
-                                <div className="flex items-center gap-1 mb-8 text-yellow-500">
+                                <div className="flex items-center gap-1 mb-4 text-yellow-500">
                                     {[...Array(5)].map((_, i) => (
                                         <Star
                                             key={i}
@@ -70,12 +78,17 @@ export function TestimonialsCarousel({ testimonials }: TestimonialsCarouselProps
                                     ))}
                                 </div>
 
-                                <p className="text-foreground/80 text-lg italic mb-10 relative z-10 leading-relaxed flex-1">
+                                <p className="text-foreground/80 text-lg italic mb-6 relative z-10 leading-relaxed">
                                     "{testimonial.content}"
                                 </p>
-
-                                <div className="flex items-center gap-5 relative z-10 mt-auto pt-6 border-t border-white/5">
-                                    <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-cyber-blue/30 shadow-lg flex-shrink-0 group-hover:border-cyber-blue transition-colors duration-500">
+                                <div className="flex items-center gap-3 relative z-10 pt-4 border-t border-white/5">
+                                    <div
+                                        className="w-16 h-16 rounded-full overflow-hidden border-2 border-cyber-blue/30 shadow-lg flex-shrink-0 group-hover:border-cyber-blue transition-colors duration-500 cursor-zoom-in"
+                                        onClick={() => setSelectedImage({
+                                            url: testimonial.image || "/images/testimoni.png",
+                                            name: testimonial.name
+                                        })}
+                                    >
                                         <img
                                             src={testimonial.image || "/images/testimoni.png"}
                                             alt={testimonial.name}
@@ -100,6 +113,23 @@ export function TestimonialsCarousel({ testimonials }: TestimonialsCarouselProps
                     <CarouselNext className="static md:absolute -right-12 top-1/2 -translate-y-1/2 bg-background/50 backdrop-blur-md border-white/10 hover:bg-cyber-blue hover:text-white" />
                 </div>
             </Carousel>
+
+            <Dialog open={!!selectedImage} onOpenChange={(open) => !open && setSelectedImage(null)}>
+                <DialogContent className="max-w-[90vw] md:max-w-3xl p-0 overflow-hidden bg-transparent border-none shadow-none">
+                    <DialogHeader className="sr-only">
+                        <DialogTitle>{selectedImage?.name || 'Testimonial Image'}</DialogTitle>
+                    </DialogHeader>
+                    <div className="relative w-full aspect-square md:aspect-video flex items-center justify-center">
+                        {selectedImage && (
+                            <img
+                                src={selectedImage.url}
+                                alt={selectedImage.name}
+                                className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl"
+                            />
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

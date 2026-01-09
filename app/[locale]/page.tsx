@@ -36,6 +36,7 @@ import {
   getUniversityProfile
 } from '@/lib/db';
 import { HomeNewsSection } from "@/components/home-news-section";
+import { PartnersCarousel } from "@/components/partners-carousel";
 
 /**
  * Fungsi pembantu untuk mengkonversi URL YouTube biasa ke URL Embed
@@ -70,7 +71,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   const latestNews = await getPublishedNews(3);
   const upcomingEvents = await getPublishedEvents(3);
   const campusStats = await getCampusStatistics();
-  const partnersFromDb = await getPublishedPartners(8);
+  const partnersFromDb = await getPublishedPartners(30);
   const rectorMessage = await getPublishedRectorMessage();
   const homeStats = await getHomepageStatistics();
   const heroData = await getHeroSection();
@@ -304,13 +305,13 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             <div className="relative inline-block">
               <div className="absolute inset-0 bg-gradient-cyber blur-3xl opacity-30 rounded-full animate-pulse"></div>
               <div className="relative z-10 p-1.5 rounded-full bg-gradient-to-tr from-cyber-blue via-white/20 to-electric-purple shadow-[0_0_50px_rgba(0,240,255,0.2)]">
-                <Card className="w-52 h-52 rounded-full overflow-hidden border-2 border-background shadow-inner bg-background">
+                <div className="w-52 h-52 rounded-full overflow-hidden border-2 border-white/10 shadow-2xl bg-slate-900">
                   <img
                     src={rectorMessage?.photo || "/images/rektor.png"}
                     alt={rectorMessage?.name || "Foto Rektor"}
-                    className="w-full h-full object-cover rounded-full transform hover:scale-110 transition-transform duration-700"
+                    className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700"
                   />
-                </Card>
+                </div>
               </div>
             </div>
           </MotionDiv>
@@ -326,22 +327,39 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
               <div className="absolute top-0 left-0 w-40 h-40 bg-cyber-blue/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
               <div className="absolute bottom-0 right-0 w-40 h-40 bg-electric-purple/5 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
 
-              <div className="relative z-10">
-                <span className="text-5xl text-cyber-blue/30 font-serif leading-none absolute -top-4 -left-2 opacity-50 select-none">"</span>
-                <div className="text-foreground/80 text-base md:text-lg leading-relaxed mb-10 font-medium whitespace-pre-line text-left md:text-center px-2 md:px-6">
-                  {rectorMessage?.message || "Universitas kami berkomitmen untuk menciptakan lulusan yang tidak hanya cerdas secara akademik, tetapi juga memiliki integritas, kreativitas, dan jiwa kepemimpinan yang kuat untuk menghadapi tantangan global."}
+              <div className="relative z-10 max-w-5xl mx-auto">
+                {/* Tanda Kutip Pembuka */}
+                <span className="text-7xl md:text-8xl text-cyber-blue/10 font-serif leading-none absolute -top-10 -left-4 md:-left-8 select-none">"</span>
+
+                <div className="space-y-6 md:space-y-8 px-4 md:px-12">
+                  <p className="text-foreground/90 text-lg font-bold italic tracking-wide">
+                    Assalamualaikum Wr. Wb.
+                  </p>
+
+                  <div className="text-foreground/80 text-base md:text-lg leading-relaxed font-medium whitespace-pre-line text-justify break-words">
+                    {rectorMessage?.message || "Universitas kami berkomitmen untuk menciptakan lulusan yang tidak hanya cerdas secara akademik, tetapi juga memiliki integritas, kreativitas, dan jiwa kepemimpinan yang kuat untuk menghadapi tantangan global."}
+                  </div>
+
+                  <p className="text-foreground/90 text-lg font-bold italic tracking-wide">
+                    Wassalamualaikum Wr. Wb.
+                  </p>
                 </div>
 
-                <div className="w-20 h-0.5 bg-gradient-cyber mx-auto mb-8 rounded-full opacity-50"></div>
-
-                <div className="space-y-1">
-                  <p className="text-foreground text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
-                    {rectorMessage?.name || "Prof. Dr. H. Ahmad Fauzi, M.Sc."}
-                  </p>
-                  <p className="text-cyber-blue font-medium tracking-[0.2em] uppercase text-xs">
-                    {rectorMessage?.position || "Rektor Universitas"}
-                  </p>
+                {/* Bagian Nama & Jabatan */}
+                <div className="mt-12 space-y-2 relative">
+                  <div className="w-16 h-0.5 bg-gradient-cyber mx-auto mb-6 opacity-30 rounded-full"></div>
+                  <div className="space-y-1">
+                    <p className="text-foreground text-2xl md:text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+                      {rectorMessage?.name || "Prof. Dr. H. Ahmad Fauzi, M.Sc."}
+                    </p>
+                    <p className="text-cyber-blue font-bold tracking-[0.3em] uppercase text-[10px] md:text-xs">
+                      {rectorMessage?.position || "Rektor Universitas"}
+                    </p>
+                  </div>
                 </div>
+
+                {/* Tanda Kutip Penutup */}
+                <span className="text-7xl md:text-8xl text-cyber-blue/10 font-serif leading-none absolute -bottom-12 -right-4 md:-right-8 select-none rotate-180">"</span>
               </div>
             </div>
           </MotionDiv>
@@ -452,7 +470,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         </div>
       </div>
 
-      {/* Partners */}
+      {/* Kemitraan  */}
       <div className="container mx-auto px-4 py-8 relative z-10">
         <MotionDiv
           initial={{ opacity: 0, y: 20 }}
@@ -461,44 +479,11 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl font-bold text-foreground mb-4">Kerjasama Kami</h2>
+          <h2 className="text-4xl font-bold text-foreground mb-5">Kemitraan & Kerjasama Kami</h2>
           <div className="w-24 h-1 bg-gradient-cyber mx-auto rounded-full"></div>
         </MotionDiv>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 items-center">
-          {partners.map((partner, index) => (
-            <MotionDiv
-              key={partner.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              viewport={{ once: true }}
-              whileHover={{ scale: 1.05 }}
-              className="glass-card p-8 rounded-2xl border border-white/10 flex items-center justify-center min-h-[120px] relative overflow-hidden group transition-all duration-300 hover:border-cyber-blue/30"
-            >
-              <div className="absolute inset-0 bg-gradient-cyber opacity-0 group-hover:opacity-[0.03] transition-opacity -z-10"></div>
-              <div className="text-center relative z-10 w-full flex items-center justify-center">
-                {partner.logo ? (
-                  <div className="flex flex-col items-center gap-3">
-                    <img
-                      src={partner.logo}
-                      alt={partner.name}
-                      className="max-h-12 max-w-full object-contain transition-all duration-500"
-                    />
-                    <p className="font-medium text-foreground/70 group-hover:text-cyber-blue transition-colors text-xs truncate max-w-full">{partner.name}</p>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center">
-                    <div className="w-12 h-12 bg-gradient-cyber rounded-full mx-auto mb-3 flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.2)] group-hover:shadow-[0_0_25px_rgba(0,240,255,0.4)] transition-all duration-500">
-                      <span className="text-foreground font-bold text-xl">{partner.name.charAt(0)}</span>
-                    </div>
-                    <p className="font-medium text-foreground/80 group-hover:text-cyber-blue transition-colors text-sm truncate max-w-full">{partner.name}</p>
-                  </div>
-                )}
-              </div>
-            </MotionDiv>
-          ))}
-        </div>
+        <PartnersCarousel partners={partners} />
       </div>
     </div>
   );

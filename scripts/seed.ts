@@ -249,7 +249,7 @@ async function seedDatabase() {
         filePath: isVideo ? (mediaItem.url || '') : (imageUrl || ''),
         fileSize: isVideo ? 0 : faker.number.int({ min: 100000, max: 2000000 }),
         mediaType: isVideo ? 'video' : 'image',
-        thumbnailPath: isVideo ? null : imageUrl, // Menggunakan URL yang sama agar tidak berbeda gambar
+        thumbnailPath: isVideo ? null : null, // Set null for images, thumbnailPath only potentially used for videos now
         duration: isVideo ? faker.number.int({ min: 60, max: 300 }) : null,
         width: 1280,
         height: 720,

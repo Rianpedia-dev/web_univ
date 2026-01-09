@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { User, Clock, Eye, ArrowRight } from "lucide-react";
+import { User, Clock, ArrowRight } from "lucide-react";
 import { MotionDiv } from "@/components/motion-wrapper";
 import Image from "next/image";
 import { NewsDetailDialog } from "./NewsDetailDialog";
@@ -146,9 +146,6 @@ export function NewsList({ initialNews, uniProfile }: NewsListProps) {
                             <div className="flex items-center text-xs text-muted-foreground mb-4">
                                 <Clock className="w-3 h-3 mr-2" />
                                 {berita.publishedAt ? new Date(berita.publishedAt).toLocaleDateString('id-ID') : '-'}
-                                <span className="mx-2">•</span>
-                                <Eye className="w-3 h-3 mr-2" />
-                                {berita.viewCount || 0} views
                             </div>
                             <h3 className="text-xl font-bold text-foreground mb-4 line-clamp-2 group-hover:text-cyber-blue transition-colors">
                                 {berita.title}

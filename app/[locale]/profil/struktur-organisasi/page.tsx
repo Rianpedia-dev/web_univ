@@ -1,22 +1,14 @@
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import {
-  Users,
   Building2,
-  FileText,
-  Download,
-  ChevronRight,
-  UserCheck,
   ShieldCheck,
   Award,
   Zap,
-  Briefcase,
-  ShieldAlert
+  Download
 } from "lucide-react";
-import { MotionDiv, MotionH1, MotionP } from "@/components/motion-wrapper";
+import { MotionDiv } from "@/components/motion-wrapper";
 import { getCurrentOrganizationalStructure, getOrganizationalEmployeesByStructure } from '@/lib/db';
-import { Badge } from "@/components/ui/badge";
-import { DownloadStrukturPDF } from "@/components/DownloadStrukturPDF";
+import { OrganizationCard } from "@/components/OrganizationCard";
+import { Button } from "@/components/ui/button";
 
 export default async function ProfilStrukturOrganisasiPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -76,9 +68,6 @@ export default async function ProfilStrukturOrganisasiPage({ params }: { params:
               }}>
                 {currentStructure.title}
               </h1>
-              <p className="text-lg md:text-xl text-foreground max-w-3xl mx-auto font-medium">
-                {currentStructure.description || 'Struktur tata kelola universitas yang transparan dan akuntabel untuk mewujudkan visi dan misi institusi.'}
-              </p>
 
 
             </MotionDiv>
@@ -104,38 +93,7 @@ export default async function ProfilStrukturOrganisasiPage({ params }: { params:
                   animate={{ opacity: 1, y: 0 }}
                   className="max-w-sm w-full"
                 >
-                  <div className="glass-card p-8 text-center rounded-[2.5rem] border border-white/10 hover:border-foreground/50 group transition-all duration-500 hover:shadow-[0_0_40px_rgba(255,255,255,0.1)] bg-gradient-to-b from-white/5 to-transparent h-full flex flex-col">
-                    <div className="w-56 aspect-[3/4] mx-auto mb-8 p-2 rounded-[2rem] bg-foreground/20 group-hover:bg-foreground/40 transition-all duration-700 mt-2 relative">
-                      <div className="absolute inset-0 bg-foreground/10 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <div className="w-full h-full bg-background rounded-[1.8rem] overflow-hidden relative z-10 border-2 border-white/5">
-                        {item.photo ? (
-                          <img src={item.photo} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                        ) : (
-                          <div className="flex items-center justify-center h-full bg-foreground/5">
-                            <Users className="w-20 h-20 text-foreground/30" />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <h4 className="text-xl font-bold text-foreground mb-2 group-hover:text-foreground transition-colors leading-tight">{item.name}</h4>
-                    <Badge variant="outline" className="mb-4 border-foreground/30 text-foreground bg-foreground/5 self-center">
-                      {item.positionName}
-                    </Badge>
-                    <div className="pt-4 border-t border-white/5 text-left flex-1">
-                      <p className="text-sm text-muted-foreground/80 mb-4 line-clamp-4 leading-relaxed">
-                        {item.description || 'Pimpinan tertinggi yang bertanggung jawab atas seluruh operasional universitas.'}
-                      </p>
-                      <div className="mt-auto space-y-3">
-                        <p className="text-xs text-muted-foreground/60 italic font-medium text-center">Periode: {item.period || '-'}</p>
-                        {item.responsibilities && (
-                          <div className="flex items-start gap-2 text-xs text-muted-foreground/60">
-                            <Briefcase className="w-3.5 h-3.5 text-foreground/60 shrink-0 mt-0.5" />
-                            <span className="line-clamp-2 italic">{item.responsibilities}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+                  <OrganizationCard employee={item} size="large" />
                 </MotionDiv>
               ))}
             </div>
@@ -150,7 +108,7 @@ export default async function ProfilStrukturOrganisasiPage({ params }: { params:
               Jajaran Rektorat
               <span className="h-px w-12 bg-electric-purple ml-4"></span>
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
               {level2.map((item, index) => (
                 <MotionDiv
                   key={item.id}
@@ -158,35 +116,7 @@ export default async function ProfilStrukturOrganisasiPage({ params }: { params:
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <div className="glass-card p-10 text-center rounded-[3rem] border border-white/10 hover:border-foreground/30 group transition-all duration-500 hover:shadow-[0_0_40px_rgba(255,255,255,0.05)] bg-gradient-to-b from-white/5 to-transparent h-full flex flex-col">
-                    <div className="w-48 aspect-[3/4] mx-auto mb-8 p-2 rounded-[2rem] bg-foreground/10 group-hover:bg-foreground/20 transition-all duration-700 mt-2 relative">
-                      <div className="absolute inset-0 bg-foreground/5 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <div className="w-full h-full bg-background rounded-[1.8rem] overflow-hidden relative z-10 border-2 border-white/5">
-                        {item.photo ? (
-                          <img src={item.photo} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                        ) : (
-                          <div className="flex items-center justify-center h-full bg-foreground/5">
-                            <Users className="w-16 h-16 text-foreground/30" />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <h4 className="text-xl font-bold text-foreground mb-2 group-hover:text-foreground transition-colors leading-tight">{item.name}</h4>
-                    <Badge variant="outline" className="mb-4 border-foreground/30 text-foreground bg-foreground/5 self-center">
-                      {item.positionName}
-                    </Badge>
-                    <div className="pt-4 border-t border-white/5 text-left flex-1">
-                      <p className="text-sm text-muted-foreground/80 mb-4 line-clamp-4 leading-relaxed">
-                        {item.description || 'Fokus pada pengembangan strategis bidang tersebut.'}
-                      </p>
-                      {item.responsibilities && (
-                        <div className="flex items-start gap-2 text-xs text-muted-foreground/60 mt-auto pt-2">
-                          <Briefcase className="w-3.5 h-3.5 text-foreground/60 shrink-0 mt-0.5" />
-                          <span className="line-clamp-2 italic">{item.responsibilities}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                  <OrganizationCard employee={item} size="medium" />
                 </MotionDiv>
               ))}
             </div>
@@ -201,7 +131,7 @@ export default async function ProfilStrukturOrganisasiPage({ params }: { params:
               Pimpinan Fakultas & Unit Lainnya
               <span className="h-px w-12 bg-neon-green ml-4"></span>
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
               {otherLevels.map((item, index) => (
                 <MotionDiv
                   key={item.id}
@@ -209,34 +139,7 @@ export default async function ProfilStrukturOrganisasiPage({ params }: { params:
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.05 }}
                 >
-                  <div className="glass-card p-10 text-center rounded-[3rem] border border-white/10 hover:border-foreground/30 group transition-all duration-500 hover:shadow-[0_0_40px_rgba(255,255,255,0.05)] bg-gradient-to-b from-white/5 to-transparent h-full flex flex-col">
-                    <div className="w-44 aspect-[3/4] mx-auto mb-8 p-2 rounded-3xl bg-foreground/10 group-hover:bg-foreground/20 transition-all duration-700 mt-2 relative">
-                      <div className="absolute inset-0 bg-foreground/5 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <div className="w-full h-full bg-background rounded-[1.5rem] overflow-hidden relative z-10 border-2 border-white/5">
-                        {item.photo ? (
-                          <img src={item.photo} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-                        ) : (
-                          <div className="flex items-center justify-center h-full bg-foreground/5">
-                            <UserCheck className="w-14 h-14 text-foreground/30" />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <h4 className="text-lg font-bold text-foreground mb-2 group-hover:text-foreground transition-colors leading-tight">{item.name}</h4>
-                    <Badge variant="outline" className="mb-4 border-foreground/30 text-foreground bg-foreground/5 self-center text-[10px] uppercase font-bold tracking-wider">
-                      {item.positionName}
-                    </Badge>
-                    <div className="pt-4 border-t border-white/5 text-left flex-1">
-                      <p className="text-xs text-muted-foreground/80 mb-4 line-clamp-4 leading-relaxed italic text-center">
-                        Periode: {item.period || '-'}
-                      </p>
-                      {item.description && (
-                        <p className="text-[11px] text-muted-foreground/60 line-clamp-3 leading-relaxed border-l-2 border-foreground/20 pl-3">
-                          {item.description}
-                        </p>
-                      )}
-                    </div>
-                  </div>
+                  <OrganizationCard employee={item} size="small" />
                 </MotionDiv>
               ))}
             </div>
@@ -246,10 +149,17 @@ export default async function ProfilStrukturOrganisasiPage({ params }: { params:
         {/* Download Button moved above Commitment Card */}
         {currentStructure.structureFile && (
           <div className="mb-16 text-center">
-            <DownloadStrukturPDF
-              employees={employees}
-              title={currentStructure.title}
-            />
+            <Button asChild size="lg" className="rounded-full px-10 h-14 text-lg font-bold gap-3">
+              <a
+                href={currentStructure.structureFile}
+                download
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Download className="w-6 h-6" />
+                Download Struktur Organisasi
+              </a>
+            </Button>
           </div>
         )}
 

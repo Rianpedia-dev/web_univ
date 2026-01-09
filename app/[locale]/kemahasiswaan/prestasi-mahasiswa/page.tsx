@@ -66,9 +66,6 @@ export default async function PrestasiMahasiswaPage({ params }: { params: Promis
           {/* Prestasi List */}
           <div className="mb-16">
             <div className="flex flex-col items-center justify-center mb-8 gap-4">
-              <h2 className="text-4xl md:text-5xl font-bold text-foreground text-center animate-fade-in-up">
-                Prestasi Minat, Bakat & Kompetisi
-              </h2>
               <Badge variant="outline" className="text-cyber-blue border-cyber-blue bg-cyber-blue/10 px-6 py-1.5 text-sm uppercase tracking-widest">
                 Total: {stats.total} Prestasi
               </Badge>

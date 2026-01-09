@@ -27,6 +27,7 @@ export default async function KalenderAkademikPage({ params }: { params: Promise
   const calendarData = await getPublishedAcademicCalendar();
   const universityProfileResult = await getPublishedUniversityProfile();
   const universityLogo = universityProfileResult?.[0]?.logo || null;
+  const universityName = universityProfileResult?.[0]?.name || null;
 
   // Kelompokkan berdasarkan tahun akademik dan semester
   const groupedCalendar = calendarData.reduce((acc, item) => {
@@ -94,9 +95,6 @@ export default async function KalenderAkademikPage({ params }: { params: Promise
               }}>
                 Kalender Akademik
               </h1>
-              <p className="text-lg md:text-xl text-foreground max-w-2xl mx-auto font-medium">
-                Jadwal kegiatan akademik sepanjang tahun ajaran
-              </p>
             </div>
           </div>
         </div>
@@ -104,53 +102,6 @@ export default async function KalenderAkademikPage({ params }: { params: Promise
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
 
-        {/* Statistik */}
-        <MotionDiv
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(0,240,255,0.1)] transition-all duration-300">
-            <div className="w-12 h-12 bg-gradient-cyber rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(0,240,255,0.3)]">
-              <Calendar className="w-6 h-6 text-foreground" />
-            </div>
-            <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-cyber mb-2">
-              {totalEvents}
-            </div>
-            <div className="text-muted-foreground text-sm">Total Kegiatan</div>
-          </div>
-
-          <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(179,118,255,0.1)] transition-all duration-300">
-            <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
-              <Clock className="w-6 h-6 text-foreground" />
-            </div>
-            <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-emerald-600 mb-2">
-              {upcomingEvents}
-            </div>
-            <div className="text-muted-foreground text-sm">Kegiatan Mendatang</div>
-          </div>
-
-          <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(179,118,255,0.1)] transition-all duration-300">
-            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(192,132,252,0.3)]">
-              <BookOpen className="w-6 h-6 text-foreground" />
-            </div>
-            <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-600 mb-2">
-              {semesters.length}
-            </div>
-            <div className="text-muted-foreground text-sm">Periode Akademik</div>
-          </div>
-
-          <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(179,118,255,0.1)] transition-all duration-300">
-            <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
-              <GraduationCap className="w-6 h-6 text-foreground" />
-            </div>
-            <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-blue-600 mb-2">
-              2
-            </div>
-            <div className="text-muted-foreground text-sm">Semester/Tahun</div>
-          </div>
-        </MotionDiv>
 
         {/* Kalender Akademik */}
         <MotionDiv
@@ -161,7 +112,7 @@ export default async function KalenderAkademikPage({ params }: { params: Promise
         >
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold text-foreground">Jadwal Kegiatan Akademik</h2>
-            <AcademicCalendarDownload calendarData={calendarData} universityLogo={universityLogo} />
+            <AcademicCalendarDownload calendarData={calendarData} universityLogo={universityLogo} universityName={universityName} />
           </div>
 
           {semesters.length > 0 ? (

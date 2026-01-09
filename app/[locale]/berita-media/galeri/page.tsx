@@ -21,17 +21,6 @@ export default async function GaleriPage({ params }: { params: Promise<{ locale:
     console.error('Error in GaleriPage:', error);
     mediaItems = [];
   }
-
-  // Kategori statis untuk filter UI
-  const kategori = [
-    { id: 1, nama: "Semua", slug: "all" },
-    { id: 2, nama: "Kegiatan Akademik", slug: "kegiatan-akademik" },
-    { id: 3, nama: "Kemahasiswaan", slug: "kegiatan-kemahasiswaan" },
-    { id: 4, nama: "Prestasi", slug: "prestasi" },
-    { id: 5, nama: "Wisuda", slug: "wisuda" },
-    { id: 6, nama: "Fasilitas", slug: "fasilitas" }
-  ];
-
   return (
     <div className="min-h-screen bg-background overflow-hidden relative">
       <div className="absolute inset-0 bg-[linear-gradient(rgba(0,240,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,240,255,0.1)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]" />
@@ -60,9 +49,6 @@ export default async function GaleriPage({ params }: { params: Promise<{ locale:
               }}>
                 Galeri Kampus
               </h1>
-              <p className="text-lg text-foreground max-w-2xl mx-auto font-medium bg-black/40 backdrop-blur-sm p-4 rounded-xl border border-white/10">
-                Dokumentasi visual kegiatan, fasilitas, dan momen berharga di Universitas
-              </p>
             </MotionDiv>
           </div>
         </div>
@@ -70,7 +56,7 @@ export default async function GaleriPage({ params }: { params: Promise<{ locale:
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Gallery Grid (Client Component) */}
-        <GalleryGrid mediaItems={mediaItems} kategori={kategori} />
+        <GalleryGrid mediaItems={mediaItems} />
       </div>
     </div>
   );

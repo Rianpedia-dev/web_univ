@@ -71,10 +71,7 @@ export default async function PartnershipPage() {
           transition={{ duration: 0.6, delay: 0.4 }}
         >
           <div className="flex flex-col items-center justify-center mb-12 text-center">
-            <h2 className="text-4xl md:text-5xl font-black text-foreground bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/60 tracking-tighter uppercase italic">
-              Daftar Partner
-            </h2>
-            <div className="w-24 h-1.5 bg-gradient-cyber rounded-full mt-4 shadow-[0_0_15px_rgba(0,240,255,0.5)]"></div>
+
           </div>
 
           {partnerUniversitas.length > 0 ? (

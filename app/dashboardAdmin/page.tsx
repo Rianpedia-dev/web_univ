@@ -162,7 +162,7 @@ const tableConfigurations = {
           { key: "slug", label: "Slug", type: "text", required: true },
           { key: "description", label: "Deskripsi", type: "textarea" },
           { key: "dean", label: "Dekan", type: "text" },
-          { key: "viceDean", label: "Wakil Dekan", type: "text" },
+
           { key: "contactEmail", label: "Email", type: "email" },
           { key: "contactPhone", label: "Telepon", type: "text" },
           { key: "address", label: "Alamat", type: "textarea" },
@@ -392,7 +392,6 @@ const tableConfigurations = {
           { key: "content", label: "Konten", type: "textarea", required: true },
           { key: "excerpt", label: "Ringkasan", type: "textarea" },
           { key: "featuredImage", label: "Gambar Utama", type: "image", bucket: "images" },
-          { key: "viewCount", label: "Jumlah Dilihat", type: "number" },
           { key: "authorName", label: "Nama Penulis", type: "text" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
           { key: "publishedAt", label: "Tanggal Publikasi", type: "datetime" },
@@ -448,24 +447,15 @@ const tableConfigurations = {
     icon: Image,
     color: "text-pink-500",
     tables: {
-      galleryCategories: {
-        label: "Kategori Galeri",
-        description: "Kategori untuk galeri",
-        fields: [
-          { key: "name", label: "Nama", type: "text", required: true },
-          { key: "slug", label: "Slug", type: "text", required: true },
-          { key: "description", label: "Deskripsi", type: "textarea" },
-        ],
-      },
       galleryMedia: {
         label: "Media Galeri",
         description: "Foto dan video dalam galeri",
         fields: [
-          { key: "categoryId", label: "Kategori", type: "select", referenceTable: "galleryCategories", referenceLabel: "name" },
           { key: "title", label: "Judul", type: "text", required: true },
           { key: "description", label: "Deskripsi", type: "textarea" },
-          { key: "filePath", label: "File Media", type: "image", bucket: "images" },
           { key: "mediaType", label: "Tipe Media", type: "select", options: ["image", "video"], required: true },
+          { key: "filePath", label: "File Gambar (untuk tipe Image)", type: "image", bucket: "images", showWhen: { field: "mediaType", value: "image" } },
+          { key: "filePath", label: "URL Video YouTube (untuk tipe Video)", type: "text", showWhen: { field: "mediaType", value: "video" } },
           { key: "isPublic", label: "Publik", type: "boolean" },
           { key: "isFeatured", label: "Unggulan", type: "boolean" },
         ],
@@ -646,16 +636,12 @@ const tableConfigurations = {
           { key: "structureId", label: "Struktur Organisasi", type: "select", referenceTable: "organizationalStructures", referenceLabel: "title", required: true },
           { key: "parentId", label: "Atasan", type: "select", referenceTable: "organizationalEmployees", referenceLabel: "name" },
           { key: "name", label: "Nama Pegawai", type: "text", required: true },
-          { key: "nip", label: "NIP", type: "text" },
           { key: "nidn", label: "NIDN", type: "text" },
           { key: "positionName", label: "Nama Jabatan", type: "text", required: true },
           { key: "positionLevel", label: "Tingkat jabatan", type: "number", required: true },
           { key: "positionOrder", label: "Urutan", type: "number" },
-          { key: "period", label: "Masa Jabatan", type: "text" },
           { key: "photo", label: "Foto Pegawai", type: "image", bucket: "images" },
           { key: "description", label: "Deskripsi", type: "textarea" },
-          { key: "responsibilities", label: "Tanggung Jawab", type: "textarea" },
-          { key: "authority", label: "Wewenang", type: "textarea" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
         ],
       },
@@ -783,6 +769,7 @@ type FieldConfig = {
   referenceTable?: string
   referenceLabel?: string
   bucket?: string
+  showWhen?: { field: string; value: string }
 }
 
 type TableConfig = {
@@ -836,166 +823,176 @@ function DynamicForm({
 
   return (
     <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto pr-2">
-      {fields.map((field) => (
-        <div key={field.key} className="grid gap-2">
-          <Label htmlFor={field.key} className="flex items-center gap-1">
-            {field.label}
-            {field.required && <span className="text-red-500">*</span>}
-          </Label>
+      {fields.map((field, fieldIndex) => {
+        // Check showWhen condition - skip rendering if condition not met
+        if (field.showWhen) {
+          const conditionValue = data[field.showWhen.field];
+          if (conditionValue !== field.showWhen.value) {
+            return null;
+          }
+        }
 
-          {field.type === "text" || field.type === "email" ? (
-            <Input
-              id={field.key}
-              type={field.type}
-              value={data[field.key] || ""}
-              onChange={(e) => onChange(field.key, e.target.value)}
-              placeholder={`Masukkan ${field.label.toLowerCase()}`}
-            />
-          ) : field.type === "textarea" ? (
-            <Textarea
-              id={field.key}
-              value={data[field.key] || ""}
-              onChange={(e) => onChange(field.key, e.target.value)}
-              placeholder={`Masukkan ${field.label.toLowerCase()}`}
-              rows={3}
-            />
-          ) : field.type === "number" ? (
-            <Input
-              id={field.key}
-              type="number"
-              value={data[field.key] || ""}
-              onChange={(e) => onChange(field.key, e.target.value ? Number(e.target.value) : "")}
-              placeholder={`Masukkan ${field.label.toLowerCase()}`}
-            />
-          ) : field.type === "datetime" ? (
-            <Input
-              id={field.key}
-              type="datetime-local"
-              value={data[field.key] ? new Date(data[field.key]).toISOString().slice(0, 16) : ""}
-              onChange={(e) => onChange(field.key, e.target.value ? new Date(e.target.value).toISOString() : "")}
-            />
-          ) : field.type === "boolean" ? (
-            <div className="flex items-center space-x-2">
-              <Switch
+        return (
+          <div key={`${field.key}-${fieldIndex}`} className="grid gap-2">
+            <Label htmlFor={field.key} className="flex items-center gap-1">
+              {field.label}
+              {field.required && <span className="text-red-500">*</span>}
+            </Label>
+
+            {field.type === "text" || field.type === "email" ? (
+              <Input
                 id={field.key}
-                checked={data[field.key] || false}
-                onCheckedChange={(checked) => onChange(field.key, checked)}
+                type={field.type}
+                value={data[field.key] || ""}
+                onChange={(e) => onChange(field.key, e.target.value)}
+                placeholder={`Masukkan ${field.label.toLowerCase()}`}
               />
-              <Label htmlFor={field.key} className="text-sm text-muted-foreground">
-                {data[field.key] ? "Ya" : "Tidak"}
-              </Label>
-            </div>
-          ) : field.type === "select" ? (
-            <Select
-              value={data[field.key] || ""}
-              onValueChange={(value) => onChange(field.key, value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={loadingRefs[field.key] ? "Loading..." : `Pilih ${field.label.toLowerCase()}`} />
-              </SelectTrigger>
-              <SelectContent>
-                {field.options ? (
-                  field.options.map((option) => (
-                    <SelectItem key={option} value={option}>
-                      {option}
-                    </SelectItem>
-                  ))
-                ) : refOptions[field.key] ? (
-                  refOptions[field.key].map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))
-                ) : null}
-              </SelectContent>
-            </Select>
-          ) : field.type === "image" || field.type === "file" ? (
-            <div className="space-y-3">
-              <div className="flex gap-2">
-                <Input
+            ) : field.type === "textarea" ? (
+              <Textarea
+                id={field.key}
+                value={data[field.key] || ""}
+                onChange={(e) => onChange(field.key, e.target.value)}
+                placeholder={`Masukkan ${field.label.toLowerCase()}`}
+                rows={3}
+              />
+            ) : field.type === "number" ? (
+              <Input
+                id={field.key}
+                type="number"
+                value={data[field.key] || ""}
+                onChange={(e) => onChange(field.key, e.target.value ? Number(e.target.value) : "")}
+                placeholder={`Masukkan ${field.label.toLowerCase()}`}
+              />
+            ) : field.type === "datetime" ? (
+              <Input
+                id={field.key}
+                type="datetime-local"
+                value={data[field.key] ? new Date(data[field.key]).toISOString().slice(0, 16) : ""}
+                onChange={(e) => onChange(field.key, e.target.value ? new Date(e.target.value).toISOString() : "")}
+              />
+            ) : field.type === "boolean" ? (
+              <div className="flex items-center space-x-2">
+                <Switch
                   id={field.key}
-                  type="text"
-                  value={data[field.key] || ""}
-                  onChange={(e) => onChange(field.key, e.target.value)}
-                  placeholder={`Masukkan URL atau unggah ${field.label.toLowerCase()}`}
-                  className="flex-1"
+                  checked={data[field.key] || false}
+                  onCheckedChange={(checked) => onChange(field.key, checked)}
                 />
-                <div className="relative">
-                  <input
-                    type="file"
-                    id={`file-${field.key}`}
-                    className="hidden"
-                    accept={field.type === "image" ? "image/*" : "application/pdf"}
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0]
-                      if (!file) return
-
-                      const loadingToast = toast.loading(`Mengunggah ${field.label}...`)
-                      try {
-                        const bucket = field.bucket || (field.type === "image" ? "images" : "documents")
-                        const folder = field.key
-                        const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`
-                        const path = `${folder}/${fileName}`
-
-                        const uploadedPath = await uploadFile(file, bucket, path)
-                        const publicUrl = getPublicUrl(bucket, uploadedPath)
-
-                        onChange(field.key, publicUrl)
-                        toast.success(`${field.label} berhasil diunggah`, { id: loadingToast })
-                      } catch (error: any) {
-                        console.error("Upload error:", error)
-                        toast.error(`Gagal mengunggah: ${error.message || "Terjadi kesalahan"}`, { id: loadingToast })
-                      }
-                    }}
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => document.getElementById(`file-${field.key}`)?.click()}
-                    className="gap-2"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Unggah
-                  </Button>
-                </div>
+                <Label htmlFor={field.key} className="text-sm text-muted-foreground">
+                  {data[field.key] ? "Ya" : "Tidak"}
+                </Label>
               </div>
-
-              {data[field.key] && field.type === "image" && (
-                <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-white/10 bg-white/5 flex items-center justify-center group">
-                  <img
-                    src={data[field.key]}
-                    alt="Preview"
-                    className="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-105"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = 'https://placehold.co/600x400?text=Gambar+Tidak+Ditemukan'
-                    }}
+            ) : field.type === "select" ? (
+              <Select
+                value={data[field.key] || ""}
+                onValueChange={(value) => onChange(field.key, value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder={loadingRefs[field.key] ? "Loading..." : `Pilih ${field.label.toLowerCase()}`} />
+                </SelectTrigger>
+                <SelectContent>
+                  {field.options ? (
+                    field.options.map((option) => (
+                      <SelectItem key={option} value={option}>
+                        {option}
+                      </SelectItem>
+                    ))
+                  ) : refOptions[field.key] ? (
+                    refOptions[field.key].map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))
+                  ) : null}
+                </SelectContent>
+              </Select>
+            ) : field.type === "image" || field.type === "file" ? (
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <Input
+                    id={field.key}
+                    type="text"
+                    value={data[field.key] || ""}
+                    onChange={(e) => onChange(field.key, e.target.value)}
+                    placeholder={`Masukkan URL atau unggah ${field.label.toLowerCase()}`}
+                    className="flex-1"
                   />
-                  <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-md px-2 py-1 rounded text-[10px] text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                    Preview
+                  <div className="relative">
+                    <input
+                      type="file"
+                      id={`file-${field.key}`}
+                      className="hidden"
+                      accept={field.type === "image" ? "image/*" : "application/pdf"}
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0]
+                        if (!file) return
+
+                        const loadingToast = toast.loading(`Mengunggah ${field.label}...`)
+                        try {
+                          const bucket = field.bucket || (field.type === "image" ? "images" : "documents")
+                          const folder = field.key
+                          const fileName = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`
+                          const path = `${folder}/${fileName}`
+
+                          const uploadedPath = await uploadFile(file, bucket, path)
+                          const publicUrl = getPublicUrl(bucket, uploadedPath)
+
+                          onChange(field.key, publicUrl)
+                          toast.success(`${field.label} berhasil diunggah`, { id: loadingToast })
+                        } catch (error: any) {
+                          console.error("Upload error:", error)
+                          toast.error(`Gagal mengunggah: ${error.message || "Terjadi kesalahan"}`, { id: loadingToast })
+                        }
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => document.getElementById(`file-${field.key}`)?.click()}
+                      className="gap-2"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Unggah
+                    </Button>
                   </div>
                 </div>
-              )}
 
-              {data[field.key] && field.type === "file" && (
-                <div className="flex items-center gap-2 p-2 rounded-lg border border-white/10 bg-white/5">
-                  <FileText className="w-4 h-4 text-primary" />
-                  <span className="text-xs truncate flex-1">{data[field.key].split('/').pop()}</span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    asChild
-                  >
-                    <a href={data[field.key]} target="_blank" rel="noopener noreferrer">
-                      Lihat
-                    </a>
-                  </Button>
-                </div>
-              )}
-            </div>
-          ) : null}
-        </div>
-      ))}
+                {data[field.key] && field.type === "image" && (
+                  <div className="relative w-full aspect-video rounded-lg overflow-hidden border border-white/10 bg-white/5 flex items-center justify-center group">
+                    <img
+                      src={data[field.key]}
+                      alt="Preview"
+                      className="max-w-full max-h-full object-contain transition-transform duration-300 group-hover:scale-105"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://placehold.co/600x400?text=Gambar+Tidak+Ditemukan'
+                      }}
+                    />
+                    <div className="absolute top-2 right-2 bg-black/50 backdrop-blur-md px-2 py-1 rounded text-[10px] text-white opacity-0 group-hover:opacity-100 transition-opacity">
+                      Preview
+                    </div>
+                  </div>
+                )}
+
+                {data[field.key] && field.type === "file" && (
+                  <div className="flex items-center gap-2 p-2 rounded-lg border border-white/10 bg-white/5">
+                    <FileText className="w-4 h-4 text-primary" />
+                    <span className="text-xs truncate flex-1">{data[field.key].split('/').pop()}</span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      asChild
+                    >
+                      <a href={data[field.key]} target="_blank" rel="noopener noreferrer">
+                        Lihat
+                      </a>
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ) : null}
+          </div>
+        )
+      })}
     </div>
   )
 }
@@ -1159,10 +1156,13 @@ function DataTableView({
     return hasMatchInValues
   })
 
-  // Get display columns: Filter out long/technical fields for a cleaner table view
+  // Get display columns: Filter out long/technical fields and ensure unique keys
   const displayFields = tableConfig.fields
     .filter(f => !["slug", "description", "requirements", "procedure", "vision", "mission", "objectives", "history"].includes(f.key))
     .filter(f => f.type !== "textarea")
+    .filter((field, index, self) =>
+      index === self.findIndex((f) => f.key === field.key)
+    )
     .slice(0, 6)
 
   if (loading) {

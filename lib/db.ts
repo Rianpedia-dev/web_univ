@@ -39,7 +39,8 @@ import {
   admissionRequirements,
   admissionFaqs,
   admissionTimelines,
-  admissionStaff
+  admissionStaff,
+  admissionBrochures
 } from '@/db/schema';
 import { eq, and, or, sql } from 'drizzle-orm';
 
@@ -576,7 +577,7 @@ export async function getPublishedStudentServices() {
 /**
  * Fungsi untuk mengambil media galeri yang dipublikasikan (publik)
  */
-export async function getPublishedGalleryMedia(limit: number = 30) {
+export async function getPublishedGalleryMedia(limit: number = 100) {
   try {
     const result = await db
       .select({
@@ -1171,6 +1172,24 @@ export async function getPublishedAdmissionStaff() {
     return result;
   } catch (error) {
     console.error('Error fetching admission staff:', error);
+    return [];
+  }
+}
+
+/**
+ * Fungsi untuk mengambil brosur pendaftaran yang dipublikasikan
+ */
+export async function getPublishedAdmissionBrochures() {
+  try {
+    const result = await db
+      .select()
+      .from(admissionBrochures)
+      .where(eq(admissionBrochures.isPublished, true))
+      .orderBy(sql`${admissionBrochures.createdAt} DESC`);
+
+    return result;
+  } catch (error) {
+    console.error('Error fetching published admission brochures:', error);
     return [];
   }
 }

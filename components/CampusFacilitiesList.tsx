@@ -154,23 +154,7 @@ export function CampusFacilitiesList({ facilities }: Props) {
                                     )}
                                 </div>
 
-                                {/* Fasilitas Tambahan */}
-                                {facility.facilities && (
-                                    <div className="pt-4 border-t border-border/50">
-                                        <div className="flex flex-wrap gap-2">
-                                            {facility.facilities.split(',').slice(0, 3).map((item, idx) => (
-                                                <Badge key={idx} variant="outline" className="border-cyber-blue/20 bg-cyber-blue/5 text-[10px] uppercase tracking-wider px-2">
-                                                    {item.trim()}
-                                                </Badge>
-                                            ))}
-                                            {facility.facilities.split(',').length > 3 && (
-                                                <Badge variant="outline" className="border-muted/30 text-[10px] px-2">
-                                                    +{facility.facilities.split(',').length - 3}
-                                                </Badge>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
+
                             </div>
                         </MotionDiv>
                     );

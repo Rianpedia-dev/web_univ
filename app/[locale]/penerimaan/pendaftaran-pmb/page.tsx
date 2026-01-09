@@ -10,7 +10,8 @@ import {
   GraduationCap,
   HelpCircle,
   Users,
-  Layers
+  Layers,
+  Download
 } from "lucide-react";
 import Link from "next/link";
 import { MotionDiv } from "@/components/motion-wrapper";
@@ -30,17 +31,23 @@ import {
   getPublishedCampusFacilities,
   getPublishedAdmissionStaff,
   getPublishedSocialMediaLinks,
-  getPublishedContactInformation
+  getPublishedContactInformation,
+  getPublishedAdmissionBrochures
 } from '@/lib/db';
 import AdmissionTimeline from "@/components/admissions/AdmissionTimeline";
-import AdmissionBrochureDownload from "@/components/admissions/AdmissionBrochureDownload";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import AdmissionStaff from "@/components/admissions/AdmissionStaff";
 
 export default async function PendaftaranPMBPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
 
   // Ambil data dari database
-  const [jalurMasuk, jenisKelas, programStudi, gelombangData, syaratData, faqsData, timelinesData, universityProfile, costsData, facultiesData, accreditationData, facilitiesData, staffData, socialMediaData, contactInfoData] = await Promise.all([
+  const [jalurMasuk, jenisKelas, programStudi, gelombangData, syaratData, faqsData, timelinesData, universityProfile, costsData, facultiesData, accreditationData, facilitiesData, staffData, socialMediaData, contactInfoData, brochuresData] = await Promise.all([
     getPublishedAdmissionPathways(),
     getPublishedAdmissionClasses(),
     getPublishedStudyPrograms(),
@@ -55,7 +62,8 @@ export default async function PendaftaranPMBPage({ params }: { params: Promise<{
     getPublishedCampusFacilities(),
     getPublishedAdmissionStaff(),
     getPublishedSocialMediaLinks(),
-    getPublishedContactInformation()
+    getPublishedContactInformation(),
+    getPublishedAdmissionBrochures()
   ]);
 
   // Tentukan gelombang aktif
@@ -136,22 +144,23 @@ export default async function PendaftaranPMBPage({ params }: { params: Promise<{
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
         >
-          <AdmissionBrochureDownload
-            universityProfile={universityProfile}
-            pathways={jalurMasuk}
-            classes={jenisKelas}
-            waves={gelombangData}
-            programs={programStudi}
-            requirements={syaratData}
-            timelines={timelinesData}
-            costs={costsData}
-            faculties={facultiesData}
-            accreditation={accreditationData[0]}
-            facilities={facilitiesData}
-            staff={staffData}
-            socialMedia={socialMediaData}
-            contactInfo={contactInfoData}
-          />
+          {brochuresData && brochuresData.length > 0 ? (
+            <Button
+              asChild
+              variant="default"
+              className="rounded-xl group hover:scale-105 transition-all duration-300"
+            >
+              <Link href={brochuresData[0].fileUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                <Download className="w-4 h-4" />
+                <span>Download Brosur PMB</span>
+                <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+              </Link>
+            </Button>
+          ) : (
+            <div className="text-center p-6 glass-card rounded-2xl border border-dashed border-muted-foreground/20">
+              <p className="text-muted-foreground text-sm font-medium italic">Brosur pendaftaran digital belum tersedia saat ini.</p>
+            </div>
+          )}
         </MotionDiv>
 
         {/* Gelombang Aktif Banner */}
@@ -347,33 +356,44 @@ export default async function PendaftaranPMBPage({ params }: { params: Promise<{
           </div>
         </div>
 
-        {/* FAQ Singkat */}
-        <MotionDiv
-          className="glass-card rounded-2xl p-8 border mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center">
-            <HelpCircle className="w-6 h-6 text-cyber-blue mr-3" />
-            FAQ Singkat
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {faqsData.map((faq: any, index: number) => (
-              <div key={faq.id} className="bg-muted/30 rounded-xl p-6 border border-white/5 hover:border-cyber-blue/30 transition-all">
-                <h3 className="font-bold text-foreground mb-3 flex items-start gap-2">
-                  <HelpCircle className="w-5 h-5 text-cyber-blue flex-shrink-0 mt-0.5" />
-                  {faq.question}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{faq.answer}</p>
-              </div>
-            ))}
-          </div>
-        </MotionDiv>
+
 
         {/* Tim PMB Section */}
         <div className="mb-24">
           <AdmissionStaff staff={staffData} />
         </div>
+        {/* FAQ Singkat */}
+        <MotionDiv
+          className="max-w-4xl mx-auto mb-24"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-black text-foreground uppercase tracking-tight mb-2">
+              FAQ <span className="text-cyber-blue">Singkat</span>
+            </h2>
+            <p className="text-muted-foreground">Informasi cepat seputar pertanyaan yang sering diajukan</p>
+          </div>
+
+          <Accordion type="single" collapsible className="space-y-4">
+            {faqsData.map((faq: any, index: number) => (
+              <AccordionItem
+                key={faq.id}
+                value={`item-${index}`}
+                className="glass-card border border-border/50 bg-slate-500/5 dark:bg-slate-900/40 rounded-2xl px-6 transition-all data-[state=open]:bg-slate-500/10 dark:data-[state=open]:bg-slate-900/60 data-[state=open]:border-cyber-blue/30 overflow-hidden"
+              >
+                <AccordionTrigger className="text-left py-6 hover:no-underline hover:text-cyber-blue transition-colors gap-4 group">
+                  <span className="font-bold text-foreground text-base md:text-lg leading-tight first-letter:uppercase">
+                    {faq.question}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground text-sm md:text-base leading-relaxed pb-6">
+                  {faq.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </MotionDiv>
 
       </div>
     </div>

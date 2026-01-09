@@ -94,11 +94,19 @@ export function NewsDetailDialog({ news, isOpen, onOpenChange, uniProfile }: New
             const ctx = canvas.getContext('2d');
             if (!ctx) return;
 
-            // Dimensions for a newspaper (e.g., A4-like ratio)
-            const width = 800;
-            const height = 1100;
-            canvas.width = width;
-            canvas.height = height;
+            // High resolution dimensions (2x for Retina-like quality)
+            const scale = 2;
+            const logicalWidth = 800;
+            const logicalHeight = 1100;
+            canvas.width = logicalWidth * scale;
+            canvas.height = logicalHeight * scale;
+
+            // Scale context for high DPI - all drawing uses logical dimensions
+            ctx.scale(scale, scale);
+
+            // Use logical dimensions for all drawing operations
+            const width = logicalWidth;
+            const height = logicalHeight;
 
             // --- 0. Load Images ---
             const loadImage = (src: string): Promise<HTMLImageElement | null> => {
@@ -253,7 +261,7 @@ export function NewsDetailDialog({ news, isOpen, onOpenChange, uniProfile }: New
                 currentY += 45;
             });
 
-            currentY += 20;
+            currentY += 10;
 
             // --- 5. Content Columns ---
             ctx.font = '14px Georgia, serif';
@@ -294,44 +302,49 @@ export function NewsDetailDialog({ news, isOpen, onOpenChange, uniProfile }: New
             }
 
             // --- 6. Footer ---
-            const footerY = height - 80;
+            const footerY = height - 70;
             ctx.strokeStyle = '#e0e0e0';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 1;
             ctx.beginPath();
-            ctx.moveTo(padding, footerY - 30);
-            ctx.lineTo(width - padding, footerY - 30);
+            ctx.moveTo(padding, footerY - 35);
+            ctx.lineTo(width - padding, footerY - 35);
             ctx.stroke();
+
+            // Row 1: Category (left) | Author (right)
+            ctx.font = 'bold 10px Arial';
 
             // Category
             ctx.textAlign = 'left';
-            ctx.fillStyle = '#666';
-            ctx.font = 'bold 13px Arial';
-            ctx.fillText('Category:', padding, footerY);
-
-            const catW = ctx.measureText('Category:').width + 10;
+            ctx.fillStyle = '#888';
+            ctx.fillText('KATEGORI', padding, footerY - 18);
             ctx.fillStyle = '#1a1a1a';
             ctx.font = 'bold 12px Arial';
-            ctx.fillText((news.categoryName || 'BERITA').toUpperCase(), padding + catW, footerY);
+            const categoryText = (news.categoryName || 'Berita').toUpperCase();
+            ctx.fillText(categoryText, padding, footerY);
 
             // Author
-            ctx.textAlign = 'left';
-            ctx.fillStyle = '#666';
-            ctx.font = 'bold 13px Arial';
-            const authorLabel = 'By: ';
-            ctx.fillText(authorLabel, padding + catW + 140, footerY);
-            ctx.fillStyle = '#1a1a1a';
-            ctx.fillText(news.authorName || 'Humas Universitas', padding + catW + 140 + ctx.measureText(authorLabel).width, footerY);
-
-            // URL
             ctx.textAlign = 'right';
-            ctx.fillStyle = '#1e3a8a';
-            ctx.font = '500 12px Arial';
-            ctx.fillText(`${window.location.origin}/berita/${news.slug}`, width - padding, footerY);
+            ctx.fillStyle = '#888';
+            ctx.font = 'bold 10px Arial';
+            ctx.fillText('PENULIS', width - padding, footerY - 18);
+            ctx.fillStyle = '#1a1a1a';
+            ctx.font = 'bold 12px Arial';
+            const authorText = news.authorName || 'Humas Universitas';
+            ctx.fillText(authorText, width - padding, footerY);
 
-            // Export
+            // Row 2: Website URL (centered)
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#888';
+            ctx.font = 'italic 10px Arial';
+            ctx.fillText('Kunjungi halaman web kami:', width / 2, footerY + 20);
+            ctx.fillStyle = '#1e3a8a';
+            ctx.font = 'bold 11px Arial';
+            ctx.fillText(`${window.location.origin}/berita/${news.slug}`, width / 2, footerY + 35);
+
+            // Export as PNG for maximum quality
             const link = document.createElement('a');
-            link.download = `berita-koran-${news.slug}.jpg`;
-            link.href = canvas.toDataURL('image/jpeg', 0.95);
+            link.download = `berita-koran-${news.slug}.png`;
+            link.href = canvas.toDataURL('image/png');
             link.click();
 
             toast.success("Berita berhasil disimpan gaya koran!");
@@ -386,38 +399,20 @@ export function NewsDetailDialog({ news, isOpen, onOpenChange, uniProfile }: New
 
                         <DialogDescription className="sr-only">Detail berita: {news.title}</DialogDescription>
 
-                        <div className="flex flex-wrap items-center gap-4 mb-8">
-                            <div className="flex items-center gap-2.5 bg-muted/50 border border-border px-3 py-1.5 rounded-xl">
-                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                                    <User className="w-4 h-4 text-primary" />
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-[8px] text-muted-foreground uppercase font-black tracking-widest opacity-60">Penulis Berita</span>
-                                    <span className="text-xs font-black text-foreground">{news.authorName || "Humas Universitas"}</span>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-2.5 bg-muted/50 border border-border px-3 py-1.5 rounded-xl">
-                                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                                    <Tag className="w-4 h-4 text-primary" />
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-[8px] text-muted-foreground uppercase font-black tracking-widest opacity-60">Kategori Berita</span>
-                                    <span className="text-xs font-black text-foreground">{news.categoryName || "Umum"}</span>
-                                </div>
-                            </div>
-
-                            <div className="flex items-center gap-2.5 bg-muted/50 border border-border px-3 py-1.5 rounded-xl ml-auto md:ml-0">
-                                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
-                                    <Clock className="w-4 h-4 text-primary" />
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-[8px] text-muted-foreground uppercase font-black tracking-widest opacity-60">Waktu Publikasi</span>
-                                    <span className="text-xs font-black text-foreground uppercase tracking-tighter">
-                                        {dateOnly} <span className="text-primary ml-1">• {timeOnly} WIB</span>
-                                    </span>
-                                </div>
-                            </div>
+                        {/* Compact Metadata for Mobile */}
+                        <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-6 md:mb-8">
+                            <Badge variant="outline" className="border-primary/30 bg-primary/5 text-primary text-[10px] md:text-xs font-bold px-2.5 py-1 gap-1.5">
+                                <User className="w-3 h-3" />
+                                {news.authorName || "Humas Universitas"}
+                            </Badge>
+                            <Badge variant="outline" className="border-muted-foreground/30 bg-muted/50 text-foreground text-[10px] md:text-xs font-bold px-2.5 py-1 gap-1.5">
+                                <Tag className="w-3 h-3" />
+                                {news.categoryName || "Umum"}
+                            </Badge>
+                            <Badge variant="outline" className="border-muted-foreground/30 bg-muted/50 text-foreground text-[10px] md:text-xs font-medium px-2.5 py-1 gap-1.5">
+                                <Clock className="w-3 h-3" />
+                                {dateOnly} <span className="text-primary">• {timeOnly}</span>
+                            </Badge>
                         </div>
 
                         {/* Article Content */}

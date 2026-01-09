@@ -15,12 +15,16 @@ import {
 import { MotionDiv } from "@/components/motion-wrapper";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { getPublishedScholarships } from '@/lib/db';
+import { getPublishedScholarships, getPublishedAdmissionStaff } from '@/lib/db';
+import AdmissionStaff from "@/components/admissions/AdmissionStaff";
 
 export default async function BeasiswaPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   // Ambil data dari database
-  const scholarshipsData = await getPublishedScholarships();
+  const [scholarshipsData, staffData] = await Promise.all([
+    getPublishedScholarships(),
+    getPublishedAdmissionStaff()
+  ]);
 
   // Fungsi untuk format tanggal
   const formatDate = (date: Date | null) => {
@@ -91,63 +95,12 @@ export default async function BeasiswaPage({ params }: { params: Promise<{ local
               }}>
                 Program Beasiswa
               </h1>
-              <p className="text-lg md:text-xl text-foreground max-w-2xl mx-auto font-medium">
-                Dukungan finansial untuk calon mahasiswa berprestasi dan tidak mampu secara ekonomi
-              </p>
             </MotionDiv>
           </div>
         </div>
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-
-        {/* Statistik */}
-        <MotionDiv
-          className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(0,240,255,0.1)] transition-all duration-300">
-            <div className="w-12 h-12 bg-gradient-cyber rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(0,240,255,0.3)]">
-              <Award className="w-6 h-6 text-foreground" />
-            </div>
-            <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-cyber mb-2">
-              {totalScholarships}
-            </div>
-            <div className="text-muted-foreground text-sm">Program Beasiswa</div>
-          </div>
-
-          <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(179,118,255,0.1)] transition-all duration-300">
-            <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(34,197,94,0.3)]">
-              <Users className="w-6 h-6 text-foreground" />
-            </div>
-            <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-emerald-600 mb-2">
-              {totalQuota > 0 ? totalQuota : '∞'}
-            </div>
-            <div className="text-muted-foreground text-sm">Total Kuota</div>
-          </div>
-
-          <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(179,118,255,0.1)] transition-all duration-300">
-            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(192,132,252,0.3)]">
-              <Globe className="w-6 h-6 text-foreground" />
-            </div>
-            <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-600 mb-2">
-              {providers.length}
-            </div>
-            <div className="text-muted-foreground text-sm">Penyedia Beasiswa</div>
-          </div>
-
-          <div className="glass-card p-6 rounded-2xl border text-center hover:shadow-[0_0_30px_rgba(179,118,255,0.1)] transition-all duration-300">
-            <div className="w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
-              <Star className="w-6 h-6 text-foreground" />
-            </div>
-            <div className="text-2xl md:text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-blue-600 mb-2">
-              {fullScholarships}
-            </div>
-            <div className="text-muted-foreground text-sm">Beasiswa Penuh</div>
-          </div>
-        </MotionDiv>
 
         {/* Jenis Beasiswa */}
         <MotionDiv
@@ -253,16 +206,6 @@ export default async function BeasiswaPage({ params }: { params: Promise<{ local
                           {item.applicationEnd && ` - ${formatDate(item.applicationEnd)}`}
                         </div>
                       </div>
-                      <Button
-                        asChild
-                        variant="default"
-                        className="rounded-full h-11 px-8 font-bold shadow-lg hover:scale-105 transition-all duration-300 group/btn"
-                      >
-                        <Link href="https://forms.google.com" target="_blank">
-                          Daftar Sekarang
-                          <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover/btn:translate-x-1" />
-                        </Link>
-                      </Button>
                     </div>
                   </div>
                 </MotionDiv>
@@ -277,128 +220,10 @@ export default async function BeasiswaPage({ params }: { params: Promise<{ local
           )}
         </MotionDiv>
 
-        {/* Jenis Beasiswa Contoh */}
-        <MotionDiv
-          className="glass-card rounded-3xl p-8 md:p-12 mb-16 border"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
-        >
-          <h2 className="text-3xl font-bold text-center text-foreground mb-8">Kategori Beasiswa</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                nama: "Beasiswa Prestasi Akademik",
-                deskripsi: "Untuk mahasiswa dengan prestasi akademik unggul",
-                icon: GraduationCap,
-                color: "from-yellow-500 to-orange-600"
-              },
-              {
-                nama: "Beasiswa Tidak Mampu",
-                deskripsi: "KIP-K / BIDIKMISI untuk keluarga kurang mampu",
-                icon: Users,
-                color: "from-blue-500 to-cyan-600"
-              },
-              {
-                nama: "Beasiswa Yayasan",
-                deskripsi: "Beasiswa internal dari yayasan universitas",
-                icon: Award,
-                color: "from-purple-500 to-pink-600"
-              },
-              {
-                nama: "Beasiswa Mitra",
-                deskripsi: "Beasiswa dari perusahaan dan instansi mitra",
-                icon: Globe,
-                color: "from-green-500 to-emerald-600"
-              }
-            ].map((kategori, index) => (
-              <MotionDiv
-                key={index}
-                className="glass-card p-6 rounded-xl border text-center hover:shadow-[0_0_30px_rgba(0,240,255,0.1)] transition-all duration-300"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * index }}
-              >
-                <div className={`w-14 h-14 bg-gradient-to-r ${kategori.color} rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg`}>
-                  <kategori.icon className="w-7 h-7 text-white" />
-                </div>
-                <h3 className="font-bold text-foreground mb-2">{kategori.nama}</h3>
-                <p className="text-sm text-muted-foreground">{kategori.deskripsi}</p>
-              </MotionDiv>
-            ))}
-          </div>
-        </MotionDiv>
-
-        {/* Panduan Pendaftaran */}
-        <MotionDiv
-          className="glass-card rounded-3xl p-8 md:p-12 mb-16 border"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-        >
-          <h2 className="text-3xl font-bold text-center text-foreground mb-8">Panduan Pendaftaran Beasiswa</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                judul: "Persiapkan Dokumen",
-                deskripsi: "Lengkapi semua dokumen persyaratan sesuai jenis beasiswa",
-                icon: FileText
-              },
-              {
-                judul: "Ajukan Pendaftaran",
-                deskripsi: "Daftar melalui portal beasiswa sebelum batas akhir",
-                icon: GraduationCap
-              },
-              {
-                judul: "Ikuti Proses Seleksi",
-                deskripsi: "Lengkapi tahapan seleksi yang ditentukan",
-                icon: Target
-              }
-            ].map((panduan, index) => (
-              <div key={index} className="glass-card p-6 rounded-xl border text-center">
-                <div className="w-12 h-12 bg-gradient-cyber rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(0,240,255,0.3)]">
-                  <panduan.icon className="w-6 h-6 text-foreground" />
-                </div>
-                <h3 className="font-bold text-lg mb-2 text-foreground">{panduan.judul}</h3>
-                <p className="text-sm text-muted-foreground">{panduan.deskripsi}</p>
-              </div>
-            ))}
-          </div>
-        </MotionDiv>
-
-        {/* Dokumen Wajib */}
-        <MotionDiv
-          className="mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.0 }}
-        >
-          <h2 className="text-3xl font-bold text-center text-foreground mb-8">Dokumen Wajib</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              "Formulir Pendaftaran",
-              "Transkrip Nilai atau Rapor",
-              "Surat Keterangan Tidak Mampu (jika aplikabel)",
-              "Surat Rekomendasi",
-              "Sertifikat Prestasi (jika aplikabel)",
-              "Surat Keterangan Bekerja (Karyasiswa)",
-              "Nilai Tes Bahasa (Internasional)",
-              "Proposal Kegiatan (jika aplikabel)"
-            ].map((dokumen, index) => (
-              <MotionDiv
-                key={index}
-                className="glass-card p-4 rounded-xl border flex items-start"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 * index }}
-              >
-                <CheckCircle className="w-5 h-5 text-cyber-blue mt-0.5 mr-3 flex-shrink-0" />
-                <span className="text-muted-foreground">{dokumen}</span>
-              </MotionDiv>
-            ))}
-          </div>
-        </MotionDiv>
+        {/* Tim PMB Section */}
+        <div className="py-24">
+          <AdmissionStaff staff={staffData} />
+        </div>
       </div>
     </div>
   );

@@ -29,16 +29,17 @@ interface MediaItem {
     createdAt: Date | string | null;
 }
 
-export default function GalleryGrid({ mediaItems, kategori }: { mediaItems: MediaItem[], kategori: any[] }) {
+export default function GalleryGrid({ mediaItems }: { mediaItems: MediaItem[] }) {
     const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
-    const [activeFilter, setActiveFilter] = useState("all");
+    const [visibleItems, setVisibleItems] = useState(16);
 
-    const filteredItems = mediaItems.filter(item => {
-        if (activeFilter === "all") return true;
-        // Map slug to category name for filtering or handle by categoryId/slug if available in data
-        // For now simple filtering based on activeFilter vs potential logic
-        return true; // The DB already returns all, filtering UI can be added later if needed
+    const sortedMedia = [...mediaItems].sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
     });
+
+    const filteredItems = sortedMedia;
 
     const getYouTubeId = (url: string) => {
         const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
@@ -48,34 +49,15 @@ export default function GalleryGrid({ mediaItems, kategori }: { mediaItems: Medi
 
     return (
         <>
-            <MotionDiv
-                className="flex flex-wrap justify-center gap-2 mb-12"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-            >
-                {kategori.map((cat) => (
-                    <Button
-                        key={cat.id}
-                        variant={cat.slug === activeFilter ? "default" : "outline"}
-                        onClick={() => setActiveFilter(cat.slug)}
-                        className={`rounded-full px-8 h-11 font-bold transition-all duration-300 ${cat.slug === activeFilter
-                            ? "shadow-lg scale-105"
-                            : "hover:border-foreground/50 border-white/10"
-                            }`}
-                    >
-                        {cat.nama}
-                    </Button>
-                ))}
-            </MotionDiv>
+            {/* Category filter removed */}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-8 mb-16">
                 {filteredItems.length > 0 ? (
-                    filteredItems.map((media, index) => {
+                    filteredItems.slice(0, visibleItems).map((media, index) => {
                         const videoId = media.mediaType === 'video' ? getYouTubeId(media.filePath) : null;
                         const displayThumbnail = media.mediaType === 'video'
                             ? (media.thumbnailPath || (videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : "/images/galeri_placeholder.png"))
-                            : (media.thumbnailPath || media.filePath || "/images/galeri_placeholder.png");
+                            : (media.filePath || media.thumbnailPath || "/images/galeri_placeholder.png");
 
                         return (
                             <MotionDiv
@@ -90,7 +72,7 @@ export default function GalleryGrid({ mediaItems, kategori }: { mediaItems: Medi
                                 <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-16 rounded-r-full z-20 transition-all duration-300 ${media.mediaType === 'video' ? 'bg-electric-purple shadow-[0_0_15px_rgba(191,0,255,0.8)]' : 'bg-cyber-blue shadow-[0_0_15px_rgba(0,240,255,0.8)]'
                                     } group-hover:h-32`} />
 
-                                <div className="relative h-72 overflow-hidden">
+                                <div className="relative h-44 sm:h-72 overflow-hidden">
                                     <Image
                                         src={displayThumbnail}
                                         alt={media.title || "Galeri"}
@@ -121,13 +103,6 @@ export default function GalleryGrid({ mediaItems, kategori }: { mediaItems: Medi
                                             )}
                                         </div>
                                     </div>
-                                    {media.categoryName && (
-                                        <div className="absolute top-4 left-4 z-20">
-                                            <Badge className="bg-background/60 backdrop-blur-xl text-foreground border border-white/20 px-3 py-1 text-[10px] font-bold uppercase tracking-widest shadow-xl">
-                                                {media.categoryName}
-                                            </Badge>
-                                        </div>
-                                    )}
                                     <div className="absolute bottom-4 left-6">
                                         <div className="flex items-center gap-4 text-xs text-white/80">
                                             <span className="flex items-center">
@@ -137,18 +112,18 @@ export default function GalleryGrid({ mediaItems, kategori }: { mediaItems: Medi
                                         </div>
                                     </div>
                                 </div>
-                                <div className="p-8">
-                                    <h3 className="text-2xl font-bold text-foreground mb-3 group-hover:text-cyber-blue transition-colors">
+                                <div className="p-4 sm:p-8">
+                                    <h3 className="text-lg sm:text-2xl font-bold text-foreground mb-3 group-hover:text-cyber-blue transition-colors line-clamp-1">
                                         {media.title}
                                     </h3>
-                                    <p className="text-muted-foreground text-sm line-clamp-2 mb-6">
+                                    <p className="text-muted-foreground text-xs sm:text-sm line-clamp-2 mb-4 sm:mb-6 hidden sm:block">
                                         {media.description || "Dokumentasi kegiatan kampus."}
                                     </p>
-                                    <div className="flex items-center justify-between">
-                                        <Badge variant="secondary" className="bg-foreground/5 text-foreground/60 border-none font-bold">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <Badge variant="secondary" className="bg-foreground/5 text-foreground/60 border-none font-bold text-[8px] sm:text-xs">
                                             {media.mediaType === 'video' ? 'VIDEO' : 'FOTO'}
                                         </Badge>
-                                        <Button variant="default" className="rounded-full h-9 px-5 text-xs font-bold shadow-md hover:scale-105 transition-all duration-300">
+                                        <Button variant="default" className="rounded-full h-7 sm:h-9 px-3 sm:px-5 text-[10px] sm:text-xs font-bold shadow-md hover:scale-105 transition-all duration-300">
                                             Detail
                                         </Button>
                                     </div>
@@ -162,6 +137,21 @@ export default function GalleryGrid({ mediaItems, kategori }: { mediaItems: Medi
                     </div>
                 )}
             </div>
+
+            {filteredItems.length > visibleItems && (
+                <div className="flex justify-center mb-20">
+                    <Button
+                        onClick={() => setVisibleItems(prev => prev + 12)}
+                        className="group relative px-10 h-14 rounded-full bg-cyber-blue text-black font-black uppercase tracking-[0.2em] hover:scale-110 active:scale-95 transition-all duration-500 overflow-hidden shadow-[0_0_30px_rgba(0,240,255,0.4)]"
+                    >
+                        <span className="relative z-10 flex items-center gap-3">
+                            Lihat Lainnya
+                        </span>
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                    </Button>
+                </div>
+            )}
+
 
             <Dialog open={!!selectedMedia} onOpenChange={(open) => !open && setSelectedMedia(null)}>
                 <DialogContent showCloseButton={false} className="max-w-[95vw] lg:max-w-5xl bg-black border-none p-0 overflow-visible rounded-xl gap-0 shadow-2xl">

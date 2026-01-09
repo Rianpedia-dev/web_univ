@@ -7,7 +7,7 @@ export const faculties = pgTable("faculties", {
     slug: text("slug").notNull().unique(),
     description: text("description"),
     dean: text("dean"), // nama dekan
-    viceDean: text("vice_dean"), // nama wakil dekan
+
     contactEmail: text("contact_email"),
     contactPhone: text("contact_phone"),
     address: text("address"),

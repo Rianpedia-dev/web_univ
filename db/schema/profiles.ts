@@ -106,16 +106,15 @@ export const organizationalEmployees = pgTable("organizational_employees", {
     structureId: uuid("structure_id").notNull().references(() => organizationalStructures.id, { onDelete: "cascade" }),
     parentId: uuid("parent_id").references((): AnyPgColumn => organizationalEmployees.id, { onDelete: "set null" }), // jabatan atasan
     name: text("name").notNull(), // nama pegawai
-    nip: text("nip"), // nomor induk pegawai
+
     nidn: text("nidn"), // nomor induk dosen nasional (jika dosen)
     positionName: text("position_name").notNull(), // nama jabatan (misal: Rektor)
     positionLevel: integer("position_level").notNull(), // tingkat jabatan
     positionOrder: integer("position_order").default(0).notNull(), // urutan jabatan
-    period: text("period"), // masa jabatan
+
     photo: text("photo"), // URL foto pegawai
     description: text("description"), // deskripsi jabatan
-    responsibilities: text("responsibilities"), // tanggung jawab
-    authority: text("authority"), // wewenang
+
     isPublished: boolean("is_published").default(false).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
