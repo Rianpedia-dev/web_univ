@@ -27,7 +27,7 @@ export function OrganizationCard({ employee, size }: OrganizationCardProps) {
     const sizeClasses = {
         large: {
             container: "max-w-sm w-full",
-            photoWrapper: "w-56 aspect-[3/4]",
+            photoWrapper: "w-full max-w-[14rem] aspect-[3/4]",
             photoRadius: "rounded-[2rem]",
             innerRadius: "rounded-[1.8rem]",
             iconSize: "w-20 h-20",
@@ -37,21 +37,21 @@ export function OrganizationCard({ employee, size }: OrganizationCardProps) {
         },
         medium: {
             container: "w-full",
-            photoWrapper: "w-48 aspect-[3/4]",
+            photoWrapper: "w-full max-w-[12rem] aspect-[3/4]",
             photoRadius: "rounded-[2rem]",
             innerRadius: "rounded-[1.8rem]",
             iconSize: "w-16 h-16",
-            nameSize: "text-xl",
+            nameSize: "text-lg md:text-xl",
             nidnSize: "text-xs",
             descSize: "text-sm",
         },
         small: {
             container: "w-full",
-            photoWrapper: "w-44 aspect-[3/4]",
+            photoWrapper: "w-full max-w-[11rem] aspect-[3/4]",
             photoRadius: "rounded-3xl",
             innerRadius: "rounded-[1.5rem]",
             iconSize: "w-14 h-14",
-            nameSize: "text-lg",
+            nameSize: "text-base md:text-lg",
             nidnSize: "text-[10px]",
             descSize: "text-[11px]",
         },
@@ -62,7 +62,7 @@ export function OrganizationCard({ employee, size }: OrganizationCardProps) {
 
     return (
         <>
-            <div className={`glass-card p-6 text-center ${size === "large" ? "rounded-[2.5rem]" : "rounded-[3rem]"} border border-white/10 hover:border-foreground/${size === "large" ? "50" : "30"} group transition-all duration-500 hover:shadow-[0_0_40px_rgba(255,255,255,${size === "large" ? "0.1" : "0.05"})] bg-gradient-to-b from-white/5 to-transparent h-full flex flex-col`}>
+            <div className={`glass-card p-4 sm:p-6 text-center ${size === "large" ? "rounded-[2.5rem]" : "rounded-[2rem] sm:rounded-[3rem]"} border border-white/10 hover:border-foreground/${size === "large" ? "50" : "30"} group transition-all duration-500 hover:shadow-[0_0_40px_rgba(255,255,255,${size === "large" ? "0.1" : "0.05"})] bg-gradient-to-b from-white/5 to-transparent h-full flex flex-col items-center`}>
                 {/* Clickable Photo Container */}
                 <div
                     className={`${styles.photoWrapper} mx-auto mb-4 p-${size === "large" ? "1" : "1.5"} ${styles.photoRadius} bg-foreground/${size === "large" ? "20" : "10"} group-hover:bg-foreground/${size === "large" ? "40" : "20"} transition-all duration-700 relative cursor-pointer`}
@@ -101,7 +101,7 @@ export function OrganizationCard({ employee, size }: OrganizationCardProps) {
                 )}
 
                 {/* Description */}
-                <div className="pt-2 border-t border-white/5 text-left flex-1">
+                <div className="pt-2 border-t border-white/5 text-left flex-1 w-full">
                     {size === "small" ? (
                         employee.description && (
                             <p className="text-[11px] text-muted-foreground/60 line-clamp-3 leading-relaxed border-l-2 border-foreground/20 pl-3">
