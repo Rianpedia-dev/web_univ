@@ -9,3 +9,4 @@ export * from './partnerships';
 export * from './profiles';
 export * from './journals';
 export * from './analytics';
+export * from './chatbot';

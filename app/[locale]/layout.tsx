@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { BackToTop } from "@/components/back-to-top";
+import { UnpalAI } from "@/components/UnpalAI";
 import { getPublishedUniversityProfile } from '@/lib/db';
 import type { Metadata } from "next";
 
@@ -68,7 +69,9 @@ export default async function LocaleLayout({
         {children}
       </main>
       <Footer locale={locale} />
+      <UnpalAI />
     </div>
   );
 }
+
 
