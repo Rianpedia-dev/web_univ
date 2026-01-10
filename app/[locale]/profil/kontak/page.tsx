@@ -142,15 +142,15 @@ export default async function ProfilKontakPage({ params }: { params: Promise<{ l
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <h1 className="text-4xl md:text-6xl font-bold mb-8 leading-tight transform transition-all duration-300 hover:scale-105" style={{
-                background: 'linear-gradient(to right, #fefce8, #fef08a, #fbbf24)',
+              <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight transform transition-all duration-300 hover:scale-105" style={{
+                background: 'linear-gradient(to right, #fefce8, #ecd735ff, #f9cd5eff)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
-                WebkitTextStroke: '1px #92400e',
+                WebkitTextStroke: '1px #fcffa5ff',
                 textShadow: '0 2px 2px rgba(0,0,0,0.5)'
               }}>
-                Hubungi Kami
+                HUBUNGI KAMI
               </h1>
 
             </MotionDiv>

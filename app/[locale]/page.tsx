@@ -229,9 +229,9 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
               delay: 0
             },
             {
-              icon: Users,
-              value: homeStats?.totalStudents || "15.000+",
-              label: "Mahasiswa",
+              icon: GraduationCap,
+              value: homeStats?.totalStudents,
+              label: "Alumni",
               iconColor: "text-purple-600 dark:text-purple-400",
               bgColor: "bg-purple-100 dark:bg-purple-500/20",
               accentColor: "bg-purple-600",
@@ -339,15 +339,15 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                 <span className="text-7xl md:text-8xl text-cyber-blue/10 font-serif leading-none absolute -top-10 -left-4 md:-left-8 select-none">"</span>
 
                 <div className="space-y-6 md:space-y-8 px-4 md:px-12">
-                  <p className="text-foreground/90 text-lg font-bold italic tracking-wide">
+                  <p className="text-foreground/90 text-lg font-bold italic">
                     Assalamualaikum Wr. Wb.
                   </p>
 
-                  <div className="text-foreground/80 text-base md:text-lg leading-relaxed font-medium whitespace-pre-line text-justify break-words">
+                  <div className="text-foreground/80 text-base md:text-lg leading-relaxed font-medium whitespace-pre-line text-left sm:text-justify break-words">
                     {rectorMessage?.message || "Universitas kami berkomitmen untuk menciptakan lulusan yang tidak hanya cerdas secara akademik, tetapi juga memiliki integritas, kreativitas, dan jiwa kepemimpinan yang kuat untuk menghadapi tantangan global."}
                   </div>
 
-                  <p className="text-foreground/90 text-lg font-bold italic tracking-wide">
+                  <p className="text-foreground/90 text-lg font-bold italic">
                     Wassalamualaikum Wr. Wb.
                   </p>
                 </div>

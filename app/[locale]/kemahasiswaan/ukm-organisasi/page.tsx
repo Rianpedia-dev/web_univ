@@ -49,21 +49,15 @@ export default async function UKMOrganisasiPage() {
           <div className="relative z-10 py-44 px-4 sm:px-6">
             <div className="container mx-auto max-w-6xl">
               <div className="text-center">
-                <h1 className="text-4xl md:text-6xl font-extrabold mb-4 leading-tight transform transition-all duration-300 hover:scale-105" style={{
-                  background: 'linear-gradient(to right, #fefce8, #fef08a, #fbbf24)',
+                <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight transform transition-all duration-300 hover:scale-105" style={{
+                  background: 'linear-gradient(to right, #fefce8, #ecd735ff, #f9cd5eff)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
-                  WebkitTextStroke: '1px #92400e',
+                  WebkitTextStroke: '1px #fcffa5ff',
                   textShadow: '0 2px 2px rgba(0,0,0,0.5)'
                 }}>
-                  UKM & <span style={{
-                    background: 'linear-gradient(to right, #fefce8, #fef08a, #fbbf24)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    textShadow: '0 2px 2px rgba(0,0,0,0.5)'
-                  }}>Organisasi</span>
+                  ORGANISASI & UKM
                 </h1>
               </div>
             </div>
@@ -79,11 +73,6 @@ export default async function UKMOrganisasiPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <div className="flex items-center justify-center mb-12">
-              <h2 className="text-4xl md:text-5xl font-black text-foreground text-center tracking-tight">
-                Daftar <span className="bg-gradient-cyber bg-clip-text text-transparent">Organisasi & UKM</span>
-              </h2>
-            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {semuaOrganisasi.length > 0 ? (

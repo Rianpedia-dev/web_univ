@@ -127,7 +127,7 @@ const tableConfigurations = {
         description: "Kelola angka statistik utama di halaman beranda",
         fields: [
           { key: "establishedYear", label: "Tahun Berdiri (Teks)", type: "text", required: true },
-          { key: "totalStudents", label: "Jumlah Mahasiswa (Teks)", type: "text", required: true },
+          { key: "totalStudents", label: "Jumlah Alumni (Teks)", type: "text", required: true },
           { key: "accreditation", label: "Akreditasi", type: "text", required: true },
           { key: "totalLecturers", label: "Jumlah Dosen (Teks)", type: "text", required: true },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },

@@ -84,12 +84,12 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
       ]
     },
     {
-      title: locale === 'id' ? "Riset & Kerjasama" : "Research & Partnership",
-      href: `/${locale}/kerjasama/partnership`, // Redirect to first submenu
+      title: locale === 'id' ? "Riset & Kerjasama" : "Riset & Kerjasama",
+      href: `/${locale}/kerjasama/kerjasama`, // Redirect to first submenu
       icon: Handshake,
       submenu: [
-        { title: locale === 'id' ? "Partnership" : "Partnership", href: `/${locale}/kerjasama/partnership` },
-        { title: locale === 'id' ? "Jurnal" : "Journal", href: `/${locale}/kerjasama/jurnal` },
+        { title: locale === 'id' ? "Kerjasama" : "Kerjasama", href: `/${locale}/kerjasama/kerjasama` },
+        { title: locale === 'id' ? "Jurnal" : "Jurnal", href: `/${locale}/kerjasama/jurnal` },
       ]
     },
   ];
@@ -138,8 +138,8 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
                   href={item.href}
                   suppressHydrationWarning
                   className={`px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2 whitespace-nowrap ${pathname === item.href || pathname.startsWith(item.href + "/")
-                    ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-blue-700 dark:text-blue-300 shadow-[0_0_10px_rgba(99,102,241,0.2)]"
-                    : "hover:bg-white/10 dark:hover:bg-gray-800/50 hover:text-blue-600 dark:hover:text-blue-400"
+                    ? "bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 text-yellow-700 dark:text-yellow-300 shadow-[0_0_10px_rgba(255,182,193,0.2)]"
+                    : "hover:bg-white/10 dark:hover:bg-gray-800/50 hover:text-yellow-600 dark:hover:text-yellow-400"
                     }`}
                 >
                   <item.icon className="w-4 h-4 shrink-0" suppressHydrationWarning />
@@ -154,10 +154,11 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
                         <Link
                           key={subItem.href}
                           href={subItem.href}
-                          className={`block px-4 py-3 text-sm hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-purple-600/10 hover:pl-6 transition-all duration-200 ${pathname === subItem.href ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-blue-700 dark:text-blue-300 border-l-4 border-blue-500" : "hover:text-blue-600 dark:hover:text-blue-300"
+                          suppressHydrationWarning
+                          className={`block px-4 py-3 text-sm hover:bg-gradient-to-r hover:from-yellow-500/10 hover:to-yellow-600/10 hover:pl-6 transition-all duration-200 ${pathname === subItem.href ? "bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 text-yellow-700 dark:text-yellow-300 border-l-4 border-yellow-500" : "hover:text-yellow-600 dark:hover:text-yellow-400"
                             }`}
                         >
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2" suppressHydrationWarning>
                             <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
                             {subItem.title}
                           </div>

@@ -38,14 +38,14 @@ export default async function BeritaPage({ params }: { params: Promise<{ locale:
               transition={{ duration: 0.6 }}
             >
               <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight transform transition-all duration-300 hover:scale-105" style={{
-                background: 'linear-gradient(to right, #fefce8, #fef08a, #fbbf24)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                WebkitTextStroke: '1px #92400e',
-                textShadow: '0 2px 2px rgba(0,0,0,0.5)'
-              }}>
-                Berita & Media
+                  background: 'linear-gradient(to right, #fefce8, #ecd735ff, #f9cd5eff)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  WebkitTextStroke: '1px #fcffa5ff',
+                  textShadow: '0 2px 2px rgba(0,0,0,0.5)'
+                }}>
+                BERITA & MEDIA
               </h1>
             </MotionDiv>
           </div>

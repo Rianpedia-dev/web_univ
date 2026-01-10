@@ -21,8 +21,15 @@ import {
   Rocket,
   Sparkles,
   Handshake,
-  ShieldCheck
+  ShieldCheck,
+  ChevronDown
 } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { MotionDiv, MotionH1, MotionP } from "@/components/motion-wrapper";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -118,11 +125,11 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
               </div>
 
               <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight transform transition-all duration-300 hover:scale-105" style={{
-                background: 'linear-gradient(to right, #fefce8, #fef08a, #fbbf24)',
+                background: 'linear-gradient(to right, #fefce8, #ecd735ff, #f9cd5eff)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
-                WebkitTextStroke: '1px #92400e',
+                WebkitTextStroke: '1px #fcffa5ff',
                 textShadow: '0 2px 2px rgba(0,0,0,0.5)'
               }}>
                 {profile.name}
@@ -284,7 +291,7 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
                 <div className="w-24 h-2 bg-gradient-to-r from-transparent via-emerald-500 to-transparent rounded-full mx-auto"></div>
               </div>
 
-              <div className="text-base md:text-lg text-foreground/80 dark:text-white/80 leading-[1.8] md:leading-[2.2] font-medium space-y-10 text-justify tracking-wide">
+              <div className="text-base md:text-lg text-foreground/80 dark:text-white/80 leading-[1.8] md:leading-[2.2] font-medium space-y-10 text-left sm:text-justify">
                 {profile.history?.split('\n').map((para, i) => (
                   para.trim() && (
                     <p key={i}>
@@ -427,7 +434,7 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
             <div className="w-24 h-1 bg-gradient-cyber mx-auto rounded-full"></div>
           </MotionDiv>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 max-w-7xl mx-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 max-w-7xl mx-auto px-4 md:px-0">
             {profile.values?.split(',').map((val, i) => {
               const value = val.trim();
               let Icon = ShieldCheck;
@@ -459,7 +466,7 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
               return (
                 <MotionDiv
                   key={i}
-                  className="glass-card p-10 rounded-[2.5rem] border border-white/10 text-center relative overflow-hidden group hover:border-white/20 transition-all duration-500"
+                  className="glass-card p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] border border-white/10 text-center relative overflow-hidden group hover:border-white/20 transition-all duration-500"
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -472,14 +479,14 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
                   ></div>
 
                   <div className={cn(
-                    "w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-8 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3",
+                    "w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl flex items-center justify-center mx-auto mb-4 md:mb-8 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3",
                     "bg-foreground/5 dark:bg-white/5 border border-foreground/10 dark:border-white/10 shadow-inner"
                   )}
                     style={{ boxShadow: `0 0 20px ${shadowColor}` }}
                   >
-                    <Icon className={cn("w-8 h-8", iconColor)} />
+                    <Icon className={cn("w-6 h-6 md:w-8 md:h-8", iconColor)} />
                   </div>
-                  <h4 className="text-xl font-extrabold text-foreground dark:text-white group-hover:scale-105 transition-transform duration-300 tracking-tight">{value}</h4>
+                  <h4 className="text-sm md:text-xl font-extrabold text-foreground dark:text-white group-hover:scale-105 transition-transform duration-300 tracking-tight">{value}</h4>
                 </MotionDiv>
               );
             })}
@@ -497,7 +504,7 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
             <p className="text-muted-foreground">Setiap elemen dalam logo kami membawa filosofi dan harapan universitas</p>
           </MotionDiv>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
             <MotionDiv
               className="lg:col-span-1"
               initial={{ opacity: 0, rotate: -10 }}
@@ -514,41 +521,39 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
               </div>
             </MotionDiv>
 
-            <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-              {logoMeaning.map((item: any, index: number) => (
-                <MotionDiv
-                  key={index}
-                  className="glass-card p-8 rounded-3xl border border-white/10 hover:border-cyber-blue/30 transition-all duration-300 group/item"
-                  initial={{ opacity: 0, x: 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                >
-                  <div className="flex items-start gap-4">
-                    {item.image && (
-                      <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 p-2 flex-shrink-0 group-hover/item:border-cyber-blue/30 transition-colors">
-                        <img
-                          src={item.image}
-                          alt={item.element}
-                          className="w-full h-full object-contain"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).parentElement?.classList.add('hidden')
-                          }}
-                        />
+            <div className="lg:col-span-2">
+              <Accordion type="single" collapsible className="w-full space-y-2">
+                {logoMeaning.map((item: any, index: number) => (
+                  <AccordionItem
+                    key={index}
+                    value={`item-${index}`}
+                    className="border border-white/10 dark:border-cyan-500/20 rounded-xl overflow-hidden bg-background/50 dark:bg-[#051120] backdrop-blur-sm px-4 group transition-all duration-300 hover:border-cyan-500/40"
+                  >
+                    <AccordionTrigger className="hover:no-underline py-3">
+                      <div className="flex items-center gap-3 text-left">
+                        {item.image && (
+                          <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 p-1 flex-shrink-0">
+                            <img
+                              src={item.image}
+                              alt={item.element}
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
+                        )}
+                        {!item.image && (
+                          <div className="w-1.5 h-1.5 bg-cyan-500 rounded-full flex-shrink-0" />
+                        )}
+                        <span className="text-sm md:text-base font-bold text-foreground dark:text-gray-100 tracking-tight">
+                          {item.element}
+                        </span>
                       </div>
-                    )}
-                    <div className="space-y-2">
-                      <h4 className="font-bold text-cyber-blue flex items-center gap-2 transition-colors">
-                        {!item.image && <div className="w-2 h-2 bg-cyber-blue rounded-full" />}
-                        {item.element}
-                      </h4>
-                      <p className="text-sm text-foreground/70 leading-relaxed group-hover/item:text-foreground/90 transition-colors">
-                        {item.meaning}
-                      </p>
-                    </div>
-                  </div>
-                </MotionDiv>
-              ))}
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-4 text-foreground/70 dark:text-gray-400 leading-relaxed text-xs md:text-sm">
+                      {item.meaning}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
             </div>
           </div>
         </div>
