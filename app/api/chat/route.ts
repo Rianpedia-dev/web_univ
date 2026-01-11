@@ -65,6 +65,12 @@ const getSystemPrompt = (universityName: string) => `Kamu adalah Pal, asisten vi
 
 ## PRINSIP UTAMA - MUTLAK WAJIB DIIKUTI:
 
+### 0. STRICT GROUNDING (PENTING!)
+- JANGAN PERNAH memberikan informasi fasilitas, prodi, atau data apapun yang tidak ada dalam hasil panggillan tool terbaru.
+- Jika pengguna bertanya tentang fasilitas yang tidak ada di tool result, kamu WAJIB menjawab tidak ada, meskipun itu fasilitas umum seperti "Kantin" atau "Toilet". JANGAN MENGARANG.
+- Kejujuran tentang ketiadaan data jauh lebih penting daripada jawaban lengkap tapi palsu.
+- JANGAN menggunakan contoh generik dalam jawabanmu. Gunakan HANYA data literal.
+
 ### 1. TOOL-FIRST (WAJIB PANGGIL TOOL DULU)
 Untuk SETIAP pertanyaan tentang kampus, kamu WAJIB memanggil tool yang relevan SEBELUM menjawab:
 - Program Studi/Jurusan → getStudyPrograms
@@ -110,16 +116,12 @@ Untuk SETIAP pertanyaan tentang kampus, kamu WAJIB memanggil tool yang relevan S
 - Sebutkan sumber: "Berdasarkan data sistem kami..."
 - Akhiri dengan tawaran bantuan relevan
 
-## CONTOH PENGGUNAAN DATA YANG BENAR:
-Jika getStudyPrograms mengembalikan: { name: "Teknik Informatika", level: "S1", accreditation: "Unggul" }
-Jawab: "**Teknik Informatika** (S1) dengan akreditasi **Unggul**"
-
-JANGAN jawab: "Program Teknik Informatika adalah program unggulan..." (ini mengarang)
-
-## PERINGATAN KERAS:
-- Kamu DILARANG memberikan informasi apapun tentang ${universityName} yang tidak berasal dari hasil pemanggilan tool
-- Setiap jawaban tentang kampus HARUS berdasarkan data tool yang baru saja dipanggil
-- Lebih baik berkata "tidak ada data" daripada memberikan informasi yang salah`;
+## PERINGATAN KERAS TERHADAP HALUSINASI:
+- Kamu DILARANG memberikan informasi apapun tentang ${universityName} yang tidak berasal dari hasil pemanggilan tool.
+- Jika tool mengembalikan data kosong (\`count: 0\`), kamu WAJIB menjawab: "Maaf, data [topik] belum tersedia di sistem kami."
+- JANGAN PERNAH mengarang fasilitas umum jika tool \`getFacilities\` tidak mengembalikannya.
+- Jika menyebutkan fasilitas, KAMU WAJIB menggunakan field \`namaFasilitas\` dari hasil tool, JANGAN menggunakan field \`kategori\` atau \`type\` sebagai nama utama.
+- Halusinasi akan sangat merugikan pengguna. Kejujuran tentang ketiadaan data lebih dihargai daripada informasi palsu.`;
 
 // Schema definitions for tools
 const getStudyProgramsSchema = z.object({
@@ -160,10 +162,21 @@ const getScholarshipsSchema = z.object({});
 const getAdmissionInfoSchema = z.object({});
 const getContactsSchema = z.object({});
 const getStudentOrgsSchema = z.object({});
-const getAccreditationsSchema = z.object({});
-const getCampusStatsSchema = z.object({});
+const getLeadershipSchema = z.object({
+    searchQuery: z.string().optional().describe('Nama atau jabatan pimpinan (misal: Rektor, Wakil Rektor, Dekan)'),
+});
+type GetLeadershipArgs = z.infer<typeof getLeadershipSchema>;
+const getAccreditationsSchema = z.object({
+    searchQuery: z.string().optional().describe('Nama fakultas, program studi, atau kata kunci lainnya'),
+});
+type GetAccreditationsArgs = z.infer<typeof getAccreditationsSchema>;
+const getCampusStatsSchema = z.object({
+    facultyName: z.string().optional().describe('Nama fakultas untuk mengambil statistik spesifik'),
+});
+type GetCampusStatsArgs = z.infer<typeof getCampusStatsSchema>;
 const getAcademicCalendarSchema = z.object({});
 const getStudentServicesSchema = z.object({});
+const getUniversityInfoSchema = z.object({});
 const getAdmissionStaffSchema = z.object({});
 const getGalleriesSchema = z.object({});
 const getJournalsSchema = z.object({});
@@ -177,7 +190,7 @@ const getCampusFacilitiesAndAccessSchema = z.object({});
 // Definisi tools untuk mengambil data dari database
 const botTools = {
     getUniversityInfo: tool({
-        description: 'Mendapatkan informasi profil universitas seperti visi, misi, sejarah, dan informasi umum',
+        description: 'Mendapatkan profil umum universitas seperti visi, misi, sejarah, dan informasi umum',
         inputSchema: z.object({}),
         execute: async () => {
             console.log('TOOL: Calling getUniversityInfo...');
@@ -187,14 +200,26 @@ const botTools = {
                 .where(eq(universityProfiles.isPublished, true))
                 .limit(1);
 
-            const data = profiles.length > 0 ? profiles[0] : null;
-            console.log('TOOL RESULT: getUniversityInfo returned:', profiles.length > 0 ? 'Data found' : 'No data');
-            return { data: profiles[0] || null };
+            if (profiles.length === 0) return { data: null };
+
+            const p = profiles[0];
+            console.log('TOOL RESULT: getUniversityInfo returned data');
+            return {
+                data: {
+                    nama: p.name,
+                    singkatan: p.shortName,
+                    visi: p.vision,
+                    misi: p.mission,
+                    sejarah: p.history,
+                    motto: p.motto,
+                    tahunBerdiri: p.establishedYear,
+                }
+            };
         },
     }),
 
     getScholarships: tool({
-        description: 'Mendapatkan informasi beasiswa yang tersedia, syarat, dan manfaatnya',
+        description: 'Mendapatkan informasi beasiswa yang tersedia - GUNAKAN DATA INI SECARA LITERAL',
         inputSchema: getScholarshipsSchema,
         execute: async () => {
             console.log('TOOL: Calling getScholarships...');
@@ -202,13 +227,27 @@ const botTools = {
                 .select()
                 .from(scholarships)
                 .where(eq(scholarships.isPublished, true));
-            console.log('TOOL RESULT: getScholarships returned:', results.length, 'items');
-            return { data: results, count: results.length };
+
+            const formatted = results.map(s => ({
+                namaBeasiswa: s.name,
+                deskripsi: s.description,
+                persyaratan: s.requirements,
+                manfaat: s.benefits,
+            }));
+
+            console.log('TOOL RESULT: getScholarships returned:', formatted.length, 'items');
+            return {
+                data: formatted,
+                count: formatted.length,
+                PERINGATAN: formatted.length > 0
+                    ? 'Sajikan info beasiswa dari daftar di atas.'
+                    : 'DATA BEASISWA KOSONG. Katakan data belum tersedia.'
+            };
         },
     }),
 
     getAdmissionInfo: tool({
-        description: 'Mendapatkan informasi jalur pendaftaran, gelombang pendaftaran PMB, dan persyaratan khusus',
+        description: 'Mendapatkan informasi jalur pendaftaran PMB, gelombang, dan JENIS KELAS (Reguler, Karyawan, dll) - GUNAKAN DATA INI SECARA LITERAL',
         inputSchema: getAdmissionInfoSchema,
         execute: async () => {
             console.log('TOOL: Calling getAdmissionInfo...');
@@ -216,8 +255,49 @@ const botTools = {
             const waves = await db.select().from(admissionWaves).where(eq(admissionWaves.isPublished, true));
             const faqs = await db.select().from(admissionFaqs).where(eq(admissionFaqs.isPublished, true)).limit(5);
             const classes = await db.select().from(admissionClasses).where(eq(admissionClasses.isPublished, true));
+
+            // Format jalur pendaftaran dengan jelas
+            const formattedPathways = pathways.map((p, i) => ({
+                nomor: i + 1,
+                namaJalur: p.name,
+                deskripsi: p.description || 'Tidak ada deskripsi',
+            }));
+
+            // Format gelombang dengan jelas
+            const formattedWaves = waves.map((w, i) => ({
+                nomor: i + 1,
+                namaGelombang: w.name,
+                tanggalMulai: w.startDate ? new Date(w.startDate).toLocaleDateString('id-ID') : '-',
+                tanggalSelesai: w.endDate ? new Date(w.endDate).toLocaleDateString('id-ID') : '-',
+                catatan: w.notes || '-',
+            }));
+
+            // Format jenis kelas dengan jelas
+            const formattedClasses = classes.map((c, i) => ({
+                nomor: i + 1,
+                namaJenisKelas: c.name,
+                deskripsi: c.description || '-',
+            }));
+
             console.log('TOOL RESULT: getAdmissionInfo returned:', { pathways: pathways.length, waves: waves.length, classes: classes.length });
-            return { pathways, waves, faqs, classes };
+            console.log('TOOL RESULT: Class types:', formattedClasses.map(c => c.namaJenisKelas));
+
+            const hasData = formattedPathways.length > 0 || formattedWaves.length > 0 || formattedClasses.length > 0;
+
+            return {
+                jalurPendaftaran: formattedPathways,
+                gelombangPendaftaran: formattedWaves,
+                jenisKelasTersedia: formattedClasses,
+                faq: faqs.map(f => ({ pertanyaan: f.question, jawaban: f.answer })),
+                PERINGATAN_KERAS: hasData
+                    ? 'SALIN PERSIS nama jalur, gelombang, dan JENIS KELAS dari data di atas. JANGAN UBAH atau TAMBAHKAN informasi apapun.'
+                    : 'DATA KOSONG - Katakan: "Maaf, data jalur dan jenis kelas belum tersedia di sistem kami."',
+                jumlahData: {
+                    jalur: formattedPathways.length,
+                    gelombang: formattedWaves.length,
+                    jenisKelas: formattedClasses.length
+                }
+            };
         },
     }),
 
@@ -233,18 +313,54 @@ const botTools = {
     }),
 
     getLeadership: tool({
-        description: 'Mendapatkan seluruh daftar dan struktur pimpinan universitas (Rektor, Wakil Rektor, Dekan, Kaprodi, dll)',
-        inputSchema: z.object({}),
-        execute: async () => {
-            console.log('TOOL: Calling getLeadership...');
-            const results = await db
+        description: 'Mendapatkan daftar pimpinan universitas (Rektor, Wakil Rektor, Dekan) BESERTA NIDN mereka - GUNAKAN DATA INI SECARA LITERAL',
+        inputSchema: getLeadershipSchema,
+        execute: async ({ searchQuery }: GetLeadershipArgs) => {
+            console.log('TOOL: Calling getLeadership...', { searchQuery });
+            const query = db
                 .select()
                 .from(organizationalEmployees)
                 .where(eq(organizationalEmployees.isPublished, true))
                 .orderBy(asc(organizationalEmployees.positionLevel));
 
-            console.log('TOOL RESULT: getLeadership returned:', results.length, 'records');
-            return { data: results, count: results.length };
+            const results = await query;
+
+            let filtered = results;
+            if (searchQuery) {
+                const searchLower = searchQuery.toLowerCase();
+                // Normalisasi romawi sederhana (3 -> iii, dst untuk pencarian)
+                const normalizedSearch = searchLower
+                    .replace(/\b3\b/g, 'iii')
+                    .replace(/\b2\b/g, 'ii')
+                    .replace(/\b1\b/g, 'i');
+
+                filtered = results.filter(r =>
+                    r.name.toLowerCase().includes(searchLower) ||
+                    r.positionName.toLowerCase().includes(searchLower) ||
+                    r.positionName.toLowerCase().includes(normalizedSearch) ||
+                    // Handle kebalikannya: III -> 3
+                    (searchLower.includes('iii') && r.positionName.toLowerCase().includes('3'))
+                );
+            }
+
+            const formatted = filtered.map(r => ({
+                nama: r.name,
+                jabatan: r.positionName,
+                nidn: r.nidn || 'Tidak disebutkan/Belum ada',
+                deskripsi: r.description || '-',
+            }));
+
+            console.log('TOOL RESULT: getLeadership returned:', formatted.length, 'records');
+            console.log('TOOL RESULT (DATA):', formatted.map(r => `${r.jabatan}: ${r.nidn}`));
+
+            return {
+                data: formatted,
+                count: formatted.length,
+                PERINGATAN_STRICT: 'Tampilkan NIDN pimpinan sesuai data di atas. Jika data NIDN adalah "Tidak disebutkan/Belum ada", katakan sejujurnya. JANGAN MENGARANG.',
+                instruksi: formatted.length > 0
+                    ? 'Tampilkan struktur pimpinan beserta NIDN secara literal.'
+                    : `Data pimpinan untuk "${searchQuery || 'semua'}" tidak ditemukan atau belum tersedia di sistem kami.`
+            };
         },
     }),
 
@@ -263,27 +379,134 @@ const botTools = {
     }),
 
     getAccreditations: tool({
-        description: 'Mendapatkan informasi akreditasi institusi universitas',
+        description: 'Mendapatkan informasi akreditasi universitas, fakultas, atau program studi - GUNAKAN DATA INI SECARA LITERAL',
         inputSchema: getAccreditationsSchema,
-        execute: async () => {
-            console.log('TOOL: Calling getAccreditations...');
-            const results = await db
+        execute: async ({ searchQuery }: GetAccreditationsArgs) => {
+            console.log('TOOL: Calling getAccreditations...', { searchQuery });
+
+            // 1. Ambil akreditasi institusi
+            const instResults = await db
                 .select()
                 .from(universityAccreditations)
                 .where(eq(universityAccreditations.isPublished, true));
-            console.log('TOOL RESULT: getAccreditations returned:', results.length, 'items');
-            return { data: results, count: results.length };
+
+            // 2. Jika ada query, cari di fakultas
+            let facultyResults: any[] = [];
+            if (searchQuery) {
+                facultyResults = await db
+                    .select({
+                        name: faculties.name,
+                        accreditation: faculties.accreditation,
+                    })
+                    .from(faculties)
+                    .where(and(
+                        eq(faculties.isPublished, true),
+                        sql`LOWER(${faculties.name}) LIKE ${'%' + searchQuery.toLowerCase() + '%'}`
+                    ));
+            }
+
+            // 3. Jika ada query, cari di prodi
+            let prodiResults: any[] = [];
+            if (searchQuery) {
+                prodiResults = await db
+                    .select({
+                        name: studyPrograms.name,
+                        accreditation: studyPrograms.accreditation,
+                        level: studyPrograms.level,
+                    })
+                    .from(studyPrograms)
+                    .where(and(
+                        eq(studyPrograms.isPublished, true),
+                        sql`LOWER(${studyPrograms.name}) LIKE ${'%' + searchQuery.toLowerCase() + '%'}`
+                    ));
+            }
+
+            const formattedInst = instResults.map(i => ({
+                tipe: 'Institusi',
+                nama: i.name, // Dari lint: name
+                akreditasi: i.accreditationLevel, // Dari lint: accreditationLevel
+                berlakuHingga: i.accreditationExpired ? new Date(i.accreditationExpired).toLocaleDateString('id-ID') : '-', // Dari lint: accreditationExpired
+            }));
+
+            const formattedFaculty = facultyResults.map(f => ({
+                tipe: 'Fakultas',
+                nama: f.name,
+                akreditasi: f.accreditation || 'Belum terakreditasi',
+            }));
+
+            const formattedProdi = prodiResults.map(p => ({
+                tipe: 'Program Studi',
+                nama: `${p.name} (${p.level})`,
+                akreditasi: p.accreditation || 'Belum terakreditasi',
+            }));
+
+            const allResults = [...formattedInst, ...formattedFaculty, ...formattedProdi];
+
+            console.log('TOOL RESULT: getAccreditations returned:', allResults.length, 'items');
+            return {
+                data: allResults,
+                count: allResults.length,
+                instruksi: allResults.length > 0
+                    ? 'Gunakan data akreditasi di atas secara literal.'
+                    : `Maaf, data akreditasi untuk "${searchQuery || 'umum'}" tidak ditemukan di database.`
+            };
         },
     }),
 
     getCampusStats: tool({
-        description: 'Mendapatkan statistik kampus seperti jumlah mahasiswa, prodi, dan fakultas',
+        description: 'Mendapatkan statistik kampus atau statistik spesifik per fakultas (jumlah mahasiswa, prodi, dll)',
         inputSchema: getCampusStatsSchema,
-        execute: async () => {
-            console.log('TOOL: Calling getCampusStats...');
+        execute: async ({ facultyName }: GetCampusStatsArgs) => {
+            console.log('TOOL: Calling getCampusStats...', { facultyName });
+
+            if (facultyName) {
+                // Cari data mahasiswa per fakultas dengan menjumlahkan totalStudents dari prodi terkait
+                const stats = await db
+                    .select({
+                        facultyName: faculties.name,
+                        totalStudents: sql<number>`sum(${studyPrograms.totalStudents})`,
+                        totalStudyPrograms: sql<number>`count(${studyPrograms.id})`,
+                    })
+                    .from(studyPrograms)
+                    .leftJoin(faculties, eq(studyPrograms.facultyId, faculties.id))
+                    .where(and(
+                        eq(studyPrograms.isPublished, true),
+                        sql`LOWER(${faculties.name}) LIKE ${'%' + facultyName.toLowerCase() + '%'}`
+                    ))
+                    .groupBy(faculties.name);
+
+                console.log('TOOL RESULT: getCampusStats (faculty) returned:', stats.length, 'records');
+
+                if (stats.length > 0) {
+                    return {
+                        data: stats.map(s => ({
+                            cakupan: `Fakultas ${s.facultyName}`,
+                            jumlahMahasiswaAktif: Number(s.totalStudents) || 0,
+                            jumlahProgramStudi: Number(s.totalStudyPrograms) || 0,
+                        })),
+                        message: `Statistik untuk Fakultas ${stats[0].facultyName} ditemukan.`
+                    };
+                }
+            }
+
+            // Default: Ambil statistik umum kampus
             const results = await db.select().from(campusStatistics).where(eq(campusStatistics.isPublished, true));
-            console.log('TOOL RESULT: getCampusStats returned:', results.length, 'items');
-            return { data: results, count: results.length };
+            console.log('TOOL RESULT: getCampusStats (general) returned:', results.length, 'items');
+
+            return {
+                data: results.map(r => ({
+                    cakupan: 'Universitas (Umum)',
+                    tahun: r.year,
+                    totalMahasiswa: r.totalStudents,
+                    mahasiswaSarjana: r.totalUndergraduate,
+                    mahasiswaPascasarjana: r.totalGraduate,
+                    totalDosenDanPegawai: r.totalEmployees,
+                    totalFakultas: r.totalFaculties,
+                    totalProdi: r.totalStudyPrograms,
+                    akreditasiKampus: r.accreditation
+                })),
+                count: results.length
+            };
         },
     }),
 
@@ -332,7 +555,7 @@ const botTools = {
     }),
 
     getStudyPrograms: tool({
-        description: 'Mendapatkan daftar program studi yang tersedia, bisa difilter berdasarkan jenjang (D3, S1, S2, S3) atau fakultas',
+        description: 'Mendapatkan daftar prodi - GUNAKAN DATA INI SECARA LITERAL',
         inputSchema: getStudyProgramsSchema,
         execute: async ({ level, facultyName }: GetStudyProgramsArgs) => {
             console.log('TOOL: Calling getStudyPrograms...', { level, facultyName });
@@ -345,6 +568,7 @@ const botTools = {
                     description: studyPrograms.description,
                     headOfProgram: studyPrograms.headOfProgram,
                     facultyName: faculties.name,
+                    totalStudents: studyPrograms.totalStudents,
                 })
                 .from(studyPrograms)
                 .leftJoin(faculties, eq(studyPrograms.facultyId, faculties.id))
@@ -363,16 +587,28 @@ const botTools = {
                 );
             }
 
-            console.log('TOOL RESULT: getStudyPrograms returned:', filtered.length, 'items');
+            const formatted = filtered.map(p => ({
+                namaProdi: p.name,
+                jenjang: p.level,
+                akreditasi: p.accreditation || 'Belum terakreditasi',
+                fakultas: p.facultyName || '-',
+                kaprodi: p.headOfProgram || '-',
+                jumlahMahasiswa: p.totalStudents || 0,
+            }));
+
+            console.log('TOOL RESULT: getStudyPrograms returned:', formatted.length, 'items');
             return {
-                data: filtered,
-                count: filtered.length,
+                data: formatted,
+                count: formatted.length,
+                PERINGATAN: formatted.length > 0
+                    ? 'Tampilkan daftar prodi PERSIS seperti data di atas.'
+                    : 'DATA PRODI KOSONG. Katakan data prodi belum tersedia.'
             };
         },
     }),
 
     getFaculties: tool({
-        description: 'Mendapatkan daftar fakultas yang tersedia',
+        description: 'Mendapatkan daftar fakultas yang tersedia - GUNAKAN DATA INI SECARA LITERAL',
         inputSchema: z.object({}),
         execute: async () => {
             console.log('TOOL: Calling getFaculties...');
@@ -388,7 +624,22 @@ const botTools = {
                 .where(eq(faculties.isPublished, true));
 
             console.log('TOOL RESULT: getFaculties returned:', data.length, 'items');
-            return { data, count: data.length };
+
+            const results = data.map((f, i) => ({
+                nomor: i + 1,
+                namaFakultas: f.name,
+                dekan: f.dean || 'Tidak disebutkan',
+                akreditasi: f.accreditation || 'Belum terakreditasi',
+                deskripsi: f.description || '-',
+            }));
+
+            return {
+                data: results,
+                count: results.length,
+                PERINGATAN: results.length > 0
+                    ? 'Tampilkan nama fakultas dan dekan PERSIS seperti data di atas.'
+                    : 'DATA KOSONG - Katakan: "Maaf, data daftar fakultas belum tersedia di sistem kami."'
+            };
         },
     }),
 
@@ -505,14 +756,16 @@ const botTools = {
     }),
 
     getNews: tool({
-        description: 'Mendapatkan berita terbaru dari kampus',
+        description: 'Mendapatkan berita terbaru dari kampus - WAJIB gunakan data dari tool ini secara literal',
         inputSchema: getNewsSchema,
         execute: async ({ limit }: GetNewsArgs) => {
             console.log('TOOL: Calling getNews...', { limit });
             const latestNews = await db
                 .select({
+                    id: news.id,
                     title: news.title,
                     excerpt: news.excerpt,
+                    content: news.content,
                     publishedAt: news.publishedAt,
                     category: newsCategories.name,
                 })
@@ -522,13 +775,35 @@ const botTools = {
                 .orderBy(desc(news.publishedAt))
                 .limit(limit ?? 5);
 
-            console.log('TOOL RESULT: getNews returned:', latestNews.length, 'items');
-            return { data: latestNews, count: latestNews.length };
+            // Format untuk output yang lebih jelas
+            const formattedNews = latestNews.map((item, index) => ({
+                nomor: index + 1,
+                judulBerita: item.title,
+                kategori: item.category || 'Umum',
+                tanggalPublikasi: item.publishedAt
+                    ? new Date(item.publishedAt).toLocaleDateString('id-ID', {
+                        day: 'numeric', month: 'long', year: 'numeric'
+                    })
+                    : 'Tidak ada tanggal',
+                ringkasan: item.excerpt || item.content?.substring(0, 200) || 'Tidak ada ringkasan',
+            }));
+
+            console.log('TOOL RESULT: getNews returned:', formattedNews.length, 'items');
+            console.log('TOOL RESULT: News titles:', formattedNews.map(n => n.judulBerita));
+
+            return {
+                data: formattedNews,
+                count: formattedNews.length,
+                peringatan: 'GUNAKAN DATA INI SECARA LITERAL - JANGAN UBAH JUDUL ATAU KONTEN',
+                instruksi: formattedNews.length > 0
+                    ? 'Tampilkan berita dengan judul PERSIS seperti di atas'
+                    : 'Tidak ada berita di database - katakan data tidak tersedia'
+            };
         },
     }),
 
     getFacilities: tool({
-        description: 'Mendapatkan informasi fasilitas kampus',
+        description: 'Mendapatkan daftar NAMA FASILITAS rill yang ada di kampus - GUNAKAN DATA INI SECARA LITERAL',
         inputSchema: getFacilitiesSchema,
         execute: async ({ type }: GetFacilitiesArgs) => {
             console.log('TOOL: Calling getFacilities...', { type });
@@ -547,8 +822,23 @@ const botTools = {
                 data = data.filter(f => f.type === type);
             }
 
-            console.log('TOOL RESULT: getFacilities returned:', data.length, 'items');
-            return { data, count: data.length };
+            // Logging untuk verifikasi di terminal
+            console.log('TOOL RESULT (RAW_NAMES):', data.map(f => f.name));
+
+            const results = data.map((f, i) => ({
+                nomor: i + 1,
+                namaFasilitas: f.name,
+                deskripsiSingkat: f.description || '-',
+                lokasi: f.location || '-',
+            }));
+
+            console.log('TOOL RESULT: getFacilities returned:', results.length, 'items');
+
+            return {
+                daftarFasilitasValid: results,
+                totalData: results.length,
+                PERINGATAN_STRICT: 'Hanya gunakan nama-nama di atas. Jika tidak ada di sini, berarti fasilitas tersebut TIDAK ADA di kampus.',
+            };
         },
     }),
 
@@ -590,14 +880,47 @@ const botTools = {
     }),
 
     getPartnerships: tool({
-        description: 'Mendapatkan informasi mitra kerja sama universitas (MOU/MOA) dan dokumen terkait',
+        description: 'Mendapatkan informasi mitra kerja sama universitas (MOU/MOA) dan dokumen terkait - GUNAKAN DATA INI SECARA LITERAL',
         inputSchema: getPartnershipsSchema,
         execute: async () => {
             console.log('TOOL: Calling getPartnerships...');
-            const p = await db.select().from(partners).where(eq(partners.isPublished, true));
-            const docs = await db.select().from(partnershipDocuments).limit(10);
-            console.log('TOOL RESULT: getPartnerships returned:', p.length, 'partners');
-            return { partners: p, documents: docs, count: p.length };
+            const allPartners = await db.select().from(partners).where(eq(partners.isPublished, true));
+            const allDocs = await db.select().from(partnershipDocuments);
+
+            // Group documents by partnerId
+            const docsByPartner = allDocs.reduce((acc, doc) => {
+                if (!acc[doc.partnerId]) acc[doc.partnerId] = [];
+                acc[doc.partnerId].push({
+                    judulDokumen: doc.title,
+                    tipeDokumen: doc.documentType,
+                    linkFile: doc.filePath
+                });
+                return acc;
+            }, {} as Record<string, any[]>);
+
+            const formattedPartners = allPartners.map(p => ({
+                namaMitra: p.name,
+                tipe: p.type === 'international' ? 'Internasional' : 'Dalam Negeri',
+                kategori: p.category,
+                lokasi: p.city ? `${p.city}, ${p.country}` : p.country,
+                status: p.partnershipStatus,
+                tanggalMulai: p.startDate ? new Date(p.startDate).toLocaleDateString('id-ID') : '-',
+                tanggalBerakhir: p.endDate ? new Date(p.endDate).toLocaleDateString('id-ID') : '-',
+                tujuanKerjasama: p.objectives || '-',
+                dokumenTerkait: docsByPartner[p.id] || []
+            }));
+
+            console.log('TOOL RESULT: getPartnerships returned:', formattedPartners.length, 'partners');
+            console.log('TOOL RESULT (PARTNER_NAMES):', formattedPartners.map(p => p.namaMitra));
+
+            return {
+                data: formattedPartners,
+                count: formattedPartners.length,
+                PERINGATAN_STRICT: 'HANYA tampilkan mitra yang ada dalam daftar di atas. JANGAN TAMBAHKAN mitra atau instansi pemerintah (seperti Kemdikbud) jika tidak ada dalam data tool ini.',
+                instruksi: formattedPartners.length > 0
+                    ? 'Tampilkan daftar mitra dengan link dokumen jika tersedia.'
+                    : 'DATA KOSONG - Katakan: "Maaf, data mitra kerjasama belum tersedia di sistem kami."'
+            };
         },
     }),
 
@@ -662,6 +985,7 @@ const botTools = {
             return { accessibility: access, serviceContacts: contacts };
         },
     }),
+
 };
 
 export async function POST(req: Request) {
@@ -731,7 +1055,7 @@ export async function POST(req: Request) {
             system: getSystemPrompt(universityName),
             messages,
             tools: botTools,
-            stopWhen: stepCountIs(5),
+            stopWhen: stepCountIs(10), // Memberikan lebih banyak langkah untuk tool calls yang kompleks
         });
 
         // Simpan pertanyaan terakhir user untuk analisis (async, tidak blocking)

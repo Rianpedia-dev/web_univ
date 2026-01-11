@@ -429,9 +429,6 @@ export function UnpalAI() {
                                     )}
                                 </button>
                             </div>
-                            <p className="text-[10px] text-muted-foreground text-center mt-2">
-                                Tekan Enter untuk mengirim, Shift+Enter untuk baris baru
-                            </p>
                         </form>
                     </motion.div>
                 )}
