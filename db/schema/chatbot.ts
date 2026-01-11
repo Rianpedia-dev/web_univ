@@ -29,7 +29,9 @@ export const chatFrequentQuestions = pgTable("chat_frequent_questions", {
 // Tabel feedback pengguna
 export const chatFeedback = pgTable("chat_feedback", {
     id: uuid("id").defaultRandom().primaryKey(),
-    messageId: uuid("message_id").references(() => chatMessages.id, { onDelete: "cascade" }),
+    sessionId: text("session_id"), // session browser untuk tracking
+    messageId: text("message_id"), // ID pesan dari AI SDK (bukan foreign key)
+    userQuestion: text("user_question"), // pertanyaan user yang di-feedback
     rating: integer("rating"), // 1 = thumbs down, 2 = thumbs up
     comment: text("comment"),
     createdAt: timestamp("created_at").defaultNow().notNull(),

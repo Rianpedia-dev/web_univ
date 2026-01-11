@@ -28,19 +28,21 @@ function ChatMessage({
     message,
     onFeedback
 }: {
-    message: { id: string; role: string; parts: Array<{ type: string; text?: string }> };
+    message: { id: string; role: string; content?: string; parts?: Array<{ type: string; text?: string }> };
     onFeedback?: (messageId: string, rating: number) => void;
 }) {
     const isUser = message.role === 'user';
     const [feedbackGiven, setFeedbackGiven] = useState<number | null>(null);
 
-    // Extract text from parts
-    const content = message.parts
-        .map(part => {
-            if (part.type === 'text') return part.text || '';
-            return '';
-        })
-        .join('');
+    // Extract text from parts or content
+    const content = message.content || (message.parts
+        ? message.parts
+            .map(part => {
+                if (part.type === 'text') return part.text || '';
+                return '';
+            })
+            .join('')
+        : '');
 
     const handleFeedback = (rating: number) => {
         if (onFeedback && !feedbackGiven) {
@@ -163,11 +165,14 @@ export function UnpalAI() {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLTextAreaElement>(null);
 
-    const { messages, sendMessage, status } = useChat({
+    const { messages, sendMessage, status, error: chatError } = useChat({
         transport: new DefaultChatTransport({
             api: '/api/chat',
             body: { sessionId },
         }),
+        onError: (err) => {
+            console.error('Chat error:', err);
+        },
     });
 
     // Add welcome message to display
@@ -191,15 +196,38 @@ export function UnpalAI() {
     // Handle feedback
     const handleFeedback = useCallback(async (messageId: string, rating: number) => {
         try {
+            // Find the last user question before this assistant message
+            const messageIndex = messages.findIndex(m => m.id === messageId);
+            let userQuestion = '';
+            if (messageIndex > 0) {
+                for (let i = messageIndex - 1; i >= 0; i--) {
+                    if (messages[i].role === 'user') {
+                        const msg = messages[i] as unknown as { role: string; parts?: Array<{ type: string; text?: string }> };
+                        userQuestion = msg.parts
+                            ? msg.parts
+                                .filter((part) => part.type === 'text')
+                                .map((part) => part.text || '')
+                                .join('')
+                            : '';
+                        break;
+                    }
+                }
+            }
+
             await fetch('/api/chat', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ messageId, rating }),
+                body: JSON.stringify({
+                    messageId,
+                    rating,
+                    sessionId,
+                    userQuestion,
+                }),
             });
         } catch (error) {
             console.error('Failed to submit feedback:', error);
         }
-    }, []);
+    }, [sessionId, messages]);
 
     // Handle form submit
     const handleSubmit = (e: React.FormEvent) => {
@@ -215,8 +243,10 @@ export function UnpalAI() {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             if (input.trim() && !isLoading) {
-                sendMessage({ text: input });
-                setInput('');
+                const form = e.currentTarget.closest('form');
+                if (form) {
+                    form.requestSubmit();
+                }
             }
         }
     };
@@ -318,6 +348,19 @@ export function UnpalAI() {
                             )}
 
                             <div ref={messagesEndRef} />
+
+                            {/* Error state */}
+                            {chatError && (
+                                <div className="p-3 mb-4 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs text-center">
+                                    <p>Maaf, terjadi kesalahan pada koneksi. Silakan coba lagi.</p>
+                                    <button
+                                        onClick={() => window.location.reload()}
+                                        className="mt-1 underline hover:no-underline"
+                                    >
+                                        Muat ulang halaman
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                         {/* Quick Actions (show only for initial state) */}
@@ -350,7 +393,7 @@ export function UnpalAI() {
                                     onKeyDown={handleKeyDown}
                                     placeholder="Ketik pertanyaan Anda..."
                                     rows={1}
-                                    disabled={status !== 'ready'}
+                                    disabled={status === 'streaming' || status === 'submitted'}
                                     className={cn(
                                         "flex-1 resize-none",
                                         "px-4 py-2.5 rounded-xl",

@@ -63,40 +63,63 @@ const getSystemPrompt = (universityName: string) => `Kamu adalah Pal, asisten vi
 - Jelas, sopan, dan sedikit hangat.
 - Selalu gunakan Bahasa Indonesia yang baik dan benar.
 
-## PRINSIP UTAMA (WAJIB DIIKUTI):
-1. **DATABASE-FIRST**: Kamu adalah antarmuka untuk database kami. JANGAN PERNAH memberikan informasi tentang ${universityName} berdasarkan pengetahuan umum Anda. Gunakan Tools untuk mendapatkan fakta.
-2. **STRICT GROUNDING**: Jika Tools mengembalikan data kosong atau tidak relevan, katakan: "Maaf, saat ini saya tidak menemukan data tersebut di sistem kami" - JANGAN mengarang jawaban atau memberikan asumsi.
-3. **MANDATORY TOOL USE**: Untuk pertanyaan seputar:
-    - Daftar Program Studi / Jurusan
-    - Biaya Kuliah (UKT, Pendaftaran, dll)
-    - Beasiswa dan Syaratnya
-    - Jalur Pendaftaran & Tanggal Penting (Gelombang)
-    - Alamat, Email, dan Nomor Telepon Kampus
-    - Siapa Rektor, Wakil Rektor (I, II, III, IV), Dekan, atau Pejabat Kampus Lainnya (WAJIB panggil getLeadership)
-    - Organisasi Mahasiswa (UKM)
-    - Akreditasi Kampus/Prodi
-    - Statistik Kampus (Jumlah Mahasiswa, dll)
-    - Kalender Akademik & Fasilitas
-    - Layanan Mahasiswa (Konseling, Karir, dll)
-    - Tim PMB (Kontak Panitia Pendaftaran)
-    - Berita dan Pengumuman Universitas (WAJIB panggil getNews)
-    - Agenda dan Event Kampus (WAJIB panggil getEvents)
-    - Foto/Video Kegiatan (Galeri)
-    - Publikasi Jurnal Dosen/Mahasiswa
-    - Kerja Sama/Mitra Universitas
-    - Testimoni Alumni & Prestasi Mahasiswa (WAJIB panggil getAlumniAndAchievements)
-    - Prospek Karir Lulusan (WAJIB panggil getCareerProspects)
-    - Syarat Detail Pendaftaran (Murni/Pindahan) & Timeline (WAJIB panggil getAdmissionDetails)
-    - Makna Logo, Penghargaan, & Media Sosial (WAJIB panggil getUniversityIdentity)
-    - Aksesibilitas Kampus & Kontak Layanan (WAJIB panggil getCampusFacilitiesAndAccess)
-    WAJIB menggunakan tools yang sesuai sebelum menjawab.
+## PRINSIP UTAMA - MUTLAK WAJIB DIIKUTI:
 
-## Aturan Penulisan:
-- Gunakan format markdown (bold, list, table) agar mudah dibaca.
-- Jika menampilkan daftar (seperti prodi atau fasilitas), buatlah dalam bentuk list yang rapi.
-- Akhiri setiap jawaban dengan tawaran bantuan lainnya yang relevan.
+### 1. TOOL-FIRST (WAJIB PANGGIL TOOL DULU)
+Untuk SETIAP pertanyaan tentang kampus, kamu WAJIB memanggil tool yang relevan SEBELUM menjawab:
+- Program Studi/Jurusan → getStudyPrograms
+- Fakultas → getFaculties  
+- Biaya Kuliah/UKT → getEducationCosts
+- Beasiswa → getScholarships
+- Jalur Pendaftaran/PMB → getAdmissionInfo
+- Kontak/Alamat → getContacts
+- Pimpinan (Rektor, Wakil Rektor, Dekan) → getLeadership
+- UKM/Organisasi Mahasiswa → getStudentOrgs
+- Akreditasi → getAccreditations
+- Statistik Kampus → getCampusStats
+- Kalender Akademik → getAcademicCalendar
+- Layanan Mahasiswa → getStudentServices
+- Tim PMB → getAdmissionStaff
+- Berita → getNews
+- Event → getEvents
+- Fasilitas → getFacilities
+- Galeri → getGalleries
+- Jurnal → getJournals
+- Kerjasama/Mitra → getPartnerships
+- Alumni/Prestasi → getAlumniAndAchievements
+- Prospek Karir → getCareerProspects
+- Syarat Pendaftaran → getAdmissionDetails
+- Logo/Penghargaan → getUniversityIdentity
+- Aksesibilitas → getCampusFacilitiesAndAccess
+- Info Umum Kampus → getUniversityInfo
 
-Ingat: Kamu dilarang keras memberikan informasi kampus yang tidak berasal dari database resmi kami.`;
+### 2. GUNAKAN DATA SECARA LITERAL
+- SALIN PERSIS data dari tool ke jawabanmu (nama, angka, tanggal, dll)
+- JANGAN mengubah, memparafrase, atau menambahkan informasi yang tidak ada di data tool
+- JANGAN menggunakan pengetahuan umummu tentang universitas manapun
+- Jika tool mengembalikan field tertentu (misal: name, description, amount), KUTIP nilainya secara langsung
+
+### 3. JIKA DATA KOSONG ATAU TIDAK ADA
+- Katakan dengan jelas: "Maaf, data [topik] belum tersedia di sistem kami."
+- JANGAN mengarang, mengasumsikan, atau memberikan informasi generik
+- JANGAN menggunakan placeholder seperti "akan diumumkan" kecuali itu memang ada di data
+
+### 4. FORMAT JAWABAN
+- Gunakan markdown: **bold** untuk menekankan, - untuk list, | untuk table
+- Untuk daftar banyak item, gunakan numbered list atau table
+- Sebutkan sumber: "Berdasarkan data sistem kami..."
+- Akhiri dengan tawaran bantuan relevan
+
+## CONTOH PENGGUNAAN DATA YANG BENAR:
+Jika getStudyPrograms mengembalikan: { name: "Teknik Informatika", level: "S1", accreditation: "Unggul" }
+Jawab: "**Teknik Informatika** (S1) dengan akreditasi **Unggul**"
+
+JANGAN jawab: "Program Teknik Informatika adalah program unggulan..." (ini mengarang)
+
+## PERINGATAN KERAS:
+- Kamu DILARANG memberikan informasi apapun tentang ${universityName} yang tidak berasal dari hasil pemanggilan tool
+- Setiap jawaban tentang kampus HARUS berdasarkan data tool yang baru saja dipanggil
+- Lebih baik berkata "tidak ada data" daripada memberikan informasi yang salah`;
 
 // Schema definitions for tools
 const getStudyProgramsSchema = z.object({
@@ -370,12 +393,15 @@ const botTools = {
     }),
 
     getEducationCosts: tool({
-        description: 'Mendapatkan informasi biaya pendidikan per program studi',
+        description: 'Mendapatkan informasi biaya pendidikan per program studi termasuk UKT, biaya pendaftaran, dan biaya lainnya',
         inputSchema: getEducationCostsSchema,
         execute: async ({ programName }: GetEducationCostsArgs) => {
             console.log('TOOL: Calling getEducationCosts...', { programName });
+
+            // Ambil semua biaya yang dipublikasikan
             const costs = await db
                 .select({
+                    id: educationCosts.id,
                     programName: studyPrograms.name,
                     programLevel: studyPrograms.level,
                     costType: educationCosts.costType,
@@ -390,13 +416,37 @@ const botTools = {
             let filtered = costs;
             if (programName) {
                 const searchLower = programName.toLowerCase();
-                filtered = filtered.filter(c =>
-                    c.programName?.toLowerCase().includes(searchLower)
+                // Filter berdasarkan nama prodi, atau ambil yang general (programName null)
+                filtered = costs.filter(c =>
+                    c.programName?.toLowerCase().includes(searchLower) ||
+                    c.programName === null // Biaya umum yang berlaku untuk semua
                 );
             }
 
-            console.log('TOOL RESULT: getEducationCosts returned:', filtered.length, 'items');
-            return { data: filtered, count: filtered.length };
+            // Jika tidak ada hasil untuk prodi spesifik, kembalikan semua biaya umum
+            if (filtered.length === 0 && programName) {
+                filtered = costs.filter(c => c.programName === null);
+            }
+
+            // Format output yang lebih jelas untuk AI
+            const formattedCosts = filtered.map(c => ({
+                programStudi: c.programName || 'Umum (berlaku untuk semua program)',
+                jenjang: c.programLevel || '-',
+                jenisBiaya: c.costType === 'registration' ? 'Biaya Pendaftaran' :
+                    c.costType === 'tuition' ? 'UKT/SPP' : 'Biaya Lainnya',
+                jumlah: `Rp ${Number(c.amount).toLocaleString('id-ID')}`,
+                tahunAkademik: c.year,
+                keterangan: c.description || '-',
+            }));
+
+            console.log('TOOL RESULT: getEducationCosts returned:', formattedCosts.length, 'items');
+            return {
+                data: formattedCosts,
+                count: formattedCosts.length,
+                message: formattedCosts.length > 0
+                    ? `Ditemukan ${formattedCosts.length} data biaya pendidikan`
+                    : 'Tidak ada data biaya pendidikan di database'
+            };
         },
     }),
 
@@ -618,22 +668,41 @@ export async function POST(req: Request) {
     try {
         const { messages: rawMessages, sessionId } = await req.json();
 
-        // Konversi format pesan dari AI SDK v5 (parts array) ke format model (content string)
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // Debug: Log headers to see if any auth cookies are present
+        const cookieHeader = req.headers.get('cookie');
+        if (cookieHeader) {
+            console.log('DEBUG: Chat request contains cookies:', cookieHeader.substring(0, 50) + '...');
+        }
+
+        console.log(`DEBUG: Received chat request, sessionId: ${sessionId}`);
+        console.log(`DEBUG: Raw messages count: ${rawMessages.length}`);
+
+        // Konversi format pesan dari AI SDK (parts atau content)
         const messages = rawMessages.map((msg: any) => {
-            // Jika sudah ada content, gunakan langsung
-            if (msg.content) {
+            // Jika sudah ada content string sederhana
+            if (typeof msg.content === 'string' && msg.content !== '') {
                 return { role: msg.role, content: msg.content };
             }
-            // Jika menggunakan parts array (AI SDK v5 format)
+
+            // Jika menggunakan parts array (AI SDK format)
             if (msg.parts && Array.isArray(msg.parts)) {
+                // Untuk tool calls, kita harus menyertakan parts tersebut
+                const hasToolCalls = msg.parts.some((p: any) => p.type === 'tool-call');
+                if (hasToolCalls) {
+                    return { role: msg.role, content: msg.parts };
+                }
+
+                // Gabungkan teks dari parts
                 const textContent = msg.parts
-                    .filter((part: { type: string }) => part.type === 'text')
-                    .map((part: { text: string }) => part.text)
+                    .filter((part: any) => part.type === 'text')
+                    .map((part: any) => part.text || '')
                     .join('');
+
                 return { role: msg.role, content: textContent };
             }
-            return { role: msg.role, content: '' };
+
+            // Fallback jika formatting tidak dikenal
+            return msg;
         });
 
         // Validasi API key
@@ -669,7 +738,20 @@ export async function POST(req: Request) {
         if (sessionId && messages.length > 0) {
             const lastUserMessage = messages.filter((m: { role: string }) => m.role === 'user').pop();
             if (lastUserMessage && lastUserMessage.content) {
-                saveQuestionForAnalysis(lastUserMessage.content).catch(console.error);
+                // Handle content that might be an array of parts
+                let questionText = '';
+                if (typeof lastUserMessage.content === 'string') {
+                    questionText = lastUserMessage.content;
+                } else if (Array.isArray(lastUserMessage.content)) {
+                    questionText = lastUserMessage.content
+                        .filter((part: any) => part.type === 'text')
+                        .map((part: any) => part.text || '')
+                        .join(' ');
+                }
+
+                if (questionText.trim()) {
+                    saveQuestionForAnalysis(questionText).catch(console.error);
+                }
             }
         }
 
@@ -688,9 +770,72 @@ export async function POST(req: Request) {
     }
 }
 
+// Fungsi untuk mendeteksi kategori pertanyaan secara otomatis
+function detectQuestionCategory(question: string): string {
+    const lowerQuestion = question.toLowerCase();
+
+    // Kategori PMB/Pendaftaran
+    if (lowerQuestion.includes('daftar') || lowerQuestion.includes('pmb') ||
+        lowerQuestion.includes('pendaftaran') || lowerQuestion.includes('gelombang') ||
+        lowerQuestion.includes('jalur masuk') || lowerQuestion.includes('persyaratan')) {
+        return 'pmb';
+    }
+
+    // Kategori Biaya
+    if (lowerQuestion.includes('biaya') || lowerQuestion.includes('ukt') ||
+        lowerQuestion.includes('spp') || lowerQuestion.includes('bayar') ||
+        lowerQuestion.includes('harga') || lowerQuestion.includes('tarif')) {
+        return 'biaya';
+    }
+
+    // Kategori Beasiswa
+    if (lowerQuestion.includes('beasiswa') || lowerQuestion.includes('bantuan') ||
+        lowerQuestion.includes('gratis') || lowerQuestion.includes('potongan')) {
+        return 'beasiswa';
+    }
+
+    // Kategori Program Studi
+    if (lowerQuestion.includes('jurusan') || lowerQuestion.includes('prodi') ||
+        lowerQuestion.includes('program studi') || lowerQuestion.includes('fakultas') ||
+        lowerQuestion.includes('akreditasi')) {
+        return 'akademik';
+    }
+
+    // Kategori Kontak/Lokasi
+    if (lowerQuestion.includes('alamat') || lowerQuestion.includes('lokasi') ||
+        lowerQuestion.includes('telepon') || lowerQuestion.includes('email') ||
+        lowerQuestion.includes('kontak') || lowerQuestion.includes('whatsapp')) {
+        return 'kontak';
+    }
+
+    // Kategori Fasilitas
+    if (lowerQuestion.includes('fasilitas') || lowerQuestion.includes('gedung') ||
+        lowerQuestion.includes('laboratorium') || lowerQuestion.includes('perpustakaan') ||
+        lowerQuestion.includes('asrama') || lowerQuestion.includes('kantin')) {
+        return 'fasilitas';
+    }
+
+    // Kategori Kemahasiswaan
+    if (lowerQuestion.includes('ukm') || lowerQuestion.includes('organisasi') ||
+        lowerQuestion.includes('ekstrakurikuler') || lowerQuestion.includes('kegiatan mahasiswa')) {
+        return 'kemahasiswaan';
+    }
+
+    // Kategori Pimpinan
+    if (lowerQuestion.includes('rektor') || lowerQuestion.includes('wakil') ||
+        lowerQuestion.includes('dekan') || lowerQuestion.includes('pimpinan') ||
+        lowerQuestion.includes('struktur organisasi')) {
+        return 'pimpinan';
+    }
+
+    return 'umum';
+}
+
 // Fungsi untuk menyimpan pertanyaan untuk analisis
 async function saveQuestionForAnalysis(question: string) {
     try {
+        const category = detectQuestionCategory(question);
+
         // Cek apakah pertanyaan sudah ada
         const existing = await db
             .select()
@@ -705,16 +850,19 @@ async function saveQuestionForAnalysis(question: string) {
                 .set({
                     count: sql`${chatFrequentQuestions.count} + 1`,
                     lastAskedAt: new Date(),
+                    category: category, // Update kategori jika berubah
                 })
                 .where(eq(chatFrequentQuestions.id, existing[0].id));
         } else {
-            // Insert pertanyaan baru
+            // Insert pertanyaan baru dengan kategori
             await db.insert(chatFrequentQuestions).values({
                 question,
+                category,
                 count: 1,
                 lastAskedAt: new Date(),
             });
         }
+        console.log(`Question saved with category: ${category}`);
     } catch (error) {
         console.error('Error saving question:', error);
     }
@@ -723,13 +871,17 @@ async function saveQuestionForAnalysis(question: string) {
 // Endpoint untuk menyimpan feedback
 export async function PUT(req: Request) {
     try {
-        const { messageId, rating, comment } = await req.json();
+        const { messageId, rating, comment, sessionId, userQuestion } = await req.json();
 
         await db.insert(chatFeedback).values({
-            messageId,
+            sessionId: sessionId || null,
+            messageId: messageId || null,
+            userQuestion: userQuestion || null,
             rating,
-            comment,
+            comment: comment || null,
         });
+
+        console.log(`Feedback saved: messageId=${messageId}, rating=${rating}`);
 
         return new Response(JSON.stringify({ success: true }), {
             status: 200,
