@@ -18,23 +18,17 @@ import {
     FileText,
     User,
     Target,
-    Activity,
-    Gift,
     CheckCircle2,
     Clock,
-    ExternalLink,
-    ChevronRight,
-    Info,
     ShieldCheck,
     Zap,
     MapPin,
     Globe,
     Mail,
     Phone,
-    Briefcase,
     Tag,
-    Navigation,
-    Eye
+    Eye,
+    ChevronRight
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -68,200 +62,183 @@ export function PartnershipDetailDialog({ partner }: PartnershipDetailDialogProp
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="sm:max-w-[95vw] lg:max-w-6xl h-[90vh] p-0 flex flex-col gap-0 overflow-hidden rounded-2xl shadow-xl border-border bg-background">
+            <DialogContent className="sm:max-w-4xl max-h-[90vh] p-0 gap-0 overflow-hidden rounded-3xl border border-border bg-background/95 dark:bg-black/90 backdrop-blur-3xl shadow-2xl">
+                {/* Header Background Gradient */}
+                <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-primary/5 to-transparent dark:from-cyber-blue/20 pointer-events-none" />
+
                 {/* Header Section */}
-                <div className="flex-shrink-0 relative border-b border-border bg-muted/30">
-                    <div className="relative z-10 p-4 md:p-8">
-                        <DialogHeader>
-                            <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-                                <div className="relative shrink-0">
-                                    <div className="relative w-24 h-24 rounded-2xl bg-background border border-border flex items-center justify-center overflow-hidden shadow-sm">
-                                        {partner.partnerLogo ? (
-                                            <img
-                                                src={partner.partnerLogo}
-                                                alt={partner.partnerName}
-                                                className="w-full h-full object-contain p-4"
-                                            />
-                                        ) : (
-                                            <Building2 className="w-12 h-12 text-primary/40" />
-                                        )}
-                                    </div>
-                                </div>
+                <div className="relative p-6 px-8 border-b border-border dark:border-white/10 flex items-start gap-6">
+                    <div className="w-24 h-24 rounded-2xl bg-muted/50 dark:bg-white/5 border border-border dark:border-white/10 flex items-center justify-center overflow-hidden shrink-0 shadow-lg">
+                        {partner.partnerLogo ? (
+                            <img
+                                src={partner.partnerLogo}
+                                alt={partner.partnerName}
+                                className="w-full h-full object-contain p-2"
+                            />
+                        ) : (
+                            <Building2 className="w-10 h-10 text-muted-foreground/40 dark:text-white/40" />
+                        )}
+                    </div>
 
-                                <div className="flex-1 text-center md:text-left space-y-4">
-                                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
-                                        <Badge variant="outline" className="font-mono text-[10px] py-1 px-3 uppercase tracking-wider">
-                                            PARTNER ID: {partner.id?.slice(-12).toUpperCase() || 'N/A'}
-                                        </Badge>
-                                        <Badge className={partner.isActive ? 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20 px-3 py-1 text-[10px] font-bold tracking-widest' : 'bg-destructive/10 text-destructive border-destructive/20 px-3 py-1 text-[10px] font-bold tracking-widest'}>
-                                            {partner.isActive ? (
-                                                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" /> AKTIF</span>
-                                            ) : (
-                                                <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> TIDAK AKTIF</span>
-                                            )}
-                                        </Badge>
-                                        <Badge variant="secondary" className="text-[10px] uppercase font-bold px-3 py-1">
-                                            {partner.type === 'international' ? 'Luar Negeri' : 'Dalam Negeri'}
-                                        </Badge>
-                                    </div>
-
-                                    <DialogTitle className="text-2xl md:text-4xl font-bold text-foreground leading-tight tracking-tight">
-                                        {partner.partnerName}
-                                    </DialogTitle>
-
-                                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-6 text-sm text-muted-foreground pt-1">
-                                        <span className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-background border border-border font-bold tracking-wider text-[10px] uppercase">
-                                            <ShieldCheck className="w-4 h-4 text-primary" /> {partner.agreementNumber || 'TIDAK TERDAFTAR'}
-                                        </span>
-                                        <span className="flex items-center gap-2 font-bold text-[10px] uppercase tracking-wider">
-                                            <Zap className="w-4 h-4 text-amber-500" />
-                                            Update: {new Date(partner.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-                                        </span>
-                                    </div>
-                                </div>
+                    <div className="flex-1 space-y-3 pt-1">
+                        <DialogHeader className="p-0">
+                            <div className="flex flex-wrap items-center gap-2 mb-1">
+                                <Badge className={`${partner.isActive ? 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20' : 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20'} hover:bg-transparent px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider`}>
+                                    {partner.isActive ? (
+                                        <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3 h-3" /> AKTIF</span>
+                                    ) : (
+                                        <span className="flex items-center gap-1.5"><Clock className="w-3 h-3" /> TIDAK AKTIF</span>
+                                    )}
+                                </Badge>
+                                <Badge variant="outline" className="text-[10px] uppercase font-bold border-border dark:border-white/20 text-muted-foreground dark:text-white/70 bg-muted/30 dark:bg-white/5 tracking-wider px-2 py-0.5">
+                                    {partner.type === 'international' ? 'Luar Negeri' : 'Dalam Negeri'}
+                                </Badge>
                             </div>
+                            <DialogTitle className="text-2xl md:text-3xl font-bold text-foreground dark:text-white leading-tight">
+                                {partner.partnerName}
+                            </DialogTitle>
                         </DialogHeader>
+
+                        <div className="flex flex-wrap items-center gap-4 text-xs font-medium text-muted-foreground dark:text-white/60">
+                            <span className="flex items-center gap-1.5">
+                                <ShieldCheck className="w-3.5 h-3.5 text-primary dark:text-cyber-blue" />
+                                {partner.agreementNumber || 'No. MOU: -'}
+                            </span>
+                            <span className="w-1 h-1 rounded-full bg-border dark:bg-white/20" />
+                            <span className="flex items-center gap-1.5">
+                                <Zap className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
+                                Update Terakhir: {new Date(partner.updatedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                            </span>
+                        </div>
                     </div>
                 </div>
 
-                {/* Content Area */}
-                <ScrollArea className="flex-1 min-h-0">
-                    <div className="p-6 md:p-10 space-y-10">
-                        <DialogDescription className="sr-only">Informasi Lengkap Profil Mitra dan Kerjasama</DialogDescription>
+                {/* Content Scroll Area */}
+                <ScrollArea className="flex-1 max-h-[calc(90vh-200px)]">
+                    <div className="p-8 space-y-8">
+                        <DialogDescription className="sr-only">Detail lengkap kerjasama</DialogDescription>
 
-                        {/* Top Overview Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        {/* Info Grid Cards */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {[
-                                { icon: Tag, color: "text-blue-500", label: "Kategori Bidang", value: partner.category || 'General' },
-                                { icon: MapPin, color: "text-rose-500", label: "Lokasi", value: `${partner.city || '-'}, ${partner.country || 'Indonesia'}` },
-                                { icon: Building2, color: "text-amber-500", label: "Tipe Mitra", value: partner.type || 'Domestic' },
-                                { icon: CheckCircle2, color: "text-green-500", label: "Status", value: partner.status || 'Active' }
+                                { icon: Tag, color: "text-blue-500 dark:text-blue-400", label: "Kategori", value: partner.category || 'General' },
+                                { icon: MapPin, color: "text-rose-500 dark:text-rose-400", label: "Lokasi", value: `${partner.city || '-'}, ${partner.country || 'Indonesia'}` },
+                                { icon: Building2, color: "text-amber-500 dark:text-amber-400", label: "Tipe Institusi", value: partner.type === 'international' ? 'International' : 'National' },
+                                { icon: User, color: "text-green-500 dark:text-green-400", label: "Koordinator", value: partner.coordinator || '-' }
                             ].map((item, idx) => (
-                                <div key={idx} className="p-5 rounded-2xl bg-muted/30 border border-border flex flex-col gap-2">
-                                    <item.icon className={`w-5 h-5 ${item.color}`} />
-                                    <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">{item.label}</span>
-                                    <span className="text-base font-bold text-foreground uppercase truncate">{item.value}</span>
+                                <div key={idx} className="bg-muted/30 dark:bg-white/5 border border-border dark:border-white/5 rounded-xl p-4 flex flex-col gap-1.5">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <item.icon className={`w-4 h-4 ${item.color}`} />
+                                        <span className="text-[10px] uppercase font-bold text-muted-foreground/70 dark:text-white/40 tracking-widest">{item.label}</span>
+                                    </div>
+                                    <span className="text-sm font-bold text-foreground dark:text-white truncate">{item.value}</span>
                                 </div>
                             ))}
                         </div>
 
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                            {/* Left Column: Description & Contacts */}
-                            <div className="lg:col-span-7 space-y-10">
-                                <section className="space-y-4">
-                                    <h4 className="text-lg font-bold flex items-center gap-2 tracking-tight">
-                                        <FileText className="w-5 h-5 text-primary" />
-                                        Deskripsi Kerjasama
+                        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                            {/* Left Column */}
+                            <div className="lg:col-span-3 space-y-8">
+                                <div className="space-y-4">
+                                    <h4 className="text-sm font-bold text-foreground dark:text-white flex items-center gap-2 uppercase tracking-wider">
+                                        <FileText className="w-4 h-4 text-primary dark:text-cyber-blue" /> Deskripsi Kerjasama
                                     </h4>
-                                    <div className="p-6 rounded-2xl bg-muted/20 border border-border">
-                                        <p className="text-base text-foreground/80 leading-relaxed italic font-serif">
-                                            "{partner.description || 'Informasi kerjasama institusi belum tersedia secara mendetail dalam profil ini.'}"
-                                        </p>
+                                    <div className="p-6 rounded-2xl bg-muted/30 dark:bg-white/5 border border-border dark:border-white/5 leading-relaxed text-muted-foreground dark:text-white/80 text-sm">
+                                        "{partner.description || 'Tidak ada deskripsi tersedia.'}"
                                     </div>
-                                </section>
+                                </div>
 
-                                <section className="space-y-4">
-                                    <h4 className="text-lg font-bold flex items-center gap-2 tracking-tight">
-                                        <Mail className="w-5 h-5 text-primary" />
-                                        Kontak & Alamat
+                                <div className="space-y-4">
+                                    <h4 className="text-sm font-bold text-foreground dark:text-white flex items-center gap-2 uppercase tracking-wider">
+                                        <Target className="w-4 h-4 text-amber-500 dark:text-amber-400" /> Tujuan Strategis
                                     </h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {[
-                                            { label: "Contact Person", value: partner.contactPerson, icon: User },
-                                            { label: "Email Resmi", value: partner.contactEmail, icon: Mail, classes: "text-primary px-0" },
-                                            { label: "Telepon / WA", value: partner.contactPhone, icon: Phone },
-                                            { label: "Website", value: partner.website, icon: Globe, classes: "text-primary" },
-                                        ].map((contact, idx) => (
-                                            <div key={idx} className="p-4 rounded-xl bg-muted/30 border border-border flex flex-col gap-1">
-                                                <span className="text-[10px] text-muted-foreground font-bold tracking-widest uppercase">{contact.label}</span>
-                                                <p className={`text-sm font-bold truncate ${contact.classes || ""}`}>{contact.value || '-'}</p>
+                                    <div className="space-y-2">
+                                        {objectives.length > 0 ? objectives.map((obj: string, i: number) => (
+                                            <div key={i} className="flex gap-3 p-3 rounded-xl bg-muted/20 dark:bg-white/[0.03] border border-border dark:border-white/5 text-sm hover:bg-muted/40 dark:hover:bg-white/[0.06] transition-colors">
+                                                <ChevronRight className="w-4 h-4 text-primary dark:text-cyber-blue shrink-0 mt-0.5" />
+                                                <span className="text-muted-foreground dark:text-white/80">{obj}</span>
                                             </div>
-                                        ))}
-                                        <div className="p-4 rounded-xl bg-muted/30 border border-border flex flex-col gap-1 md:col-span-2">
-                                            <span className="text-[10px] text-muted-foreground font-bold tracking-widest uppercase">Alamat Lengkap</span>
-                                            <p className="text-sm font-bold leading-snug">{partner.address || '-'}</p>
-                                        </div>
+                                        )) : (
+                                            <p className="text-sm text-muted-foreground dark:text-white/40 italic">Belum ada tujuan spesifik yang terdata.</p>
+                                        )}
                                     </div>
-                                </section>
+                                </div>
                             </div>
 
-                            {/* Right Column: Key Metrics & Objectives */}
-                            <div className="lg:col-span-5 space-y-8">
-                                {/* Masa Berlaku Card */}
-                                <div className="p-6 rounded-2xl bg-card border border-border shadow-md space-y-6">
-                                    <h5 className="flex items-center gap-2 text-primary font-bold tracking-widest text-[10px] uppercase">
-                                        <Calendar className="w-4 h-4" /> MASA BERLAKU PERJANJIAN
+                            {/* Right Column */}
+                            <div className="lg:col-span-2 space-y-6">
+                                {/* Date Card */}
+                                <div className="p-5 rounded-2xl bg-gradient-to-br from-muted/50 to-muted/20 dark:from-white/10 dark:to-white/5 border border-border dark:border-white/10 space-y-5">
+                                    <h5 className="flex items-center gap-2 text-muted-foreground dark:text-white/50 font-bold tracking-widest text-[10px] uppercase border-b border-border dark:border-white/10 pb-3">
+                                        <Calendar className="w-3.5 h-3.5" /> Periode Kerjasama
                                     </h5>
-                                    <div className="grid grid-cols-1 gap-4">
-                                        <div className="relative p-4 rounded-xl bg-muted/30 border-l-4 border-l-primary">
-                                            <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest mb-1">TANGGAL MULAI</p>
-                                            <p className="text-lg font-mono font-bold text-foreground">{startDate}</p>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <p className="text-[10px] text-primary dark:text-cyber-blue font-bold uppercase tracking-widest mb-1">Mulai</p>
+                                            <p className="text-base font-mono font-bold text-foreground dark:text-white">{startDate}</p>
                                         </div>
-                                        <div className="relative p-4 rounded-xl bg-muted/30 border-l-4 border-l-destructive">
-                                            <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest mb-1">TANGGAL BERAKHIR</p>
-                                            <p className="text-lg font-mono font-bold text-destructive">{endDate}</p>
+                                        <div>
+                                            <p className="text-[10px] text-rose-500 dark:text-rose-400 font-bold uppercase tracking-widest mb-1">Berakhir</p>
+                                            <p className="text-base font-mono font-bold text-foreground dark:text-white">{endDate}</p>
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Coordinator Card */}
-                                <div className="p-6 rounded-2xl bg-muted/30 border border-border flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shrink-0">
-                                        <User className="w-6 h-6 text-primary" />
-                                    </div>
-                                    <div>
-                                        <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold">KOORDINATOR</p>
-                                        <p className="text-lg font-bold text-foreground leading-tight">{partner.coordinator || '-'}</p>
+                                {/* Contact Info */}
+                                <div className="space-y-3">
+                                    <h5 className="flex items-center gap-2 text-muted-foreground dark:text-white/50 font-bold tracking-widest text-[10px] uppercase">
+                                        Kontak Informasi
+                                    </h5>
+                                    <div className="space-y-2">
+                                        {partner.contactEmail && (
+                                            <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/30 dark:bg-white/5 border border-border dark:border-white/5 text-xs text-muted-foreground dark:text-white/80">
+                                                <Mail className="w-3.5 h-3.5 text-muted-foreground/60 dark:text-white/40" />
+                                                {partner.contactEmail}
+                                            </div>
+                                        )}
+                                        {partner.contactPhone && (
+                                            <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/30 dark:bg-white/5 border border-border dark:border-white/5 text-xs text-muted-foreground dark:text-white/80">
+                                                <Phone className="w-3.5 h-3.5 text-muted-foreground/60 dark:text-white/40" />
+                                                {partner.contactPhone}
+                                            </div>
+                                        )}
+                                        {partner.website && (
+                                            <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/30 dark:bg-white/5 border border-border dark:border-white/5 text-xs text-muted-foreground dark:text-white/80">
+                                                <Globe className="w-3.5 h-3.5 text-muted-foreground/60 dark:text-white/40" />
+                                                <span className="truncate max-w-[180px]">{partner.website}</span>
+                                            </div>
+                                        )}
+                                        {(!partner.contactEmail && !partner.contactPhone && !partner.website) && (
+                                            <p className="text-xs text-muted-foreground dark:text-white/30 italic px-2">Tidak ada informasi kontak.</p>
+                                        )}
                                     </div>
                                 </div>
-
-                                {/* Objectives area */}
-                                {objectives.length > 0 && (
-                                    <section className="space-y-4">
-                                        <h5 className="flex items-center gap-2 text-amber-500 font-bold tracking-widest text-[10px] uppercase">
-                                            <Target className="w-4 h-4" /> TUJUAN STRATEGIS
-                                        </h5>
-                                        <div className="space-y-2">
-                                            {objectives.map((obj: string, i: number) => (
-                                                <div key={i} className="flex gap-3 p-4 rounded-xl bg-muted/20 border border-border text-sm hover:bg-muted/40 transition-colors group">
-                                                    <ChevronRight className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                                                    <span className="text-foreground/80 font-medium">{obj}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </section>
-                                )}
                             </div>
                         </div>
                     </div>
                 </ScrollArea>
 
-                {/* Action Footer */}
-                <div className="flex-shrink-0 p-6 border-t border-border bg-card flex flex-col sm:flex-row items-center justify-between gap-6 relative z-30">
-                    <div className="text-center sm:text-left space-y-0.5">
-                        <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-bold">TIMESTAMP SINKRONISASI</p>
-                        <p className="text-xs font-mono font-bold text-primary">{new Date(partner.updatedAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' })} • {new Date(partner.updatedAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB</p>
-                    </div>
-
-                    <div className="flex gap-3 w-full sm:w-auto">
-                        {partner.agreementFile && (
-                            <Button
-                                variant="default"
-                                asChild
-                                className="flex-1 sm:flex-none h-11 px-8 rounded-full font-bold shadow-lg hover:scale-105 transition-all duration-300 gap-2 text-[11px] uppercase"
-                            >
-                                <a href={partner.agreementFile} target="_blank" rel="noopener noreferrer">
-                                    <Eye className="w-4 h-4" />
-                                    DOKUMEN MOU
-                                </a>
-                            </Button>
-                        )}
-                        <DialogClose asChild>
-                            <Button variant="secondary" className="flex-1 sm:flex-none h-11 px-8 rounded-full font-bold tracking-[0.2em] text-[11px] uppercase shadow-md hover:shadow-lg transition-all hover:bg-foreground hover:text-background">
-                                KEMBALI
-                            </Button>
-                        </DialogClose>
-                    </div>
+                {/* Footer Actions */}
+                <div className="p-6 border-t border-border dark:border-white/10 flex justify-end gap-3 bg-background/80 dark:bg-black/40 backdrop-blur-md">
+                    <DialogClose asChild>
+                        <Button
+                            variant="outline"
+                            className="h-10 px-6 rounded-full border-border dark:border-white/10 bg-background dark:bg-white/5 hover:bg-muted dark:hover:bg-white/10 text-foreground dark:text-white font-bold text-xs tracking-wider uppercase transition-colors"
+                        >
+                            Tutup
+                        </Button>
+                    </DialogClose>
+                    {partner.agreementFile && (
+                        <Button
+                            asChild
+                            className="h-10 px-6 rounded-full bg-primary dark:bg-cyber-blue text-primary-foreground dark:text-black hover:bg-primary/90 dark:hover:bg-cyber-blue/90 font-bold text-xs tracking-wider uppercase shadow-md hover:shadow-lg dark:shadow-[0_0_20px_rgba(0,240,255,0.3)] transition-all hover:scale-105"
+                        >
+                            <a href={partner.agreementFile} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                                <Eye className="w-3.5 h-3.5" />
+                                Lihat Dokumen
+                            </a>
+                        </Button>
+                    )}
                 </div>
             </DialogContent>
         </Dialog>

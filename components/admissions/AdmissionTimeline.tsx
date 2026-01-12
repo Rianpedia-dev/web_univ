@@ -26,6 +26,8 @@ import {
     ArrowRight
 } from "lucide-react";
 import { MotionDiv } from "@/components/motion-wrapper";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const iconMap: Record<string, any> = {
     UserPlus,
@@ -60,6 +62,7 @@ interface AdmissionTimelineProps {
     requirements: any[];
     costs: any[];
     faculties: any[];
+    brochures: any[];
 }
 
 export default function AdmissionTimeline({
@@ -71,7 +74,8 @@ export default function AdmissionTimeline({
     programs,
     requirements,
     costs,
-    faculties
+    faculties,
+    brochures
 }: AdmissionTimelineProps) {
     return (
         <div id="alur-pendaftaran" className="space-y-12 pt-16 relative">
@@ -149,10 +153,27 @@ export default function AdmissionTimeline({
                 </div>
 
                 {/* Bottom CTA Block (Cleaner) */}
-                <div className="mt-20 pt-10 border-t border-border flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div className="text-center md:text-left">
+                <div className="mt-20 pt-10 border-t border-border flex flex-col items-center justify-center gap-8">
+                    <div className="text-center">
                         <h4 className="text-xl font-bold text-foreground">Butuh Informasi Lengkap?</h4>
-                        <p className="text-sm text-muted-foreground">Unduh brosur resmi penerimaan fakultas kami.</p>
+                        <p className="text-sm text-muted-foreground mb-4">Unduh brosur resmi penerimaan mahasiswa baru.</p>
+                        {brochures && brochures.length > 0 ? (
+                            <Button
+                                asChild
+                                variant="default"
+                                className="rounded-xl group hover:scale-105 transition-all duration-300"
+                            >
+                                <Link href={brochures[0].fileUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                                    <Download className="w-4 h-4" />
+                                    <span>Download Brosur PMB</span>
+                                    <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                                </Link>
+                            </Button>
+                        ) : (
+                            <div className="text-left p-4 glass-card rounded-xl border border-dashed border-muted-foreground/20">
+                                <p className="text-muted-foreground text-xs font-medium italic">Brosur pendaftaran digital belum tersedia saat ini.</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </MotionDiv>

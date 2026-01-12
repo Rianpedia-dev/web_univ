@@ -21,7 +21,6 @@ export const admissionClasses = pgTable("admission_classes", {
     type: text("type", { enum: ['reguler', 'executive', 'online', 'part_time', 'full_time'] }).notNull(),
     schedule: text("schedule"), // jadwal kelas
     requirements: text("requirements"), // persyaratan khusus
-    quota: integer("quota"), // kuota kelas
     isPublished: boolean("is_published").default(false).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),

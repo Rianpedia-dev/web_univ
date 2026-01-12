@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { cn } from '@/lib/utils';
+import { ChatFloatingButton } from './ChatFloatingButton';
 
 // Generate unique session ID
 function generateSessionId() {
@@ -262,25 +263,7 @@ export function UnpalAI() {
     return (
         <>
             {/* Floating Button */}
-            <motion.button
-                onClick={() => setIsOpen(true)}
-                className={cn(
-                    "fixed bottom-6 right-6 z-50",
-                    "w-14 h-14 rounded-full",
-                    "bg-gradient-to-br from-amber-400 via-orange-500 to-red-500",
-                    "text-white shadow-lg shadow-orange-500/30",
-                    "flex items-center justify-center",
-                    "hover:scale-110 active:scale-95 transition-transform",
-                    "focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2",
-                    isOpen && "hidden"
-                )}
-                whileHover={{ rotate: [0, -10, 10, 0] }}
-                transition={{ duration: 0.5 }}
-                aria-label="Buka chat dengan Pal"
-            >
-                <MessageCircle className="w-6 h-6" />
-                <Sparkles className="absolute -top-1 -right-1 w-4 h-4 text-yellow-300" />
-            </motion.button>
+            <ChatFloatingButton onClick={() => setIsOpen(true)} isOpen={isOpen} />
 
             {/* Chat Panel */}
             <AnimatePresence>

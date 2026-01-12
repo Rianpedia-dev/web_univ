@@ -81,16 +81,7 @@ export default function GalleryGrid({ mediaItems }: { mediaItems: MediaItem[] })
                                         unoptimized
                                     />
 
-                                    {/* Overlay Ikon Play untuk Video */}
-                                    {media.mediaType === 'video' && (
-                                        <div className="absolute inset-0 flex items-center justify-center z-10">
-                                            <div className="w-16 h-16 rounded-full bg-electric-purple/20 backdrop-blur-sm border border-electric-purple/50 flex items-center justify-center group-hover:scale-125 transition-transform duration-500">
-                                                <div className="w-12 h-12 rounded-full bg-electric-purple flex items-center justify-center shadow-[0_0_20px_rgba(191,0,255,0.6)]">
-                                                    <Video className="w-6 h-6 text-white ml-0.5" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
+
 
                                     <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent" />
 
@@ -113,7 +104,7 @@ export default function GalleryGrid({ mediaItems }: { mediaItems: MediaItem[] })
                                     </div>
                                 </div>
                                 <div className="p-4 sm:p-8">
-                                    <h3 className="text-lg sm:text-2xl font-bold text-foreground mb-3 group-hover:text-cyber-blue transition-colors line-clamp-1">
+                                    <h3 className="text-lg sm:text-2xl font-bold text-foreground mb-3 group-hover:text-cyber-blue transition-colors break-words">
                                         {media.title}
                                     </h3>
                                     <p className="text-muted-foreground text-xs sm:text-sm line-clamp-2 mb-4 sm:mb-6 hidden sm:block">

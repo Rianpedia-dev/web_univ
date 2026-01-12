@@ -278,20 +278,20 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             viewport={{ once: true }}
-            className="glass-card p-12 md:pb-8 md:pt-16 rounded-[4rem] border border-white/10 relative overflow-hidden group shadow-[0_0_80px_rgba(147,51,234,0.1)]"
+            className="glass-card p-8 md:p-12 rounded-[2.5rem] border border-white/10 relative overflow-hidden group shadow-[0_0_80px_rgba(147,51,234,0.1)]"
           >
             {/* Premium Background gradients */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-electric-purple/5 rounded-full blur-[120px] -z-10"></div>
 
-            <div className="relative z-10 text-center max-w-6xl mx-auto space-y-10">
+            <div className="relative z-10 text-center max-w-6xl mx-auto space-y-6">
               <div className="space-y-4">
-                <h3 className="text-3xl md:text-5xl font-extrabold text-foreground dark:text-white tracking-tight">
+                <h3 className="text-2xl md:text-4xl font-extrabold text-foreground dark:text-white tracking-tight">
                   Sejarah Singkat
                 </h3>
                 <div className="w-24 h-2 bg-gradient-to-r from-transparent via-emerald-500 to-transparent rounded-full mx-auto"></div>
               </div>
 
-              <div className="text-base md:text-lg text-foreground/80 dark:text-white/80 leading-[1.8] md:leading-[2.2] font-medium space-y-10 text-left sm:text-justify">
+              <div className="text-base md:text-lg text-foreground/80 dark:text-white/80 leading-[1.8] md:leading-[2.2] font-medium space-y-6 text-justify [hyphens:auto] [text-wrap:pretty]">
                 {profile.history?.split('\n').map((para, i) => (
                   para.trim() && (
                     <p key={i}>
@@ -319,7 +319,7 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
             viewport={{ once: true }}
             className="space-y-4"
           >
-            <h2 className="text-3xl md:text-5xl font-extrabold text-foreground dark:text-white tracking-tight">Visi & Misi</h2>
+            <h2 className="text-2xl md:text-4xl font-extrabold text-foreground dark:text-white tracking-tight">Visi & Misi</h2>
             <div className="w-24 h-2 bg-gradient-cyber rounded-full mx-auto"></div>
             <p className="text-muted-foreground font-medium uppercase tracking-[0.3em] text-xs md:text-sm">Arah & Komitmen Kami</p>
           </MotionDiv>
@@ -396,19 +396,19 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
             viewport={{ once: true }}
             className="mb-24 px-4 sm:px-0"
           >
-            <div className="glass-card p-12 md:p-16 rounded-[4rem] border border-white/10 relative overflow-hidden group shadow-[0_0_80px_rgba(16,185,129,0.05)]">
+            <div className="glass-card p-8 md:p-12 rounded-[2.5rem] border border-white/10 relative overflow-hidden group shadow-[0_0_80px_rgba(16,185,129,0.05)]">
               {/* Premium Background gradients */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-emerald-500/5 rounded-full blur-[120px] -z-10"></div>
 
-              <div className="relative z-10 text-center max-w-4xl mx-auto space-y-10">
+              <div className="relative z-10 text-center max-w-4xl mx-auto space-y-6">
                 <div className="space-y-4">
-                  <h3 className="text-3xl md:text-5xl font-extrabold text-foreground dark:text-white tracking-tight">
+                  <h3 className="text-2xl md:text-4xl font-extrabold text-foreground dark:text-white tracking-tight">
                     Tujuan Universitas
                   </h3>
                   <div className="w-24 h-2 bg-gradient-to-r from-transparent via-emerald-500 to-transparent rounded-full mx-auto"></div>
                 </div>
 
-                <p className="text-xl md:text-2xl text-foreground/80 dark:text-white/80 leading-relaxed font-medium">
+                <p className="text-xl md:text-2xl text-foreground/80 dark:text-white/80 leading-relaxed font-medium text-justify [hyphens:auto] [text-wrap:pretty]">
                   {profile.objectives}
                 </p>
 
@@ -430,7 +430,7 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <h2 className="text-3xl font-bold text-foreground mb-4">Nilai-Nilai Dasar</h2>
+            <h2 className="text-2xl md:text-4xl font-extrabold text-foreground dark:text-white tracking-tight mb-4">Nilai-Nilai Dasar</h2>
             <div className="w-24 h-1 bg-gradient-cyber mx-auto rounded-full"></div>
           </MotionDiv>
 
@@ -500,7 +500,7 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <h2 className="text-3xl font-bold text-foreground mb-4">Makna Logo</h2>
+            <h2 className="text-2xl md:text-4xl font-extrabold text-foreground dark:text-white tracking-tight mb-4">Makna Logo</h2>
             <p className="text-muted-foreground">Setiap elemen dalam logo kami membawa filosofi dan harapan universitas</p>
           </MotionDiv>
 

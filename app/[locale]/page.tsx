@@ -22,6 +22,13 @@ import {
   MapPin
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { TestimonialsCarousel } from "@/components/testimonials-carousel";
 import { MotionDiv, MotionH1, MotionP } from "@/components/motion-wrapper";
 import {
@@ -312,13 +319,30 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             <div className="relative inline-block">
               <div className="absolute inset-0 bg-gradient-cyber blur-3xl opacity-30 rounded-full animate-pulse"></div>
               <div className="relative z-10 p-1.5 rounded-full bg-gradient-to-tr from-cyber-blue via-white/20 to-electric-purple shadow-[0_0_50px_rgba(0,240,255,0.2)]">
-                <div className="w-52 h-52 rounded-full overflow-hidden border-2 border-white/10 shadow-2xl bg-slate-900">
-                  <img
-                    src={rectorMessage?.photo || "/images/rektor.png"}
-                    alt={rectorMessage?.name || "Foto Rektor"}
-                    className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700"
-                  />
-                </div>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <div className="w-52 h-52 rounded-full overflow-hidden border-2 border-white/10 shadow-2xl bg-slate-900 cursor-pointer group-hover:ring-4 ring-cyber-blue/30 transition-all duration-300">
+                      <img
+                        src={rectorMessage?.photo || "/images/rektor.png"}
+                        alt={rectorMessage?.name || "Foto Rektor"}
+                        className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700"
+                      />
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-4xl w-full p-0 overflow-hidden bg-transparent border-none shadow-none text-center flex items-center justify-center">
+                    <DialogTitle className="sr-only">Foto Rektor</DialogTitle>
+                    <DialogDescription className="sr-only">
+                      Foto lengkap {rectorMessage?.name || "Rektor"}
+                    </DialogDescription>
+                    <div className="relative w-auto h-auto max-h-[85vh]">
+                      <img
+                        src={rectorMessage?.photo || "/images/rektor.png"}
+                        alt={rectorMessage?.name || "Foto Rektor Full"}
+                        className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl border-4 border-white/10"
+                      />
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
           </MotionDiv>
@@ -343,7 +367,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                     Assalamualaikum Wr. Wb.
                   </p>
 
-                  <div className="text-foreground/80 text-base md:text-lg leading-relaxed font-medium whitespace-pre-line text-left sm:text-justify break-words">
+                  <div className="text-foreground/80 text-base md:text-lg leading-relaxed font-medium whitespace-pre-line text-justify break-words [hyphens:auto] [text-wrap:pretty]">
                     {rectorMessage?.message || "Universitas kami berkomitmen untuk menciptakan lulusan yang tidak hanya cerdas secara akademik, tetapi juga memiliki integritas, kreativitas, dan jiwa kepemimpinan yang kuat untuk menghadapi tantangan global."}
                   </div>
 

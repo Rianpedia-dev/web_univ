@@ -9,16 +9,24 @@ import {
   Calendar,
   Award,
   BookOpen,
-  Target
+  Target,
+  ExternalLink
 } from "lucide-react";
 import { MotionDiv } from "@/components/motion-wrapper";
 import { Badge } from "@/components/ui/badge";
-import { getPublishedFaculties, getPublishedStudyPrograms } from '@/lib/db';
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { getPublishedFacultiesSync, getPublishedStudyPrograms } from '@/lib/db';
 
 export default async function FakultasPage({ params }: { params: Promise<{ locale: string }> }) {
   await params;
   // Ambil data dari database
-  const facultiesData = await getPublishedFaculties();
+  const facultiesData = await getPublishedFacultiesSync();
   const studyProgramsData = await getPublishedStudyPrograms();
 
   // Kelompokkan prodi berdasarkan fakultas
@@ -45,13 +53,13 @@ export default async function FakultasPage({ params }: { params: Promise<{ local
           <div className="container mx-auto max-w-6xl">
             <div className="text-center">
               <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight transform transition-all duration-300 hover:scale-105" style={{
-                  background: 'linear-gradient(to right, #fefce8, #ecd735ff, #f9cd5eff)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  WebkitTextStroke: '1px #fcffa5ff',
-                  textShadow: '0 2px 2px rgba(0,0,0,0.5)'
-                }}>
+                background: 'linear-gradient(to right, #fefce8, #ecd735ff, #f9cd5eff)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                WebkitTextStroke: '1px #fcffa5ff',
+                textShadow: '0 2px 2px rgba(0,0,0,0.5)'
+              }}>
                 FAKULTAS
               </h1>
             </div>
@@ -90,9 +98,25 @@ export default async function FakultasPage({ params }: { params: Promise<{ local
                       <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
                         <div className="flex items-center gap-3 sm:gap-4">
                           {fakultas.logo ? (
-                            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-foreground/5 border border-foreground/10 p-2 flex items-center justify-center overflow-hidden shrink-0 group-hover:border-cyber-blue/50 transition-colors">
-                              <img src={fakultas.logo} alt={fakultas.name} className="w-full h-full object-contain" />
-                            </div>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-foreground/5 border border-foreground/10 p-2 flex items-center justify-center overflow-hidden shrink-0 group-hover:border-cyber-blue/50 transition-colors cursor-pointer hover:bg-white/10">
+                                  <img src={fakultas.logo} alt={fakultas.name} className="w-full h-full object-contain transform transition-transform duration-300 hover:scale-110" />
+                                </div>
+                              </DialogTrigger>
+                              <DialogContent className="sm:max-w-lg bg-transparent border-none shadow-none p-0 flex flex-col items-center justify-center">
+                                <DialogTitle className="sr-only">Logo {fakultas.name}</DialogTitle>
+                                <DialogDescription className="sr-only">Tampilan penuh logo fakultas {fakultas.name}</DialogDescription>
+                                <div className="relative p-8 rounded-3xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 backdrop-blur-xl border border-white/10 shadow-2xl flex items-center justify-center">
+                                  <div className="absolute inset-0 bg-gradient-cyber opacity-10 rounded-3xl animate-pulse"></div>
+                                  <img
+                                    src={fakultas.logo}
+                                    alt={fakultas.name}
+                                    className="max-w-[280px] max-h-[280px] sm:max-w-[400px] sm:max-h-[400px] object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] relative z-10"
+                                  />
+                                </div>
+                              </DialogContent>
+                            </Dialog>
                           ) : (
                             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-cyber-blue/10 border border-cyber-blue/20 flex items-center justify-center shrink-0">
                               <Building2 className="w-6 h-6 sm:w-8 sm:h-8 text-cyber-blue" />
@@ -108,15 +132,6 @@ export default async function FakultasPage({ params }: { params: Promise<{ local
                             </p>
                           </div>
                         </div>
-                        {fakultas.accreditation && (
-                          <Badge className={`px-3 py-1 sm:px-4 sm:py-1.5 rounded-full font-black text-[10px] sm:text-xs shadow-lg flex items-center gap-1 sm:gap-1.5 shrink-0 ${fakultas.accreditation === 'A' || fakultas.accreditation === 'Unggul'
-                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                            : 'bg-cyber-blue/20 text-cyber-blue border border-cyber-blue/30'
-                            }`}>
-                            <Award className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                            {fakultas.accreditation}
-                          </Badge>
-                        )}
                       </div>
                       <p className="text-muted-foreground/80 text-xs sm:text-sm leading-relaxed italic">
                         {fakultas.description || `Fakultas ${fakultas.name} berkomitmen menyelenggarakan pendidikan tinggi berkualitas untuk mencetak lulusan unggul.`}
@@ -138,7 +153,7 @@ export default async function FakultasPage({ params }: { params: Promise<{ local
                           <span className="truncate">Mahasiswa</span>
                         </span>
                         <p className="text-base sm:text-lg font-black text-foreground">
-                          {fakultas.prodi.reduce((acc, p) => acc + (p.totalStudents || 0), 0).toLocaleString('id-ID')}
+                          {fakultas.prodi.reduce((acc: number, p: any) => acc + (p.totalStudents || 0), 0).toLocaleString('id-ID')}
                         </p>
                       </div>
                     </div>
@@ -171,6 +186,17 @@ export default async function FakultasPage({ params }: { params: Promise<{ local
                               <span className="truncate">{fakultas.contactPhone}</span>
                             </div>
                           )}
+                        </div>
+                      )}
+
+                      {fakultas.websiteUrl && (
+                        <div className="mt-6">
+                          <Button>
+                            <a href={fakultas.websiteUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
+                              Kunjungi Website
+                              <ExternalLink className="size-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                            </a>
+                          </Button>
                         </div>
                       )}
                     </div>

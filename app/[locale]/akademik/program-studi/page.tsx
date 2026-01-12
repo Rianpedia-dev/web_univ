@@ -20,13 +20,20 @@ import {
 } from "lucide-react";
 import { MotionDiv } from "@/components/motion-wrapper";
 import { Badge } from "@/components/ui/badge";
-import { getPublishedStudyPrograms, getPublishedFaculties, getPublishedCareerProspects } from '@/lib/db';
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { getPublishedStudyPrograms, getPublishedFacultiesSync, getPublishedCareerProspects } from '@/lib/db';
 
 export default async function ProgramStudiPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   // Ambil data dari database
   const programStudi = await getPublishedStudyPrograms();
-  const faculties = await getPublishedFaculties();
+  const faculties = await getPublishedFacultiesSync();
   const careerProspects = await getPublishedCareerProspects();
 
   // Hitung statistik
@@ -57,13 +64,13 @@ export default async function ProgramStudiPage({ params }: { params: Promise<{ l
               transition={{ duration: 0.6 }}
             >
               <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight transform transition-all duration-300 hover:scale-105" style={{
-                  background: 'linear-gradient(to right, #fefce8, #ecd735ff, #f9cd5eff)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  WebkitTextStroke: '1px #fcffa5ff',
-                  textShadow: '0 2px 2px rgba(0,0,0,0.5)'
-                }}>
+                background: 'linear-gradient(to right, #fefce8, #ecd735ff, #f9cd5eff)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                WebkitTextStroke: '1px #fcffa5ff',
+                textShadow: '0 2px 2px rgba(0,0,0,0.5)'
+              }}>
                 PROGRAM STUDI
               </h1>
             </MotionDiv>
@@ -104,9 +111,25 @@ export default async function ProgramStudiPage({ params }: { params: Promise<{ l
                     <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
                       <div className="flex items-center gap-3 sm:gap-4">
                         {prodi.logo ? (
-                          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-foreground/5 border border-foreground/10 p-2 flex items-center justify-center overflow-hidden shrink-0 group-hover:border-cyber-blue/50 transition-colors">
-                            <img src={prodi.logo} alt={prodi.name} className="w-full h-full object-contain" />
-                          </div>
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-foreground/5 border border-foreground/10 p-2 flex items-center justify-center overflow-hidden shrink-0 group-hover:border-cyber-blue/50 transition-colors cursor-pointer hover:bg-white/10">
+                                <img src={prodi.logo} alt={prodi.name} className="w-full h-full object-contain transform transition-transform duration-300 hover:scale-110" />
+                              </div>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-lg bg-transparent border-none shadow-none p-0 flex flex-col items-center justify-center">
+                              <DialogTitle className="sr-only">Logo {prodi.name}</DialogTitle>
+                              <DialogDescription className="sr-only">Tampilan penuh logo program studi {prodi.name}</DialogDescription>
+                              <div className="relative p-8 rounded-3xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 backdrop-blur-xl border border-white/10 shadow-2xl flex items-center justify-center">
+                                <div className="absolute inset-0 bg-gradient-cyber opacity-10 rounded-3xl animate-pulse"></div>
+                                <img
+                                  src={prodi.logo}
+                                  alt={prodi.name}
+                                  className="max-w-[280px] max-h-[280px] sm:max-w-[400px] sm:max-h-[400px] object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] relative z-10"
+                                />
+                              </div>
+                            </DialogContent>
+                          </Dialog>
                         ) : (
                           <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-cyber-blue/10 border border-cyber-blue/20 flex items-center justify-center shrink-0">
                             <GraduationCap className="w-6 h-6 sm:w-8 sm:h-8 text-cyber-blue" />

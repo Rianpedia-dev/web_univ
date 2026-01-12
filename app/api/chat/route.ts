@@ -396,7 +396,6 @@ const botTools = {
                 facultyResults = await db
                     .select({
                         name: faculties.name,
-                        accreditation: faculties.accreditation,
                     })
                     .from(faculties)
                     .where(and(
@@ -431,7 +430,6 @@ const botTools = {
             const formattedFaculty = facultyResults.map(f => ({
                 tipe: 'Fakultas',
                 nama: f.name,
-                akreditasi: f.accreditation || 'Belum terakreditasi',
             }));
 
             const formattedProdi = prodiResults.map(p => ({
@@ -614,10 +612,8 @@ const botTools = {
             console.log('TOOL: Calling getFaculties...');
             const data = await db
                 .select({
-                    id: faculties.id,
                     name: faculties.name,
                     dean: faculties.dean,
-                    accreditation: faculties.accreditation,
                     description: faculties.description,
                 })
                 .from(faculties)
@@ -629,7 +625,6 @@ const botTools = {
                 nomor: i + 1,
                 namaFakultas: f.name,
                 dekan: f.dean || 'Tidak disebutkan',
-                akreditasi: f.accreditation || 'Belum terakreditasi',
                 deskripsi: f.description || '-',
             }));
 

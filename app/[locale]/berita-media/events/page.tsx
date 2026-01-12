@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { getUpcomingEventsWithCategory, getPublishedUniversityProfile } from '@/lib/db';
 import { cn } from "@/lib/utils";
 import { EventShareButton } from "@/components/EventShareButton";
+import { EventPoster } from "@/components/EventPoster";
 
 export default async function AgendaPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -102,13 +103,13 @@ export default async function AgendaPage({ params }: { params: Promise<{ locale:
               transition={{ duration: 0.6 }}
             >
               <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight transform transition-all duration-300 hover:scale-105" style={{
-                  background: 'linear-gradient(to right, #fefce8, #ecd735ff, #f9cd5eff)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  WebkitTextStroke: '1px #fcffa5ff',
-                  textShadow: '0 2px 2px rgba(0,0,0,0.5)'
-                }}>
+                background: 'linear-gradient(to right, #fefce8, #ecd735ff, #f9cd5eff)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                WebkitTextStroke: '1px #fcffa5ff',
+                textShadow: '0 2px 2px rgba(0,0,0,0.5)'
+              }}>
                 AGENDA & EVENT
               </h1>
 
@@ -149,19 +150,8 @@ export default async function AgendaPage({ params }: { params: Promise<{ locale:
                   >
                     <div className="glass-card rounded-[2rem] border border-primary/10 hover:border-cyber-blue/30 transition-all duration-500 shadow-xl flex flex-col overflow-hidden">
                       {/* Poster Image */}
-                      <div className="relative h-64 w-full overflow-hidden bg-muted/20">
-                        {agenda.poster ? (
-                          <img
-                            src={agenda.poster}
-                            alt={agenda.title}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center opacity-20">
-                            <Calendar className="w-12 h-12 text-muted-foreground" />
-                          </div>
-                        )}
-                        <div className="absolute top-4 left-4">
+                      <EventPoster src={agenda.poster} alt={agenda.title}>
+                        <div className="absolute top-4 left-4 z-10">
                           <Badge className={cn(
                             "px-3 py-1 rounded-full font-bold text-[8px] uppercase tracking-widest border-none shadow-lg",
                             displayStatus === 'open' || displayStatus === 'ongoing' ? 'bg-green-500 text-white' :
@@ -175,7 +165,7 @@ export default async function AgendaPage({ params }: { params: Promise<{ locale:
                                   displayStatus === 'completed' ? 'Selesai' : 'Dibatalkan'}
                           </Badge>
                         </div>
-                      </div>
+                      </EventPoster>
 
                       <div className="p-5 flex flex-col relative z-10">
                         <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -265,8 +255,13 @@ export default async function AgendaPage({ params }: { params: Promise<{ locale:
                             event={agenda}
                             universityName={universityProfile?.name || 'Universitas Teknokrat Indonesia'}
                             universityLogo={universityProfile?.logo}
+                            disabled={displayStatus === 'cancelled' || displayStatus === 'completed'}
                           />
-                          {agenda.registrationUrl ? (
+                          {(displayStatus === 'cancelled' || displayStatus === 'completed') ? (
+                            <Button variant="secondary" disabled className="flex-[2] h-11 rounded-full font-bold uppercase tracking-wider text-[10px] opacity-40">
+                              {displayStatus === 'cancelled' ? 'EVENT DIBATALKAN' : 'EVENT SELESAI'}
+                            </Button>
+                          ) : agenda.registrationUrl ? (
                             <a
                               href={agenda.registrationUrl}
                               target="_blank"

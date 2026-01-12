@@ -1,4 +1,5 @@
 import { db } from '@/db';
+// Force re-compile to fix stale schema
 import {
   news,
   newsCategories,
@@ -169,10 +170,24 @@ export async function getPublishedEventsByCategory(categorySlug: string, limit: 
 /**
  * Fungsi untuk mengambil fakultas yang dipublikasikan
  */
-export async function getPublishedFaculties() {
+export async function getPublishedFacultiesSync() {
   try {
     const result = await db
-      .select()
+      .select({
+        id: faculties.id,
+        name: faculties.name,
+        slug: faculties.slug,
+        description: faculties.description,
+        dean: faculties.dean,
+        contactEmail: faculties.contactEmail,
+        contactPhone: faculties.contactPhone,
+        address: faculties.address,
+        websiteUrl: faculties.websiteUrl,
+        logo: faculties.logo,
+        isPublished: faculties.isPublished,
+        createdAt: faculties.createdAt,
+        updatedAt: faculties.updatedAt,
+      })
       .from(faculties)
       .where(eq(faculties.isPublished, true));
 
@@ -392,7 +407,7 @@ export async function getUpcomingEventsWithCategory(limit: number = 5) {
       .where(
         eq(events.isPublished, true)
       )
-      .orderBy(sql`${events.startDate} ASC`)
+      .orderBy(sql`${events.createdAt} DESC`)
       .limit(limit);
 
     return result;
@@ -725,7 +740,7 @@ export async function getPublishedUniversityProfile() {
 
     return result;
   } catch (error) {
-    console.error('Error fetching published university profile:', error);
+    console.error('Error fetching published university profile [Line 743]:', error);
     throw new Error('Failed to fetch university profile');
   }
 }
@@ -736,7 +751,18 @@ export async function getPublishedUniversityProfile() {
 export async function getPublishedAdmissionClasses() {
   try {
     const result = await db
-      .select()
+      .select({
+        id: admissionClasses.id,
+        name: admissionClasses.name,
+        slug: admissionClasses.slug,
+        description: admissionClasses.description,
+        type: admissionClasses.type,
+        schedule: admissionClasses.schedule,
+        requirements: admissionClasses.requirements,
+        isPublished: admissionClasses.isPublished,
+        createdAt: admissionClasses.createdAt,
+        updatedAt: admissionClasses.updatedAt,
+      })
       .from(admissionClasses)
       .where(eq(admissionClasses.isPublished, true))
       .orderBy(sql`${admissionClasses.name} ASC`);
@@ -754,7 +780,15 @@ export async function getPublishedAdmissionClasses() {
 export async function getPublishedAdmissionPathways() {
   try {
     const result = await db
-      .select()
+      .select({
+        id: admissionPathways.id,
+        name: admissionPathways.name,
+        slug: admissionPathways.slug,
+        description: admissionPathways.description,
+        isPublished: admissionPathways.isPublished,
+        createdAt: admissionPathways.createdAt,
+        updatedAt: admissionPathways.updatedAt,
+      })
       .from(admissionPathways)
       .where(eq(admissionPathways.isPublished, true))
       .orderBy(sql`${admissionPathways.createdAt} ASC`);

@@ -155,93 +155,103 @@ export default function BiayaPendidikanView({
             <div className="container mx-auto px-4 relative z-10">
 
 
-                {/* Step-by-Step Selection */}
+                {/* Filter Section */}
                 <MotionDiv
                     className="glass-card rounded-3xl border border-white/10 p-5 md:p-8 mb-12 shadow-2xl relative overflow-hidden bg-white/[0.02] backdrop-blur-md"
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-cyber-blue/5 rounded-full blur-[100px] -mr-32 -mt-32" />
-                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-electric-purple/5 rounded-full blur-[100px] -ml-32 -mb-32" />
+                    {/* Decorative Elements */}
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-cyber-blue/5 rounded-full blur-[100px] -mr-32 -mt-32 pointer-events-none" />
+                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-electric-purple/5 rounded-full blur-[100px] -ml-32 -mb-32 pointer-events-none" />
 
-                    <div className="flex flex-col md:flex-row items-center gap-4 mb-6">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-cyber flex items-center justify-center shadow-lg">
-                            <Search className="w-5 h-5 text-foreground" />
-                        </div>
-                        <div>
-                            <h2 className="text-xl font-black text-foreground uppercase tracking-tight">Konfigurasi Simulasi</h2>
-                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1">Sesuaikan dengan pilihan program pendidikan Anda</p>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="space-y-1.5">
-                            <label className="text-[10px] font-black text-muted-foreground uppercase tracking-wider ml-1">Pilih Program Studi</label>
-                            <Select value={selectedProgram} onValueChange={setSelectedProgram}>
-                                <SelectTrigger className="h-10 bg-white/5 border-white/10 rounded-xl text-xs">
-                                    <SelectValue placeholder="Semua Program Studi" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">Semua Program Studi</SelectItem>
-                                    {studyPrograms.map((p) => (
-                                        <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <div className="space-y-1.5">
-                            <label className="text-[10px] font-black text-muted-foreground uppercase tracking-wider ml-1">Pilih Jalur Masuk</label>
-                            <Select value={selectedPathway} onValueChange={setSelectedPathway}>
-                                <SelectTrigger className="h-10 bg-white/5 border-white/10 rounded-xl text-xs">
-                                    <SelectValue placeholder="Semua Jalur" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">Semua Jalur</SelectItem>
-                                    {admissionPathways.map((p) => (
-                                        <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <div className="space-y-1.5">
-                            <label className="text-[10px] font-black text-muted-foreground uppercase tracking-wider ml-1">Jenis Kelas</label>
-                            <Select value={selectedClass} onValueChange={setSelectedClass}>
-                                <SelectTrigger className="h-10 bg-white/5 border-white/10 rounded-xl text-xs">
-                                    <SelectValue placeholder="Semua Kelas" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">Semua Kelas</SelectItem>
-                                    {admissionClasses.map((c) => (
-                                        <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-
-                    {hasSelections && (
-                        <div className="mt-4 pt-4 border-t border-white/5 flex justify-between items-center">
-                            <div className="flex gap-2 items-center overflow-x-auto pb-1">
-                                {selectedProgram !== "all" && (
-                                    <Badge variant="secondary" className="bg-cyber-blue/20 text-cyber-blue text-[10px] px-2 py-0.5 whitespace-nowrap">
-                                        {getProgramName(selectedProgram)}
-                                    </Badge>
-                                )}
-                                {/* ... other badges ... */}
+                    <div className="relative z-10">
+                        {/* Header */}
+                        <div className="flex flex-col md:flex-row items-center gap-4 mb-6 md:mb-8 border-b border-white/5 pb-6 text-center md:text-left">
+                            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyber-blue/20 to-electric-purple/20 flex items-center justify-center shadow-inner ring-1 ring-white/10">
+                                <Search className="w-6 h-6 text-cyber-blue" />
                             </div>
-                            <Button
-                                variant="secondary"
-                                size="sm"
-                                onClick={resetFilters}
-                                className="rounded-full text-[10px] h-7 px-4 font-bold"
-                            >
-                                Reset Filter
-                            </Button>
+                            <div>
+                                <h2 className="text-xl md:text-2xl font-black text-foreground uppercase tracking-tight">Cari Program Studi</h2>
+                                <p className="text-sm text-muted-foreground font-medium mt-1">Temukan rincian biaya pendidikan sesuai pilihan Anda</p>
+                            </div>
                         </div>
-                    )}
+
+                        {/* Filter Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+                            {/* Program Studi */}
+                            <div className="space-y-2">
+                                <label className="text-[10px] md:text-[11px] font-bold text-cyber-blue uppercase tracking-wider flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-cyber-blue" />
+                                    Program Studi
+                                </label>
+                                <Select value={selectedProgram} onValueChange={setSelectedProgram}>
+                                    <SelectTrigger className="h-10 md:h-12 bg-white/5 border-white/10 rounded-xl text-xs md:text-sm focus:ring-cyber-blue/50 hover:bg-white/10 transition-colors">
+                                        <SelectValue placeholder="Pilih Program Studi" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Semua Program Studi</SelectItem>
+                                        {studyPrograms.map((p) => (
+                                            <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* Jalur Masuk */}
+                            <div className="space-y-2">
+                                <label className="text-[10px] md:text-[11px] font-bold text-electric-purple uppercase tracking-wider flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-electric-purple" />
+                                    Jalur Masuk
+                                </label>
+                                <Select value={selectedPathway} onValueChange={setSelectedPathway}>
+                                    <SelectTrigger className="h-10 md:h-12 bg-white/5 border-white/10 rounded-xl text-xs md:text-sm focus:ring-electric-purple/50 hover:bg-white/10 transition-colors">
+                                        <SelectValue placeholder="Pilih Jalur Masuk" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Semua Jalur Masuk</SelectItem>
+                                        {admissionPathways.map((p) => (
+                                            <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* Jenis Kelas */}
+                            <div className="space-y-2">
+                                <label className="text-[10px] md:text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                                    Jenis Kelas
+                                </label>
+                                <Select value={selectedClass} onValueChange={setSelectedClass}>
+                                    <SelectTrigger className="h-10 md:h-12 bg-white/5 border-white/10 rounded-xl text-xs md:text-sm focus:ring-emerald-400/50 hover:bg-white/10 transition-colors">
+                                        <SelectValue placeholder="Pilih Jenis Kelas" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">Semua Jenis Kelas</SelectItem>
+                                        {admissionClasses.map((c) => (
+                                            <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+
+                        {/* Active Filters Summary */}
+                        {hasSelections && (
+                            <div className="mt-6 md:mt-8 pt-6 border-t border-white/5 flex justify-end animate-in fade-in slide-in-from-top-2">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={resetFilters}
+                                    className="text-muted-foreground hover:text-foreground text-[10px] md:text-xs font-bold hover:bg-white/5 rounded-full px-4 h-8 md:h-9 w-full md:w-auto"
+                                >
+                                    Reset Semua Filter
+                                </Button>
+                            </div>
+                        )}
+                    </div>
                 </MotionDiv>
 
                 {/* Results Section */}
@@ -327,10 +337,6 @@ export default function BiayaPendidikanView({
                     ) : (
                         // Mode: Default (8 Preset Tables)
                         <div className="space-y-16">
-                            <div className="text-center">
-                                <h3 className="text-2xl font-bold text-foreground mb-4">Contoh Simulasi Biaya</h3>
-                                <p className="text-sm text-muted-foreground">Pilih konfigurasi di atas untuk hasil yang lebih spesifik</p>
-                            </div>
 
                             <div className="space-y-20">
                                 {defaultCombinations.map((group, groupIdx) => {

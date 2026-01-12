@@ -11,7 +11,7 @@ export const faculties = pgTable("faculties", {
     contactEmail: text("contact_email"),
     contactPhone: text("contact_phone"),
     address: text("address"),
-    accreditation: text("accreditation", { enum: ['A', 'B', 'C', 'Unggul', 'Baik'] }), // status akreditasi fakultas
+    websiteUrl: text("website_url"), // URL website fakultas
     logo: text("logo"), // URL logo fakultas
     isPublished: boolean("is_published").default(false).notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),

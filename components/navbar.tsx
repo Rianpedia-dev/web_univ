@@ -58,7 +58,6 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
       icon: Users,
       submenu: [
         { title: locale === 'id' ? "Pendaftaran PMB" : "Registration", href: `/${locale}/penerimaan/pendaftaran-pmb` },
-        { title: locale === 'id' ? "Jenis Kelas" : "Class Types", href: `/${locale}/penerimaan/jenis-kelas` },
         { title: locale === 'id' ? "Biaya Pendidikan" : "Education Cost", href: `/${locale}/penerimaan/biaya-pendidikan` },
         { title: locale === 'id' ? "Beasiswa" : "Scholarships", href: `/${locale}/penerimaan/beasiswa` },
       ]
@@ -196,32 +195,37 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden mt-2 py-4 rounded-xl bg-gradient-to-b from-white/90 to-gray-100/90 dark:from-gray-800/90 dark:to-gray-900/90 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50 shadow-2xl max-h-[80vh] overflow-y-auto">
-            <nav className="flex flex-col gap-2 px-4">
+          <div className="md:hidden mt-2 py-2 rounded-2xl bg-background/95 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-xl max-h-[85vh] overflow-y-auto ring-1 ring-black/5 animate-in slide-in-from-top-2 duration-200">
+            <nav className="flex flex-col p-2 space-y-0.5">
               {navItems.map((item) => (
-                <div key={item.href}>
+                <div key={item.href} className="overflow-hidden">
                   <Link
                     href={item.href}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${pathname === item.href || pathname.startsWith(item.href + "/")
-                      ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-blue-700 dark:text-blue-300"
-                      : "hover:bg-white/10 dark:hover:bg-gray-800/50"
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300 ${pathname === item.href || pathname.startsWith(item.href + "/")
+                      ? "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 font-semibold shadow-sm ring-1 ring-yellow-500/20"
+                      : "text-foreground/70 hover:bg-black/5 dark:hover:bg-white/5 hover:text-foreground font-medium"
                       }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    <item.icon className="w-5 h-5" />
-                    <span>{item.title}</span>
+                    <div className={`p-1 rounded-md transition-colors ${pathname === item.href || pathname.startsWith(item.href + "/")
+                      ? "bg-yellow-500/20 text-yellow-700 dark:text-yellow-400"
+                      : "bg-black/5 dark:bg-white/10 text-foreground/70 group-hover:bg-black/10 dark:group-hover:bg-white/20"
+                      }`}>
+                      <item.icon className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm">{item.title}</span>
                   </Link>
 
                   {/* Mobile Submenu */}
                   {item.submenu.length > 0 && (
-                    <div className="ml-6 mt-1 space-y-1 pl-4 border-l-2 border-gray-200 dark:border-gray-700">
+                    <div className="ml-9 mt-0.5 mb-1 space-y-0.5 border-l-2 border-dashed border-black/10 dark:border-white/10 pl-2">
                       {item.submenu.map((subItem) => (
                         <Link
                           key={subItem.href}
                           href={subItem.href}
-                          className={`block px-4 py-2 text-sm rounded-lg transition-all ${pathname === subItem.href
-                            ? "bg-gradient-to-r from-blue-500/20 to-purple-600/20 text-blue-700 dark:text-blue-300"
-                            : "hover:bg-white/10 dark:hover:bg-gray-800/50 hover:pl-6"
+                          className={`relative block px-3 py-2 text-xs rounded-lg transition-all duration-300 ${pathname === subItem.href
+                            ? "text-yellow-700 dark:text-yellow-400 font-medium bg-yellow-500/5"
+                            : "text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 hover:translate-x-1"
                             }`}
                           onClick={() => setIsMenuOpen(false)}
                         >
@@ -232,8 +236,6 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
                   )}
                 </div>
               ))}
-
-              {/* Mobile Menu Items */}
             </nav>
           </div>
         )}

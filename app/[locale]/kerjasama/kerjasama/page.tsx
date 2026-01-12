@@ -18,6 +18,13 @@ import {
 import { MotionDiv } from "@/components/motion-wrapper";
 import { PartnershipDetailDialog } from "@/components/PartnershipDetailDialog";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { getPublishedPartnerships } from '@/lib/db';
 
 export default async function PartnershipPage() {
@@ -70,10 +77,6 @@ export default async function PartnershipPage() {
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <div className="flex flex-col items-center justify-center mb-12 text-center">
-
-          </div>
-
           {partnerUniversitas.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {partnerUniversitas.map((partner, index) => {
@@ -91,11 +94,28 @@ export default async function PartnershipPage() {
                         <div className="flex items-center gap-3">
                           <div className="w-16 h-16 rounded-xl bg-cyber-blue/5 flex items-center justify-center shadow-[0_0_20px_rgba(0,240,255,0.1)] overflow-hidden border border-border dark:border-white/10 group-hover:scale-105 transition-transform duration-500">
                             {partner.partnerLogo ? (
-                              <img
-                                src={partner.partnerLogo}
-                                alt={partner.partnerName}
-                                className="w-full h-full object-contain p-2"
-                              />
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <div className="w-full h-full cursor-pointer hover:bg-white/5 transition-colors p-2">
+                                    <img
+                                      src={partner.partnerLogo}
+                                      alt={partner.partnerName}
+                                      className="w-full h-full object-contain"
+                                    />
+                                  </div>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-md bg-transparent border-none shadow-none p-0 flex flex-col items-center justify-center">
+                                  <DialogTitle className="sr-only">Logo {partner.partnerName}</DialogTitle>
+                                  <DialogDescription className="sr-only">Logo lengkap {partner.partnerName}</DialogDescription>
+                                  <div className="relative p-8 rounded-3xl bg-slate-900/90 backdrop-blur-xl border border-white/20 shadow-2xl flex items-center justify-center">
+                                    <img
+                                      src={partner.partnerLogo}
+                                      alt={partner.partnerName}
+                                      className="max-w-[300px] max-h-[300px] object-contain drop-shadow-xl"
+                                    />
+                                  </div>
+                                </DialogContent>
+                              </Dialog>
                             ) : (
                               <Building2 className="w-8 h-8 text-cyber-blue" />
                             )}

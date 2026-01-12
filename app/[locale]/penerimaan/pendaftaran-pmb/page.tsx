@@ -11,7 +11,15 @@ import {
   HelpCircle,
   Users,
   Layers,
-  Download
+  Download,
+  Building2,
+  Sun,
+  Moon,
+  Monitor,
+  Briefcase,
+  Clock,
+  BookOpen,
+  FileText
 } from "lucide-react";
 import Link from "next/link";
 import { MotionDiv } from "@/components/motion-wrapper";
@@ -26,7 +34,7 @@ import {
   getPublishedStudyPrograms,
   getUniversityProfile,
   getPublishedEducationCosts,
-  getPublishedFaculties,
+  getPublishedFacultiesSync,
   getPublishedUniversityAccreditations,
   getPublishedCampusFacilities,
   getPublishedAdmissionStaff,
@@ -57,7 +65,7 @@ export default async function PendaftaranPMBPage({ params }: { params: Promise<{
     getPublishedAdmissionTimelines(),
     getUniversityProfile(),
     getPublishedEducationCosts(),
-    getPublishedFaculties(),
+    getPublishedFacultiesSync(),
     getPublishedUniversityAccreditations(),
     getPublishedCampusFacilities(),
     getPublishedAdmissionStaff(),
@@ -94,6 +102,29 @@ export default async function PendaftaranPMBPage({ params }: { params: Promise<{
   const formatCurrency = (amount: number | string | null | undefined) => {
     if (!amount) return 'Gratis';
     return `Rp ${Number(amount).toLocaleString('id-ID')}`;
+  };
+
+  // Helper functions for Class Types
+  const getClassIcon = (type: string) => {
+    switch (type?.toLowerCase()) {
+      case 'reguler': return Sun;
+      case 'executive': return Briefcase;
+      case 'online': return Monitor;
+      case 'part_time': return Moon;
+      case 'full_time': return Clock;
+      default: return BookOpen;
+    }
+  };
+
+  const getTypeLabel = (type: string) => {
+    switch (type?.toLowerCase()) {
+      case 'reguler': return 'Kelas Reguler';
+      case 'executive': return 'Kelas Eksekutif';
+      case 'online': return 'Kelas Online/Hybrid';
+      case 'part_time': return 'Kelas Karyawan';
+      case 'full_time': return 'Full Time';
+      default: return type;
+    }
   };
 
   return (
@@ -137,31 +168,7 @@ export default async function PendaftaranPMBPage({ params }: { params: Promise<{
 
       <div className="container mx-auto px-4 relative z-10">
 
-        {/* Brochure Download Button at Top */}
-        <MotionDiv
-          className="flex justify-center mb-12"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          {brochuresData && brochuresData.length > 0 ? (
-            <Button
-              asChild
-              variant="default"
-              className="rounded-xl group hover:scale-105 transition-all duration-300"
-            >
-              <Link href={brochuresData[0].fileUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
-                <Download className="w-4 h-4" />
-                <span>Download Brosur PMB</span>
-                <ArrowRight className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
-              </Link>
-            </Button>
-          ) : (
-            <div className="text-center p-6 glass-card rounded-2xl border border-dashed border-muted-foreground/20">
-              <p className="text-muted-foreground text-sm font-medium italic">Brosur pendaftaran digital belum tersedia saat ini.</p>
-            </div>
-          )}
-        </MotionDiv>
+
 
         {/* Gelombang Aktif Banner */}
         {gelombangAktif && (
@@ -264,6 +271,211 @@ export default async function PendaftaranPMBPage({ params }: { params: Promise<{
             </div>
           </div>
 
+
+          {/*Pilihan Jenis Kelas */}
+          <MotionDiv
+            className="space-y-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="text-center space-y-2">
+              <h2 className="text-3xl font-black text-foreground uppercase tracking-tight">Pilihan Jenis Kelas</h2>
+              <p className="text-muted-foreground">Berbagai pilihan waktu dan metode pembelajaran yang fleksibel</p>
+            </div>
+
+            {jenisKelas.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {jenisKelas.map((kelasItem: any, index: number) => {
+                  const IconComponent = getClassIcon(kelasItem.type);
+                  return (
+                    <MotionDiv
+                      key={kelasItem.id}
+                      className="glass-card rounded-2xl border overflow-hidden hover:shadow-[0_0_30px_rgba(0,240,255,0.1)] transition-all duration-300 group"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 * index }}
+                    >
+                      <div className="p-8">
+                        <div className="flex items-center justify-between mb-6">
+                          <div className="flex items-center">
+                            <div className="w-14 h-14 bg-gradient-cyber rounded-2xl flex items-center justify-center mr-4 shadow-[0_0_15px_rgba(0,240,255,0.3)]">
+                              <IconComponent className="w-7 h-7 text-foreground" />
+                            </div>
+                            <div>
+                              <h3 className="text-2xl font-bold text-foreground group-hover:text-cyber-blue transition-colors">
+                                {kelasItem.name}
+                              </h3>
+                              <Badge variant="outline" className="mt-1 border-cyber-blue/50 text-cyber-blue">
+                                {getTypeLabel(kelasItem.type)}
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+
+                        <p className="text-muted-foreground mb-6">
+                          {kelasItem.description || 'Program kelas yang dirancang untuk kebutuhan pembelajaran yang optimal.'}
+                        </p>
+
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="bg-muted/30 rounded-xl p-4">
+                            <span className="text-sm text-muted-foreground flex items-center mb-1">
+                              <Clock className="w-4 h-4 mr-2 text-cyber-blue" />
+                              Jadwal
+                            </span>
+                            <p className="font-semibold text-foreground">
+                              {kelasItem.schedule?.split(', ')[0] || 'Fleksibel'}
+                            </p>
+                          </div>
+                          <div className="bg-muted/30 rounded-xl p-4">
+                            <span className="text-sm text-muted-foreground flex items-center mb-1">
+                              <Calendar className="w-4 h-4 mr-2 text-electric-purple" />
+                              Durasi
+                            </span>
+                            <p className="font-semibold text-foreground">
+                              {kelasItem.schedule?.split(', ')[1] || 'Sesuai Jadwal'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </MotionDiv>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="glass-card rounded-2xl border p-12 text-center text-muted-foreground italic">
+                Informasi jenis kelas belum tersedia.
+              </div>
+            )}
+          </MotionDiv>
+
+          {/*Panduan Pemilihan Kelas */}
+          <MotionDiv
+            className="space-y-8"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <div className="text-center space-y-2">
+              <h2 className="text-3xl font-black text-foreground uppercase tracking-tight">Panduan Pemilihan Kelas</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                {
+                  judul: "Evaluasi Kondisi",
+                  deskripsi: "Pertimbangkan kondisi pekerjaan, waktu luang, dan kemampuan finansial",
+                  icon: Users
+                },
+                {
+                  judul: "Sesuaikan Target",
+                  deskripsi: "Pilih kelas yang sesuai dengan tujuan akademik dan karir Anda",
+                  icon: BookOpen
+                },
+                {
+                  judul: "Konsultasi",
+                  deskripsi: "Berkonsultasi dengan konselor akademik untuk pemilihan kelas terbaik",
+                  icon: FileText
+                }
+              ].map((panduan, index) => (
+                <div key={index} className="glass-card p-6 rounded-xl border border-white/5 bg-background/50 text-center hover:border-cyber-blue/30 transition-colors">
+                  <div className="w-12 h-12 bg-gradient-cyber rounded-full flex items-center justify-center mx-auto mb-4 shadow-[0_0_15px_rgba(0,240,255,0.3)]">
+                    <panduan.icon className="w-6 h-6 text-foreground" />
+                  </div>
+                  <h3 className="font-bold text-lg text-foreground mb-2">{panduan.judul}</h3>
+                  <p className="text-muted-foreground text-sm">{panduan.deskripsi}</p>
+                </div>
+              ))}
+            </div>
+          </MotionDiv>
+
+
+          {/* Section: Gelombang & Syarat (Stacked) */}
+          <div className="space-y-16">
+            {/* Gelombang */}
+            <div id="gelombang" className="space-y-8">
+              <h2 className="text-3xl font-black text-foreground uppercase tracking-tight flex items-center justify-center gap-3">
+                <Calendar className="w-8 h-8 text-yellow-500" />
+                Jadwal Gelombang
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {gelombangData.map((wave: any) => {
+                  const status = getWaveStatus(new Date(wave.startDate), new Date(wave.endDate));
+                  return (
+                    <div key={wave.id} className={`glass-card rounded-2xl p-6 border transition-all ${status.status === 'active' ? 'border-green-500/30 bg-green-500/5' : 'border-white/5'}`}>
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <h3 className="font-bold text-foreground text-lg">{wave.name}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {formatDate(new Date(wave.startDate))} - {formatDate(new Date(wave.endDate))}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Syarat Pendaftaran */}
+            <div className="space-y-8">
+              <h2 className="text-3xl font-black text-foreground uppercase tracking-tight flex items-center justify-center gap-3">
+                <ShieldCheck className="w-8 h-8 text-cyber-blue" />
+                Syarat Pendaftaran
+              </h2>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Syarat Mahasiswa Murni */}
+                <div className="glass-card rounded-3xl p-8 border border-cyber-blue/20 bg-cyber-blue/5 space-y-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 bg-cyber-blue/10 rounded-2xl flex items-center justify-center">
+                      <GraduationCap className="w-6 h-6 text-cyber-blue" />
+                    </div>
+                    <h3 className="text-xl font-bold text-foreground">Mahasiswa Murni</h3>
+                  </div>
+                  <div className="space-y-4">
+                    {syaratData.filter((s: any) => s.type === 'murni').length > 0 ? (
+                      syaratData.filter((s: any) => s.type === 'murni').map((syarat: any) => (
+                        <div key={syarat.id} className="flex items-start gap-4 group">
+                          <div className="mt-1 w-5 h-5 rounded-full bg-cyber-blue/10 flex items-center justify-center flex-shrink-0 group-hover:bg-cyber-blue/20 transition-colors">
+                            <CheckCircle className="w-3.5 h-3.5 text-cyber-blue" />
+                          </div>
+                          <span className="text-muted-foreground text-sm leading-relaxed">{syarat.content}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-muted-foreground text-sm italic">Belum ada syarat untuk kategori ini.</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Syarat Mahasiswa Transisi */}
+                <div className="glass-card rounded-3xl p-8 border border-electric-purple/20 bg-electric-purple/5 space-y-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 bg-electric-purple/10 rounded-2xl flex items-center justify-center">
+                      <Users className="w-6 h-6 text-electric-purple" />
+                    </div>
+                    <h3 className="text-xl font-bold text-foreground">Mahasiswa Transisi</h3>
+                  </div>
+                  <div className="space-y-4">
+                    {syaratData.filter((s: any) => s.type === 'transisi').length > 0 ? (
+                      syaratData.filter((s: any) => s.type === 'transisi').map((syarat: any) => (
+                        <div key={syarat.id} className="flex items-start gap-4 group">
+                          <div className="mt-1 w-5 h-5 rounded-full bg-electric-purple/10 flex items-center justify-center flex-shrink-0 group-hover:bg-electric-purple/20 transition-colors">
+                            <CheckCircle className="w-3.5 h-3.5 text-electric-purple" />
+                          </div>
+                          <span className="text-muted-foreground text-sm leading-relaxed">{syarat.content}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-muted-foreground text-sm italic">Belum ada syarat untuk kategori ini.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <AdmissionTimeline
             timelines={timelinesData}
             universityProfile={universityProfile}
@@ -274,86 +486,8 @@ export default async function PendaftaranPMBPage({ params }: { params: Promise<{
             requirements={syaratData}
             costs={costsData}
             faculties={facultiesData}
+            brochures={brochuresData}
           />
-
-          {/* Section: Gelombang & Syarat (2 Columns on Desktop) */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Gelombang */}
-            <div id="gelombang" className="space-y-6">
-              <h2 className="text-2xl font-black text-foreground flex items-center gap-3">
-                <Calendar className="w-6 h-6 text-yellow-500" />
-                Jadwal Gelombang
-              </h2>
-              <div className="space-y-4">
-                {gelombangData.map((wave: any) => {
-                  const status = getWaveStatus(new Date(wave.startDate), new Date(wave.endDate));
-                  return (
-                    <div key={wave.id} className={`glass-card rounded-2xl p-5 border transition-all ${status.status === 'active' ? 'border-green-500/30 bg-green-500/5' : 'border-white/5'}`}>
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <h3 className="font-bold text-foreground text-sm">{wave.name}</h3>
-                          <p className="text-[11px] text-muted-foreground">
-                            {formatDate(new Date(wave.startDate))} - {formatDate(new Date(wave.endDate))}
-                          </p>
-                        </div>
-
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Syarat Pendaftaran */}
-            <div className="space-y-6">
-              <h2 className="text-2xl font-black text-foreground flex items-center gap-3">
-                <ShieldCheck className="w-6 h-6 text-cyber-blue" />
-                Syarat Pendaftaran
-              </h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Syarat Mahasiswa Murni */}
-                <div className="glass-card rounded-2xl p-6 border border-cyber-blue/20 bg-cyber-blue/5 space-y-4">
-                  <div className="flex items-center gap-2 mb-4">
-                    <GraduationCap className="w-5 h-5 text-cyber-blue" />
-                    <h3 className="font-bold text-foreground">Mahasiswa Murni</h3>
-                  </div>
-                  {syaratData.filter((s: any) => s.type === 'murni').length > 0 ? (
-                    syaratData.filter((s: any) => s.type === 'murni').map((syarat: any) => (
-                      <div key={syarat.id} className="flex items-start gap-3 group">
-                        <div className="mt-1 w-4 h-4 rounded-full bg-cyber-blue/10 flex items-center justify-center flex-shrink-0 group-hover:bg-cyber-blue/20 transition-colors">
-                          <CheckCircle className="w-3 h-3 text-cyber-blue" />
-                        </div>
-                        <span className="text-muted-foreground text-xs leading-relaxed">{syarat.content}</span>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-muted-foreground text-xs italic">Belum ada syarat untuk kategori ini.</p>
-                  )}
-                </div>
-
-                {/* Syarat Mahasiswa Transisi */}
-                <div className="glass-card rounded-2xl p-6 border border-electric-purple/20 bg-electric-purple/5 space-y-4">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Users className="w-5 h-5 text-electric-purple" />
-                    <h3 className="font-bold text-foreground">Mahasiswa Transisi</h3>
-                  </div>
-                  {syaratData.filter((s: any) => s.type === 'transisi').length > 0 ? (
-                    syaratData.filter((s: any) => s.type === 'transisi').map((syarat: any) => (
-                      <div key={syarat.id} className="flex items-start gap-3 group">
-                        <div className="mt-1 w-4 h-4 rounded-full bg-electric-purple/10 flex items-center justify-center flex-shrink-0 group-hover:bg-electric-purple/20 transition-colors">
-                          <CheckCircle className="w-3 h-3 text-electric-purple" />
-                        </div>
-                        <span className="text-muted-foreground text-xs leading-relaxed">{syarat.content}</span>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-muted-foreground text-xs italic">Belum ada syarat untuk kategori ini.</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
 
