@@ -28,19 +28,22 @@ import {
     DollarSign,
     Home,
     Menu,
-    BarChart3
+    BarChart3,
+    ChevronLeft,
+    ChevronRight
 } from "lucide-react"
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { uploadFile, getPublicUrl } from "@/lib/storage"
 import { VisitorCounter } from "@/components/visitor-counter"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
     Table,
@@ -127,6 +130,7 @@ const tableConfigurations = {
             studentOrganizations: {
                 label: "Organisasi Mahasiswa",
                 description: "Daftar organisasi mahasiswa",
+                viewMode: "grid",
                 fields: [
                     { key: "name", label: "Nama", type: "text", required: true },
                     { key: "description", label: "Deskripsi", type: "textarea" },
@@ -144,6 +148,7 @@ const tableConfigurations = {
             studentAchievements: {
                 label: "Prestasi Mahasiswa",
                 description: "Prestasi mahasiswa",
+                viewMode: "grid",
                 fields: [
                     { key: "studentName", label: "Nama Mahasiswa", type: "text", required: true },
                     { key: "studentId", label: "NIM", type: "text", required: true },
@@ -184,6 +189,7 @@ const tableConfigurations = {
             events: {
                 label: "Event",
                 description: "Daftar event dan kegiatan",
+                viewMode: "grid",
                 fields: [
                     { key: "categoryId", label: "Kategori", type: "select", referenceTable: "eventCategories", referenceLabel: "name", required: true },
                     { key: "title", label: "Judul", type: "text", required: true },
@@ -206,6 +212,7 @@ const tableConfigurations = {
             news: {
                 label: "Berita",
                 description: "Artikel berita",
+                viewMode: "grid",
                 fields: [
                     { key: "categoryId", label: "Kategori", type: "select", referenceTable: "newsCategories", referenceLabel: "name", required: true },
                     { key: "title", label: "Judul", type: "text", required: true },
@@ -221,6 +228,7 @@ const tableConfigurations = {
             galleryMedia: {
                 label: "Galeri",
                 description: "Foto dan video dalam galeri",
+                viewMode: "grid",
                 fields: [
                     { key: "title", label: "Judul", type: "text", required: true },
                     { key: "description", label: "Deskripsi", type: "textarea" },
@@ -242,6 +250,7 @@ const tableConfigurations = {
             educationCosts: {
                 label: "Biaya Pendidikan",
                 description: "Daftar biaya pendidikan",
+                mobileViewMode: "table",
                 fields: [
                     { key: "studyProgramId", label: "Program Studi", type: "select", referenceTable: "studyPrograms", referenceLabel: "name" },
                     { key: "classId", label: "Kelas", type: "select", referenceTable: "admissionClasses", referenceLabel: "name" },
@@ -265,6 +274,7 @@ const tableConfigurations = {
             admissionStaff: {
                 label: "Tim PMB",
                 description: "Kelola data tim penerimaan mahasiswa baru",
+                viewMode: "grid",
                 fields: [
                     { key: "name", label: "Nama", type: "text", required: true },
                     { key: "position", label: "Jabatan", type: "text", required: true },
@@ -310,6 +320,7 @@ const tableConfigurations = {
             testimonials: {
                 label: "Testimoni",
                 description: "Kelola testimoni alumni dan mahasiswa",
+                viewMode: "grid",
                 fields: [
                     { key: "name", label: "Nama", type: "text", required: true },
                     { key: "role", label: "Peran/Jabatan", type: "text", required: true },
@@ -330,6 +341,7 @@ const tableConfigurations = {
             journals: {
                 label: "Jurnal Ilmiah",
                 description: "Kelola publikasi jurnal ilmiah dan riset",
+                viewMode: "grid",
                 fields: [
                     { key: "title", label: "Judul Artikel", type: "text", required: true },
                     { key: "authors", label: "Penulis", type: "text", required: true },
@@ -348,6 +360,7 @@ const tableConfigurations = {
             partners: {
                 label: "Mitra",
                 description: "Daftar mitra kerjasama",
+                viewMode: "grid",
                 fields: [
                     { key: "name", label: "Nama Mitra", type: "text", required: true },
                     { key: "slug", label: "Slug", type: "text", required: true },
@@ -392,6 +405,8 @@ type TableConfig = {
     description: string
     fields: FieldConfig[]
     isStatsOnly?: boolean
+    viewMode?: "table" | "grid"
+    mobileViewMode?: "table" | "card"
 }
 
 type ModuleConfig = {
@@ -620,18 +635,20 @@ const DataTableView = ({
     onRefresh,
     readOnly = false,
     hideSearch = false,
+    onCountChange,
 }: {
     tableName: string
     tableConfig: TableConfig
     onRefresh: () => void
     readOnly?: boolean
     hideSearch?: boolean
+    onCountChange?: (count: number) => void
 }) => {
     const [data, setData] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState("")
     const [currentPage, setCurrentPage] = useState(1)
-    const [totalPages, setTotalPages] = useState(1)
+    const itemsPerPage = 10
 
     // Form & Dialog States
     const [isAddOpen, setIsAddOpen] = useState(false)
@@ -679,14 +696,14 @@ const DataTableView = ({
             const json = await res.json()
             if (json.data) {
                 setData(json.data)
-                setTotalPages(Math.ceil(json.data.length / 10))
+                onCountChange?.(json.data.length)
             }
         } catch (error) {
             console.error("Error fetching data:", error)
         } finally {
             setLoading(false)
         }
-    }, [tableName])
+    }, [tableName, onCountChange])
 
     useEffect(() => {
         fetchData()
@@ -725,7 +742,10 @@ const DataTableView = ({
         )
     )
 
-    const paginatedData = filteredData.slice((currentPage - 1) * 10, currentPage * 10)
+    const totalPages = Math.ceil(filteredData.length / itemsPerPage)
+    const paginatedData = tableConfig.viewMode === "grid"
+        ? filteredData
+        : filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
     const handleDelete = async () => {
         if (!deleteId) return
@@ -813,84 +833,380 @@ const DataTableView = ({
                 </div>
             </div>
 
-            <div className="rounded-md border overflow-x-auto">
-                <Table>
-                    <TableHeader className="bg-background/40">
-                        <TableRow className="hover:bg-transparent border-b-2 border-white/10">
-                            {tableConfig.fields.map((field, index) => (
-                                <TableHead
-                                    key={field.key}
-                                    className={cn(
-                                        "whitespace-nowrap font-bold text-[10px] uppercase tracking-wider text-muted-foreground py-4",
-                                        index < tableConfig.fields.length - (readOnly ? 0 : 1) && "border-r border-white/5"
-                                    )}
-                                >
-                                    {field.label}
-                                </TableHead>
-                            ))}
-                            {!readOnly && <TableHead className="w-[100px] font-bold text-[10px] uppercase tracking-wider text-muted-foreground py-4">Aksi</TableHead>}
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {loading ? (
-                            <TableRow>
-                                <TableCell colSpan={tableConfig.fields.length + (readOnly ? 0 : 1)} className="h-24 text-center">
-                                    <Skeleton className="h-4 w-[250px] mx-auto" />
-                                </TableCell>
-                            </TableRow>
-                        ) : paginatedData.length === 0 ? (
-                            <TableRow>
-                                <TableCell colSpan={tableConfig.fields.length + (readOnly ? 0 : 1)} className="h-24 text-center">
-                                    Tidak ada data
-                                </TableCell>
-                            </TableRow>
-                        ) : (
-                            paginatedData.map((item) => (
-                                <TableRow key={item.id} className="hover:bg-white/[0.02] border-b border-white/5 transition-colors">
-                                    {tableConfig.fields.map((field, index) => (
-                                        <TableCell
-                                            key={field.key}
-                                            className={cn(
-                                                "whitespace-nowrap max-w-[200px] py-4",
-                                                index < tableConfig.fields.length - (readOnly ? 0 : 1) && "border-r border-white/5"
+            {/* Mobile Card View (Only for standard tables) */}
+            <div className={cn("lg:hidden space-y-4", (tableConfig.viewMode === "grid" || tableConfig.mobileViewMode === "table") && "hidden")}>
+                {loading ? (
+                    <Card className="bg-background/40 border-white/10 p-8 flex justify-center">
+                        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground/50" />
+                    </Card>
+                ) : paginatedData.length === 0 ? (
+                    <Card className="bg-background/40 border-white/10 p-8 text-center text-muted-foreground">
+                        Tidak ada data
+                    </Card>
+                ) : (
+                    paginatedData.map((item) => (
+                        <Card key={item.id} className="bg-background/40 border-white/10 overflow-hidden">
+                            <CardContent className="p-4 space-y-3">
+                                {tableConfig.fields.map((field, index) => (
+                                    <div key={`${field.key}-${index}`} className="flex flex-col gap-1 border-b border-white/5 pb-2 last:border-0 last:pb-0">
+                                        <span className="text-[10px] text-muted-foreground uppercase font-black tracking-widest opacity-60">
+                                            {field.label}
+                                        </span>
+                                        <div className="flex items-center justify-between gap-4">
+                                            <div className="text-sm font-medium">
+                                                {getDisplayValue(item, field)}
+                                            </div>
+                                            {(field.key === 'answer' || field.key === 'content') && item[field.key] && (
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="h-7 px-2 text-[9px] font-bold bg-white/5 hover:bg-white/10 border-white/10 transition-all uppercase"
+                                                    onClick={() => setViewContent(item[field.key])}
+                                                >
+                                                    Lihat
+                                                </Button>
                                             )}
-                                            title={String(item[field.key])}
-                                        >
-                                            <div className="flex items-center justify-between gap-4">
-                                                <div className="truncate flex-1 text-sm">
-                                                    {getDisplayValue(item, field)}
-                                                </div>
-                                                {(field.key === 'answer' || field.key === 'content') && item[field.key] && (
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        className="h-6 px-2 text-[9px] font-bold bg-white/5 hover:bg-white/10 border-none transition-all uppercase"
-                                                        onClick={() => setViewContent(item[field.key])}
-                                                    >
-                                                        Lihat
-                                                    </Button>
-                                                )}
-                                            </div>
-                                        </TableCell>
-                                    ))}
-                                    {!readOnly && (
-                                        <TableCell>
-                                            <div className="flex gap-2">
-                                                <Button variant="ghost" size="icon" onClick={() => openEditDialog(item)}>
-                                                    <Pencil className="h-4 w-4" />
-                                                </Button>
-                                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => setDeleteId(item.id)}>
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        </TableCell>
-                                    )}
-                                </TableRow>
-                            ))
-                        )}
-                    </TableBody>
-                </Table>
+                                        </div>
+                                    </div>
+                                ))}
+                            </CardContent>
+                            {!readOnly && (
+                                <CardFooter className="p-3 bg-white/[0.02] border-t border-white/5 flex justify-end gap-2">
+                                    <Button variant="ghost" size="sm" onClick={() => openEditDialog(item)} className="h-8 gap-1 text-[10px] font-bold uppercase tracking-wider">
+                                        <Pencil className="h-3 w-3" /> Edit
+                                    </Button>
+                                    <Button variant="ghost" size="sm" className="h-8 gap-1 text-[10px] font-bold uppercase tracking-wider text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setDeleteId(item.id)}>
+                                        <Trash2 className="h-3 w-3" /> Hapus
+                                    </Button>
+                                </CardFooter>
+                            )}
+                        </Card>
+                    ))
+                )}
             </div>
+
+            {/* Desktop Table/Grid View */}
+            {tableConfig.viewMode === "grid" ? (
+                <div className="grid grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
+                    {loading ? (
+                        Array.from({ length: 6 }).map((_, i) => (
+                            <Card key={i} className="bg-background/40 border-white/10 p-4 space-y-4">
+                                <Skeleton className="h-32 w-full rounded-lg" />
+                                <div className="space-y-2">
+                                    <Skeleton className="h-4 w-3/4" />
+                                    <Skeleton className="h-3 w-1/2" />
+                                </div>
+                            </Card>
+                        ))
+                    ) : paginatedData.length === 0 ? (
+                        <div className="col-span-full h-40 flex items-center justify-center text-muted-foreground bg-background/20 rounded-xl border border-dashed border-white/10">
+                            Tidak ada data
+                        </div>
+                    ) : (
+                        paginatedData.map((item) => (
+                            <Card
+                                key={item.id}
+                                className="group relative bg-background/40 border-white/10 hover:border-blue-500/50 hover:bg-white/[0.04] transition-all duration-300 cursor-pointer overflow-hidden shadow-sm hover:shadow-blue-500/10"
+                                onClick={() => openEditDialog(item)}
+                            >
+                                <CardContent className="p-3 sm:p-5 flex flex-col items-center text-center space-y-2 sm:space-y-4">
+                                    {/* Logo/Photo Container */}
+                                    <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-xl sm:rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform duration-500 shadow-inner">
+                                        {tableName === 'studentOrganizations' ? (
+                                            item.logo ? (
+                                                <img src={item.logo} alt={item.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="text-2xl sm:text-4xl font-bold text-white/10 uppercase">{item.name?.charAt(0)}</div>
+                                            )
+                                        ) : tableName === 'studentAchievements' ? (
+                                            item.image ? (
+                                                <img src={item.image} alt={item.studentName} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="text-2xl sm:text-4xl font-bold text-white/10 uppercase">{item.studentName?.charAt(0)}</div>
+                                            )
+                                        ) : tableName === 'events' ? (
+                                            item.poster ? (
+                                                <img src={item.poster} alt={item.title} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="text-2xl sm:text-4xl font-bold text-white/10 uppercase">{item.title?.charAt(0)}</div>
+                                            )
+                                        ) : tableName === 'news' ? (
+                                            item.featuredImage ? (
+                                                <img src={item.featuredImage} alt={item.title} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="text-2xl sm:text-4xl font-bold text-white/10 uppercase">{item.title?.charAt(0)}</div>
+                                            )
+                                        ) : tableName === 'galleryMedia' ? (
+                                            item.mediaType === 'image' && item.filePath ? (
+                                                <img src={item.filePath} alt={item.title} className="w-full h-full object-cover" />
+                                            ) : item.mediaType === 'video' ? (
+                                                <div className="relative w-full h-full bg-slate-800 flex items-center justify-center">
+                                                    <div className="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center">
+                                                        <div className="w-0 h-0 border-t-4 border-t-transparent border-l-8 border-l-white border-b-4 border-b-transparent ml-1" />
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="text-2xl sm:text-4xl font-bold text-white/10 uppercase">{item.title?.charAt(0)}</div>
+                                            )
+                                        ) : tableName === 'admissionStaff' || tableName === 'testimonials' ? (
+                                            item.image ? (
+                                                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="text-2xl sm:text-4xl font-bold text-white/10 uppercase">{item.name?.charAt(0)}</div>
+                                            )
+                                        ) : tableName === 'journals' ? (
+                                            item.imageUrl ? (
+                                                <img src={item.imageUrl} alt={item.title} className="w-full h-full object-contain" />
+                                            ) : (
+                                                <div className="text-2xl sm:text-4xl font-bold text-white/10 uppercase">{item.title?.charAt(0)}</div>
+                                            )
+                                        ) : tableName === 'partners' ? (
+                                            item.logo ? (
+                                                <img src={item.logo} alt={item.name} className="w-full h-full object-contain p-2" />
+                                            ) : (
+                                                <div className="text-2xl sm:text-4xl font-bold text-white/10 uppercase">{item.name?.charAt(0)}</div>
+                                            )
+                                        ) : (
+                                            <div className="text-2xl sm:text-4xl font-bold text-white/10 uppercase">?</div>
+                                        )}
+                                    </div>
+
+                                    {/* Info */}
+                                    <div className="space-y-1 w-full flex flex-col items-center">
+                                        <h3 className="font-bold text-[10px] sm:text-lg leading-tight group-hover:text-blue-400 transition-colors line-clamp-2 min-h-[1.5rem] sm:min-h-[2.5rem] flex items-center justify-center">
+                                            {tableName === 'studentOrganizations' ? item.name : item.title || item.studentName || item.name}
+                                        </h3>
+
+                                        {tableName === 'studentAchievements' && (
+                                            <div className="flex flex-col items-center gap-0.5 opacity-60">
+                                                <span className="text-[9px] sm:text-xs font-medium tracking-wider uppercase">{item.studentId}</span>
+                                                <span className="text-[8px] sm:text-[10px] font-bold text-blue-400 uppercase tracking-tight">
+                                                    {getDisplayValue(item, tableConfig.fields.find(f => f.key === 'studyProgramId')!)}
+                                                </span>
+                                            </div>
+                                        )}
+
+                                        {tableName === 'events' && (
+                                            <div className="flex flex-col items-center gap-1 w-full mt-1">
+                                                {item.registrationUrl && (
+                                                    <span className="text-[8px] sm:text-[10px] text-blue-400 truncate max-w-full px-2 italic opacity-80">
+                                                        {item.registrationUrl}
+                                                    </span>
+                                                )}
+                                                <Badge variant="outline" className={`text-[8px] uppercase tracking-[0.2em] font-black border-none py-0 px-2 ${item.status === 'ongoing' ? 'bg-green-500/20 text-green-500' :
+                                                    item.status === 'upcoming' ? 'bg-blue-500/20 text-blue-500' :
+                                                        item.status === 'completed' ? 'bg-gray-500/20 text-gray-500' :
+                                                            'bg-red-500/20 text-red-500'
+                                                    }`}>
+                                                    {item.status || 'draft'}
+                                                </Badge>
+                                            </div>
+                                        )}
+
+                                        {tableName === 'news' && (
+                                            <div className="flex items-center gap-2 opacity-60 mt-1">
+                                                <Users className="h-3 w-3" />
+                                                <span className="text-[9px] sm:text-xs font-medium uppercase tracking-wider">{item.authorName || 'Admin'}</span>
+                                            </div>
+                                        )}
+
+                                        {tableName === 'admissionStaff' && (
+                                            <div className="flex items-center gap-2 mt-1 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                                                <span className="text-[9px] sm:text-[10px] font-bold text-green-500 uppercase tracking-tight">{item.whatsapp || 'No WA'}</span>
+                                            </div>
+                                        )}
+
+                                        {tableName === 'testimonials' && (
+                                            <div className="flex items-center gap-1 mt-1">
+                                                {Array.from({ length: 5 }).map((_, i) => (
+                                                    <div key={i} className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${i < (item.rating || 0) ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'bg-white/10'}`} />
+                                                ))}
+                                                <span className="text-[9px] sm:text-[10px] font-black text-amber-500 ml-1">{item.rating || 0}/5</span>
+                                            </div>
+                                        )}
+
+                                        {tableName === 'journals' && (
+                                            <div className="mt-1">
+                                                <span className="text-[8px] sm:text-[10px] font-bold text-blue-400 uppercase tracking-tighter line-clamp-1 italic px-2">
+                                                    {item.journalName}
+                                                </span>
+                                            </div>
+                                        )}
+
+                                        {tableName === 'partners' && (
+                                            <div className="mt-1">
+                                                <Badge variant="outline" className="text-[8px] uppercase tracking-widest font-black border-white/10 bg-white/5 py-0 px-2">
+                                                    {item.category}
+                                                </Badge>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Actions */}
+                                    <div className="flex gap-2 w-full pt-2" onClick={(e) => e.stopPropagation()}>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="flex-1 h-9 rounded-lg border-white/10 bg-white/5 hover:bg-white/10 text-[11px] font-bold uppercase tracking-wider gap-2"
+                                            onClick={() => openEditDialog(item)}
+                                        >
+                                            <Pencil className="h-3.5 w-3.5" /> Edit
+                                        </Button>
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="h-9 w-9 rounded-lg border-white/10 bg-white/5 hover:bg-red-500/20 hover:text-red-500 hover:border-red-500/30 transition-all p-0 shrink-0"
+                                            onClick={() => setDeleteId(item.id)}
+                                        >
+                                            <Trash2 className="h-3.5 w-3.5" />
+                                        </Button>
+                                    </div>
+                                </CardContent>
+
+                                {/* Hover Glow */}
+                                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                            </Card>
+                        ))
+                    )}
+                </div>
+            ) : (
+                <div className={cn(
+                    "rounded-md border overflow-x-auto w-full custom-scrollbar",
+                    tableConfig.mobileViewMode === "table" ? "block" : "hidden lg:block"
+                )}>
+                    {tableConfig.mobileViewMode === "table" && (
+                        <div className="lg:hidden bg-blue-500/10 text-blue-400 text-[9px] font-bold uppercase tracking-widest py-1.5 px-3 border-b border-white/5 flex items-center gap-2">
+                            <div className="w-1 h-1 rounded-full bg-blue-400 animate-pulse" />
+                            Geser ke samping untuk melihat detail tabel
+                        </div>
+                    )}
+                    <style jsx>{`
+                        .custom-scrollbar::-webkit-scrollbar {
+                            height: 6px;
+                            display: block !important;
+                        }
+                        .custom-scrollbar::-webkit-scrollbar-track {
+                            background: rgba(255, 255, 255, 0.02);
+                        }
+                        .custom-scrollbar::-webkit-scrollbar-thumb {
+                            background: rgba(255, 255, 255, 0.1);
+                            border-radius: 10px;
+                        }
+                        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                            background: rgba(255, 255, 255, 0.2);
+                        }
+                    `}</style>
+                    <Table className={cn(tableConfig.mobileViewMode === "table" && "min-w-[800px] lg:min-w-full")}>
+                        <TableHeader className="bg-background/40">
+                            <TableRow className="hover:bg-transparent border-b-2 border-white/10">
+                                {tableConfig.fields.map((field, index) => (
+                                    <TableHead
+                                        key={`${field.key}-${index}`}
+                                        className={cn(
+                                            "whitespace-nowrap font-bold text-[10px] uppercase tracking-wider text-muted-foreground py-4",
+                                            index < tableConfig.fields.length - (readOnly ? 0 : 1) && "border-r border-white/5"
+                                        )}
+                                    >
+                                        {field.label}
+                                    </TableHead>
+                                ))}
+                                {!readOnly && <TableHead className="w-[100px] font-bold text-[10px] uppercase tracking-wider text-muted-foreground py-4">Aksi</TableHead>}
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {loading ? (
+                                <TableRow>
+                                    <TableCell colSpan={tableConfig.fields.length + (readOnly ? 0 : 1)} className="h-24 text-center">
+                                        <div className="flex justify-center items-center gap-2">
+                                            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground/50" />
+                                            <span className="text-sm text-muted-foreground">Memuat data...</span>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ) : paginatedData.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={tableConfig.fields.length + (readOnly ? 0 : 1)} className="h-24 text-center">
+                                        Tidak ada data
+                                    </TableCell>
+                                </TableRow>
+                            ) : (
+                                paginatedData.map((item) => (
+                                    <TableRow key={item.id} className="hover:bg-white/[0.02] border-b border-white/5 transition-colors">
+                                        {tableConfig.fields.map((field, index) => (
+                                            <TableCell
+                                                key={`${field.key}-${index}`}
+                                                className={cn(
+                                                    "whitespace-nowrap max-w-[200px] py-4",
+                                                    index < tableConfig.fields.length - (readOnly ? 0 : 1) && "border-r border-white/5"
+                                                )}
+                                                title={String(item[field.key])}
+                                            >
+                                                <div className="flex items-center justify-between gap-4">
+                                                    <div className="truncate flex-1 text-sm">
+                                                        {getDisplayValue(item, field)}
+                                                    </div>
+                                                    {(field.key === 'answer' || field.key === 'content') && item[field.key] && (
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            className="h-6 px-2 text-[9px] font-bold bg-white/5 hover:bg-white/10 border-none transition-all uppercase"
+                                                            onClick={() => setViewContent(item[field.key])}
+                                                        >
+                                                            Lihat
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            </TableCell>
+                                        ))}
+                                        {!readOnly && (
+                                            <TableCell>
+                                                <div className="flex gap-2">
+                                                    <Button variant="ghost" size="icon" onClick={() => openEditDialog(item)}>
+                                                        <Pencil className="h-4 w-4" />
+                                                    </Button>
+                                                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => setDeleteId(item.id)}>
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                        )}
+                                    </TableRow>
+                                ))
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
+            )}
+
+            {/* Pagination Controls */}
+            {tableConfig.viewMode !== "grid" && totalPages > 1 && (
+                <div className="flex items-center justify-between px-2 py-4 border-t border-white/5 bg-black/20 rounded-b-lg">
+                    <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest opacity-60">
+                        Halaman {currentPage} dari {totalPages}
+                    </div>
+                    <div className="flex gap-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 px-3 text-[10px] font-bold uppercase tracking-widest bg-white/5 border-white/10 hover:bg-white/10 transition-all disabled:opacity-30"
+                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                            disabled={currentPage === 1}
+                        >
+                            <ChevronLeft className="h-3 w-3 mr-1" /> Prev
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 px-3 text-[10px] font-bold uppercase tracking-widest bg-white/5 border-white/10 hover:bg-white/10 transition-all disabled:opacity-30"
+                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                            disabled={currentPage === totalPages}
+                        >
+                            Next <ChevronRight className="h-3 w-3 ml-1" />
+                        </Button>
+                    </div>
+                </div>
+            )}
 
             {/* View Modal */}
             <Dialog open={!!viewContent} onOpenChange={(open) => !open && setViewContent(null)}>
@@ -989,13 +1305,15 @@ function VisitorStatsView() {
                         Tren Pengunjung {new Date().getFullYear()}
                     </span>
                 </div>
-                <div className="flex-1 flex items-center justify-start overflow-hidden">
+                <div className="flex-1 flex items-center justify-start overflow-hidden min-h-[140px]">
                     {loading ? (
-                        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground/20" />
+                        <div className="w-full h-full flex items-center justify-center">
+                            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground/20" />
+                        </div>
                     ) : (
-                        <div style={{ width: `${(trendData.length / 12) * 100}%`, minWidth: '64px' }} className="h-full">
+                        <div style={{ width: `${Math.max((trendData.length / 12) * 100, 100)}%`, minWidth: '100%' }} className="h-full">
                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={trendData} margin={{ left: -10, right: 0, top: 0, bottom: 0 }}>
+                                <BarChart data={trendData} margin={{ left: -30, right: 10, top: 10, bottom: 0 }}>
                                     <defs>
                                         <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
                                             <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
@@ -1006,7 +1324,8 @@ function VisitorStatsView() {
                                         dataKey="name"
                                         axisLine={false}
                                         tickLine={false}
-                                        tick={{ fontSize: 10, fill: '#888' }}
+                                        tick={{ fontSize: 9, fill: '#666' }}
+                                        interval={0}
                                     />
                                     <YAxis hide />
                                     <Tooltip
@@ -1022,8 +1341,8 @@ function VisitorStatsView() {
                                     <Bar
                                         dataKey="visitors"
                                         fill="url(#colorVisitors)"
-                                        radius={[6, 6, 0, 0]}
-                                        barSize={24}
+                                        radius={[4, 4, 0, 0]}
+                                        barSize={window?.innerWidth < 640 ? 12 : 24}
                                         animationDuration={1500}
                                     />
                                 </BarChart>
@@ -1042,6 +1361,7 @@ export default function AdminStaffDashboardPage() {
     const [activeTable, setActiveTable] = useState<string>("visitorStats")
     const [openModules, setOpenModules] = useState<string[]>(["home"])
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+    const [itemCount, setItemCount] = useState(0)
 
     // Set default table when module changes
     useEffect(() => {
@@ -1064,9 +1384,9 @@ export default function AdminStaffDashboardPage() {
     const currentTable = currentModule?.tables[activeTable]
 
     return (
-        <div className="flex flex-col lg:flex-row h-full gap-4 lg:gap-6 p-4 lg:p-6">
+        <div className="flex flex-col lg:flex-row h-full gap-2 lg:gap-6 p-2 lg:p-6">
             {/* Mobile Header with Hamburger Menu */}
-            <div className="lg:hidden flex items-center justify-between mb-2">
+            <div className="lg:hidden flex items-center justify-between mb-1 px-1">
                 <div className="flex items-center gap-2">
                     <Database className="h-5 w-5" />
                     <span className="font-semibold">Admin Staff</span>
@@ -1079,10 +1399,13 @@ export default function AdminStaffDashboardPage() {
                     </SheetTrigger>
                     <SheetContent side="left" className="w-[280px] p-0">
                         <SheetHeader className="p-4 border-b">
-                            <SheetTitle className="flex items-center gap-2">
-                                <Database className="h-5 w-5" />
-                                Admin Staff Panel
-                            </SheetTitle>
+                            <div className="flex items-center justify-between">
+                                <SheetTitle className="flex items-center gap-2">
+                                    <Database className="h-5 w-5" />
+                                    Admin Staff Panel
+                                </SheetTitle>
+                                <ThemeToggle />
+                            </div>
                         </SheetHeader>
                         <ScrollArea className="h-[calc(100vh-80px)]">
                             <div className="p-4 space-y-2">
@@ -1100,7 +1423,7 @@ export default function AdminStaffDashboardPage() {
                                             <Button
                                                 key={moduleKey}
                                                 variant={isActive ? "secondary" : "ghost"}
-                                                className="w-full justify-start gap-2"
+                                                className="w-full justify-start gap-3 h-11"
                                                 onClick={() => {
                                                     setActiveModule(moduleKey)
                                                     setActiveTable(tableKey)
@@ -1122,7 +1445,7 @@ export default function AdminStaffDashboardPage() {
                                             <div className="flex items-center w-full">
                                                 <Button
                                                     variant={isActive ? "secondary" : "ghost"}
-                                                    className="flex-1 justify-start gap-2"
+                                                    className="flex-1 justify-start gap-3 h-11"
                                                     onClick={() => {
                                                         setActiveModule(moduleKey)
                                                         if (!isOpen) toggleModule(moduleKey)
@@ -1152,8 +1475,7 @@ export default function AdminStaffDashboardPage() {
                                                     <Button
                                                         key={tableKey}
                                                         variant={activeTable === tableKey && isActive ? "secondary" : "ghost"}
-                                                        size="sm"
-                                                        className="w-full justify-start text-sm"
+                                                        className="w-full justify-start text-sm h-10 px-4"
                                                         onClick={() => {
                                                             setActiveModule(moduleKey)
                                                             setActiveTable(tableKey)
@@ -1176,12 +1498,15 @@ export default function AdminStaffDashboardPage() {
             {/* Desktop Sidebar - Hidden on mobile */}
             <aside className="hidden lg:block w-72 shrink-0">
                 <Card className="sticky top-4">
-                    <CardHeader className="pb-3">
-                        <CardTitle className="flex items-center gap-2 text-lg">
-                            <Database className="h-5 w-5" />
-                            Admin Staff Panel
-                        </CardTitle>
-                        <CardDescription>
+                    <CardHeader className="pb-3 px-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Database className="h-5 w-5 text-blue-500" />
+                                <CardTitle className="text-lg">Admin Staff</CardTitle>
+                            </div>
+                            <ThemeToggle />
+                        </div>
+                        <CardDescription className="mt-1.5">
                             Kelola data kampus (akses terbatas)
                         </CardDescription>
                     </CardHeader>
@@ -1274,35 +1599,10 @@ export default function AdminStaffDashboardPage() {
             </aside>
 
             {/* Main Content Area */}
-            <div className="flex-1 bg-background/50 backdrop-blur-sm border rounded-xl overflow-hidden flex flex-col shadow-sm">
-                {/* Mobile Toolbar */}
-                <div className="lg:hidden p-4 border-b flex items-center justify-between bg-card">
-                    <h2 className="font-semibold text-lg flex items-center gap-2">
-                        {currentModule?.icon && <currentModule.icon className={cn("h-5 w-5", currentModule.color)} />}
-                        {currentModule?.label || "Dashboard"}
-                    </h2>
-                </div>
+            <div className="flex-1 bg-background/50 backdrop-blur-sm border rounded-lg lg:rounded-xl overflow-hidden flex flex-col shadow-sm">
 
-                {/* Desktop Toolbar */}
-                <div className="hidden lg:flex p-6 border-b items-center justify-between bg-card/50">
-                    <div>
-                        <h2 className="text-2xl font-bold flex items-center gap-2">
-                            {currentModule?.icon && <currentModule.icon className={cn("h-6 w-6", currentModule.color)} />}
-                            {currentModule?.label || "Dashboard"}
-                        </h2>
-                        <p className="text-muted-foreground mt-1">
-                            {activeModule === 'home'
-                                ? "Ringkasan aktivitas dan pertanyaan pengunjung"
-                                : currentTable?.description || `Kelola data ${currentModule?.label?.toLowerCase()}`
-                            }
-                        </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="px-3 py-1">
-                            Role: Admin Staff
-                        </Badge>
-                    </div>
-                </div>
+
+
 
                 <ScrollArea className="flex-1">
                     <div className="p-2 lg:p-4 pb-20 lg:pb-6">
@@ -1310,8 +1610,8 @@ export default function AdminStaffDashboardPage() {
                             <Card className="overflow-hidden border-none shadow-sm bg-card/30">
                                 <CardContent className="p-0">
                                     {/* Stats Section */}
-                                    <div className="pt-0 pb-4 px-6 border-b bg-gradient-to-br from-background/50 to-transparent">
-                                        <div className="flex items-center gap-2 mb-1 text-[11px] font-black text-muted-foreground uppercase tracking-[0.3em]">
+                                    <div className="pt-0 pb-4 px-3 sm:px-6 border-b bg-gradient-to-br from-background/50 to-transparent">
+                                        <div className="flex items-center gap-2 mb-2 text-[11px] font-black text-muted-foreground uppercase tracking-[0.3em]">
                                             <Users className="h-4 w-4 text-blue-500" />
                                             Analitik Pengunjung
                                         </div>
@@ -1319,18 +1619,18 @@ export default function AdminStaffDashboardPage() {
                                     </div>
 
                                     {/* Questions Section */}
-                                    <div className="p-8">
-                                        <div className="flex items-center justify-between mb-6">
+                                    <div className="p-4 sm:p-8">
+                                        <div className="flex items-center justify-between mb-4 sm:mb-6">
                                             <div className="flex items-center gap-2 text-[11px] font-black text-muted-foreground uppercase tracking-[0.3em]">
                                                 <Megaphone className="h-4 w-4 text-blue-500" />
                                                 Interaksi Chatbot Terbaru
                                             </div>
-                                            <Badge variant="outline" className="text-[9px] bg-blue-500/5 text-blue-500 border-blue-500/20">
+                                            <Badge variant="outline" className="text-[9px] bg-blue-500/5 text-blue-500 border-blue-500/20 hidden sm:flex">
                                                 Live Updates
                                             </Badge>
                                         </div>
 
-                                        <div className="rounded-xl border bg-background/40 backdrop-blur-sm overflow-hidden shadow-2xl shadow-black/20">
+                                        <div className="rounded-lg lg:rounded-xl border bg-background/40 backdrop-blur-sm overflow-hidden shadow-2xl shadow-black/20">
                                             <DataTableView
                                                 tableName="chatMessages"
                                                 tableConfig={{
@@ -1354,9 +1654,14 @@ export default function AdminStaffDashboardPage() {
                             <Card className="border-none shadow-none bg-transparent">
                                 <CardHeader className="px-0 pt-0">
                                     <div className="flex items-center justify-between">
-                                        <div>
-                                            <CardTitle className="text-xl">{currentTable.label}</CardTitle>
-                                            <CardDescription>{currentTable.description}</CardDescription>
+                                        <div className="flex items-center gap-3">
+                                            <div>
+                                                <CardTitle className="text-xl">{currentTable.label}</CardTitle>
+                                                <CardDescription>{currentTable.description}</CardDescription>
+                                            </div>
+                                            <Badge variant="secondary" className="bg-blue-500/10 text-blue-500 border-blue-500/20 px-3 py-1 font-black text-sm rounded-full">
+                                                {itemCount}
+                                            </Badge>
                                         </div>
                                     </div>
                                 </CardHeader>
@@ -1365,6 +1670,7 @@ export default function AdminStaffDashboardPage() {
                                         tableName={activeTable}
                                         tableConfig={currentTable}
                                         onRefresh={() => { }}
+                                        onCountChange={setItemCount}
                                     />
                                 </CardContent>
                             </Card>
