@@ -36,7 +36,6 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recha
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { uploadFile, getPublicUrl } from "@/lib/storage"
-import { VisitorCounter } from "@/components/visitor-counter"
 import { ThemeToggle } from "@/components/theme-toggle"
 
 import { Button } from "@/components/ui/button"
@@ -168,6 +167,7 @@ const tableConfigurations = {
             academicCalendar: {
                 label: "Kalender Akademik",
                 description: "Jadwal kegiatan akademik",
+                mobileViewMode: "table",
                 fields: [
                     { key: "title", label: "Judul", type: "text", required: true },
                     { key: "description", label: "Deskripsi", type: "textarea" },
@@ -298,6 +298,7 @@ const tableConfigurations = {
             admissionWaves: {
                 label: "Gelombang Pendaftaran",
                 description: "Periode waktu penerimaan mahasiswa baru",
+                mobileViewMode: "table",
                 fields: [
                     { key: "name", label: "Nama Gelombang", type: "text", required: true },
                     { key: "startDate", label: "Tanggal Mulai", type: "datetime", required: true },
@@ -310,6 +311,7 @@ const tableConfigurations = {
             admissionRequirements: {
                 label: "Syarat Pendaftaran",
                 description: "Kelola syarat pendaftaran untuk mahasiswa murni dan transisi",
+                mobileViewMode: "table",
                 fields: [
                     { key: "type", label: "Jenis Mahasiswa", type: "select", options: ["murni", "transisi"], required: true },
                     { key: "content", label: "Syarat", type: "text", required: true },
@@ -808,9 +810,6 @@ const DataTableView = ({
         setIsEditOpen(true)
     }
 
-    if (tableConfig.isStatsOnly) {
-        return <VisitorCounter />
-    }
 
     return (
         <div className="space-y-4">
@@ -887,7 +886,7 @@ const DataTableView = ({
 
             {/* Desktop Table/Grid View */}
             {tableConfig.viewMode === "grid" ? (
-                <div className="grid grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
                     {loading ? (
                         Array.from({ length: 6 }).map((_, i) => (
                             <Card key={i} className="bg-background/40 border-white/10 p-4 space-y-4">
@@ -911,7 +910,7 @@ const DataTableView = ({
                             >
                                 <CardContent className="p-3 sm:p-5 flex flex-col items-center text-center space-y-2 sm:space-y-4">
                                     {/* Logo/Photo Container */}
-                                    <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-xl sm:rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform duration-500 shadow-inner">
+                                    <div className="w-full aspect-square max-w-[180px] sm:max-w-[240px] rounded-xl sm:rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform duration-500 shadow-inner">
                                         {tableName === 'studentOrganizations' ? (
                                             item.logo ? (
                                                 <img src={item.logo} alt={item.name} className="w-full h-full object-cover" />
@@ -979,6 +978,7 @@ const DataTableView = ({
 
                                         {tableName === 'studentAchievements' && (
                                             <div className="flex flex-col items-center gap-0.5 opacity-60">
+                                                <span className="text-[10px] sm:text-sm font-bold text-foreground mb-1">{item.studentName}</span>
                                                 <span className="text-[9px] sm:text-xs font-medium tracking-wider uppercase">{item.studentId}</span>
                                                 <span className="text-[8px] sm:text-[10px] font-bold text-blue-400 uppercase tracking-tight">
                                                     {getDisplayValue(item, tableConfig.fields.find(f => f.key === 'studyProgramId')!)}
@@ -1071,111 +1071,107 @@ const DataTableView = ({
                     )}
                 </div>
             ) : (
-                <div className={cn(
-                    "rounded-md border overflow-x-auto w-full custom-scrollbar",
-                    tableConfig.mobileViewMode === "table" ? "block" : "hidden lg:block"
-                )}>
+                <div
+                    className={cn(
+                        "rounded-md border w-full overflow-hidden bg-background/30 backdrop-blur-md",
+                        tableConfig.mobileViewMode === "table" ? "block" : "hidden lg:block"
+                    )}
+                >
                     {tableConfig.mobileViewMode === "table" && (
-                        <div className="lg:hidden bg-blue-500/10 text-blue-400 text-[9px] font-bold uppercase tracking-widest py-1.5 px-3 border-b border-white/5 flex items-center gap-2">
-                            <div className="w-1 h-1 rounded-full bg-blue-400 animate-pulse" />
-                            Geser ke samping untuk melihat detail tabel
+                        <div className="lg:hidden bg-blue-500/10 text-blue-400 text-[10px] font-bold uppercase tracking-widest py-2 px-4 border-b border-white/5 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                                <span>Mode Tabel Mobile</span>
+                            </div>
+                            <span className="text-[9px] opacity-70 italic whitespace-nowrap">← Geser untuk detail →</span>
                         </div>
                     )}
-                    <style jsx>{`
-                        .custom-scrollbar::-webkit-scrollbar {
-                            height: 6px;
-                            display: block !important;
-                        }
-                        .custom-scrollbar::-webkit-scrollbar-track {
-                            background: rgba(255, 255, 255, 0.02);
-                        }
-                        .custom-scrollbar::-webkit-scrollbar-thumb {
-                            background: rgba(255, 255, 255, 0.1);
-                            border-radius: 10px;
-                        }
-                        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                            background: rgba(255, 255, 255, 0.2);
-                        }
-                    `}</style>
-                    <Table className={cn(tableConfig.mobileViewMode === "table" && "min-w-[800px] lg:min-w-full")}>
-                        <TableHeader className="bg-background/40">
-                            <TableRow className="hover:bg-transparent border-b-2 border-white/10">
-                                {tableConfig.fields.map((field, index) => (
-                                    <TableHead
-                                        key={`${field.key}-${index}`}
-                                        className={cn(
-                                            "whitespace-nowrap font-bold text-[10px] uppercase tracking-wider text-muted-foreground py-4",
-                                            index < tableConfig.fields.length - (readOnly ? 0 : 1) && "border-r border-white/5"
-                                        )}
-                                    >
-                                        {field.label}
-                                    </TableHead>
-                                ))}
-                                {!readOnly && <TableHead className="w-[100px] font-bold text-[10px] uppercase tracking-wider text-muted-foreground py-4">Aksi</TableHead>}
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {loading ? (
-                                <TableRow>
-                                    <TableCell colSpan={tableConfig.fields.length + (readOnly ? 0 : 1)} className="h-24 text-center">
-                                        <div className="flex justify-center items-center gap-2">
-                                            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground/50" />
-                                            <span className="text-sm text-muted-foreground">Memuat data...</span>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ) : paginatedData.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={tableConfig.fields.length + (readOnly ? 0 : 1)} className="h-24 text-center">
-                                        Tidak ada data
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                paginatedData.map((item) => (
-                                    <TableRow key={item.id} className="hover:bg-white/[0.02] border-b border-white/5 transition-colors">
-                                        {tableConfig.fields.map((field, index) => (
-                                            <TableCell
-                                                key={`${field.key}-${index}`}
-                                                className={cn(
-                                                    "whitespace-nowrap max-w-[200px] py-4",
-                                                    index < tableConfig.fields.length - (readOnly ? 0 : 1) && "border-r border-white/5"
-                                                )}
-                                                title={String(item[field.key])}
-                                            >
-                                                <div className="flex items-center justify-between gap-4">
-                                                    <div className="truncate flex-1 text-sm">
-                                                        {getDisplayValue(item, field)}
-                                                    </div>
-                                                    {(field.key === 'answer' || field.key === 'content') && item[field.key] && (
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            className="h-6 px-2 text-[9px] font-bold bg-white/5 hover:bg-white/10 border-none transition-all uppercase"
-                                                            onClick={() => setViewContent(item[field.key])}
-                                                        >
-                                                            Lihat
-                                                        </Button>
-                                                    )}
-                                                </div>
-                                            </TableCell>
-                                        ))}
-                                        {!readOnly && (
-                                            <TableCell>
-                                                <div className="flex gap-2">
-                                                    <Button variant="ghost" size="icon" onClick={() => openEditDialog(item)}>
-                                                        <Pencil className="h-4 w-4" />
-                                                    </Button>
-                                                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => setDeleteId(item.id)}>
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                            </TableCell>
-                                        )}
-                                    </TableRow>
-                                ))
+                    <div className="modern-table-scroll">
+                        <table
+                            className={cn(
+                                "w-full caption-bottom text-sm border-collapse",
+                                tableConfig.mobileViewMode === "table" && "min-w-[1200px] lg:min-w-full"
                             )}
-                        </TableBody>
-                    </Table>
+                        >
+                            <TableHeader className="bg-background/40">
+                                <TableRow className="hover:bg-transparent border-b-2 border-white/10">
+                                    {tableConfig.fields.map((field, index) => (
+                                        <TableHead
+                                            key={`${field.key}-${index}`}
+                                            className={cn(
+                                                "whitespace-nowrap font-bold text-[10px] uppercase tracking-wider text-muted-foreground py-4",
+                                                index < tableConfig.fields.length - (readOnly ? 0 : 1) && "border-r border-white/5"
+                                            )}
+                                        >
+                                            {field.label}
+                                        </TableHead>
+                                    ))}
+                                    {!readOnly && <TableHead className="w-[100px] font-bold text-[10px] uppercase tracking-wider text-muted-foreground py-4">Aksi</TableHead>}
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {loading ? (
+                                    <TableRow>
+                                        <TableCell colSpan={tableConfig.fields.length + (readOnly ? 0 : 1)} className="h-24 text-center">
+                                            <div className="flex justify-center items-center gap-2">
+                                                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground/50" />
+                                                <span className="text-sm text-muted-foreground">Memuat data...</span>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ) : paginatedData.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={tableConfig.fields.length + (readOnly ? 0 : 1)} className="h-24 text-center">
+                                            Tidak ada data
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    paginatedData.map((item) => (
+                                        <TableRow key={item.id} className="hover:bg-white/[0.02] border-b border-white/5 transition-colors">
+                                            {tableConfig.fields.map((field, index) => (
+                                                <TableCell
+                                                    key={`${field.key}-${index}`}
+                                                    className={cn(
+                                                        "whitespace-nowrap max-w-[200px] py-4",
+                                                        index < tableConfig.fields.length - (readOnly ? 0 : 1) && "border-r border-white/5"
+                                                    )}
+                                                    title={String(item[field.key])}
+                                                >
+                                                    <div className="flex items-center justify-between gap-4">
+                                                        <div className="truncate flex-1 text-sm">
+                                                            {getDisplayValue(item, field)}
+                                                        </div>
+                                                        {(field.key === 'answer' || field.key === 'content') && item[field.key] && (
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="sm"
+                                                                className="h-6 px-2 text-[9px] font-bold bg-white/5 hover:bg-white/10 border-none transition-all uppercase"
+                                                                onClick={() => setViewContent(item[field.key])}
+                                                            >
+                                                                Lihat
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                                </TableCell>
+                                            ))}
+                                            {!readOnly && (
+                                                <TableCell>
+                                                    <div className="flex gap-2">
+                                                        <Button variant="ghost" size="icon" onClick={() => openEditDialog(item)}>
+                                                            <Pencil className="h-4 w-4" />
+                                                        </Button>
+                                                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => setDeleteId(item.id)}>
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            )}
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </table>
+                    </div>
                 </div>
             )}
 
@@ -1268,40 +1264,53 @@ const DataTableView = ({
 // Visitor Stats Component - Using style from StatCard.tsx (Connected to Real Visitor Data)
 function VisitorStatsView() {
     const [trendData, setTrendData] = useState<{ name: string, visitors: number }[]>([])
+    const [visitorCount, setVisitorCount] = useState<number | null>(null)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        const fetchTrends = async () => {
+        const fetchAnalytics = async () => {
             try {
-                const res = await fetch("/api/analytics/visitor-trends")
-                const json = await res.json()
-                if (json.data) {
-                    setTrendData(json.data)
-                }
+                const [trendRes, countRes] = await Promise.all([
+                    fetch("/api/analytics/visitor-trends"),
+                    fetch("/api/analytics/visitor-count")
+                ])
+                const trendJson = await trendRes.json()
+                const countJson = await countRes.json()
+
+                if (trendJson.data) setTrendData(trendJson.data)
+                if (countJson.count !== undefined) setVisitorCount(countJson.count)
             } catch (error) {
-                console.error("Error fetching visitor trends:", error)
+                console.error("Error fetching analytics data:", error)
             } finally {
                 setLoading(false)
             }
         }
-        fetchTrends()
+        fetchAnalytics()
     }, [])
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-2 items-stretch">
-            {/* Real-time Counter */}
-            <div className="lg:col-span-1 flex flex-col items-center justify-center p-3 rounded-2xl bg-white/[0.03] border border-white/10 shadow-inner">
-                <div className="transform scale-110 mb-1">
-                    <VisitorCounter />
+            {/* Real-time Counter - Simple & Premium */}
+            <div className="lg:col-span-1 flex flex-col items-center justify-center p-4 rounded-2xl bg-foreground/[0.03] dark:bg-white/[0.02] border border-foreground/10 dark:border-white/10 shadow-lg relative overflow-hidden group min-h-[120px]">
+                {/* Decorative background element */}
+                <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 blur-[40px] rounded-full -mr-12 -mt-12 transition-all duration-700 group-hover:bg-blue-500/20" />
+
+                <div className="relative z-10 flex flex-col items-center gap-1">
+                    <div className="text-4xl lg:text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-slate-900 to-slate-500 dark:from-white dark:to-white/40 drop-shadow-[0_0_15px_rgba(59,130,246,0.3)] dark:drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                        {visitorCount !== null ? visitorCount.toLocaleString('id-ID') : '...'}
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6] animate-pulse" />
+                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.3em] opacity-80 dark:opacity-60">Total Pengunjung</span>
+                    </div>
                 </div>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-black opacity-50">Total Traffic</p>
             </div>
 
             {/* StatCard Style Chart */}
-            <div className="lg:col-span-3 h-[180px] w-full p-2 rounded-2xl bg-white/[0.01] border border-white/5 flex flex-col">
+            <div className="lg:col-span-3 h-[180px] w-full p-2 rounded-2xl bg-foreground/[0.01] dark:bg-white/[0.01] border border-foreground/5 dark:border-white/5 flex flex-col">
                 <div className="flex items-center gap-1 mb-1 px-1">
                     <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest opacity-70">
+                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest opacity-80 dark:opacity-70">
                         Tren Pengunjung {new Date().getFullYear()}
                     </span>
                 </div>
@@ -1329,12 +1338,13 @@ function VisitorStatsView() {
                                     />
                                     <YAxis hide />
                                     <Tooltip
-                                        cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                                        cursor={{ fill: 'rgba(59, 130, 246, 0.05)' }}
                                         contentStyle={{
-                                            backgroundColor: '#18181b',
-                                            border: '1px solid rgba(255,255,255,0.1)',
+                                            backgroundColor: 'rgba(24, 24, 27, 0.95)',
+                                            border: '1px solid rgba(255, 255, 255, 0.1)',
                                             borderRadius: '8px',
-                                            fontSize: '10px'
+                                            fontSize: '10px',
+                                            color: '#fff'
                                         }}
                                         labelStyle={{ fontWeight: 'bold', marginBottom: '4px' }}
                                     />
@@ -1362,6 +1372,23 @@ export default function AdminStaffDashboardPage() {
     const [openModules, setOpenModules] = useState<string[]>(["home"])
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
     const [itemCount, setItemCount] = useState(0)
+    const [profile, setProfile] = useState<any>(null)
+
+    // Fetch university profile for logo
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const res = await fetch('/api/admin/universityProfiles')
+                const json = await res.json()
+                if (json.data && json.data.length > 0) {
+                    setProfile(json.data[0])
+                }
+            } catch (error) {
+                console.error("Error fetching profile:", error)
+            }
+        }
+        fetchProfile()
+    }, [])
 
     // Set default table when module changes
     useEffect(() => {
@@ -1386,123 +1413,145 @@ export default function AdminStaffDashboardPage() {
     return (
         <div className="flex flex-col lg:flex-row h-full gap-2 lg:gap-6 p-2 lg:p-6">
             {/* Mobile Header with Hamburger Menu */}
-            <div className="lg:hidden flex items-center justify-between mb-1 px-1">
-                <div className="flex items-center gap-2">
-                    <Database className="h-5 w-5" />
-                    <span className="font-semibold">Admin Staff</span>
+            <div className="lg:hidden flex items-center justify-between mb-1 px-1 py-1">
+                <div className="flex items-center gap-3">
+                    {profile?.logo ? (
+                        <div className="w-12 h-12 flex items-center justify-center">
+                            <img src={profile.logo} alt="Logo" className="w-full h-full object-contain" />
+                        </div>
+                    ) : (
+                        <Database className="h-6 w-6" />
+                    )}
+                    <div className="flex flex-col">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-blue-500 leading-none mb-1">Admin Staff</span>
+                        <span className="font-bold text-sm truncate max-w-[180px] leading-tight">{profile?.name || "Rianpedia"}</span>
+                    </div>
                 </div>
-                <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-                    <SheetTrigger asChild>
-                        <Button variant="outline" size="icon">
-                            <Menu className="h-5 w-5" />
-                        </Button>
-                    </SheetTrigger>
-                    <SheetContent side="left" className="w-[280px] p-0">
-                        <SheetHeader className="p-4 border-b">
-                            <div className="flex items-center justify-between">
-                                <SheetTitle className="flex items-center gap-2">
-                                    <Database className="h-5 w-5" />
-                                    Admin Staff Panel
-                                </SheetTitle>
-                                <ThemeToggle />
-                            </div>
-                        </SheetHeader>
-                        <ScrollArea className="h-[calc(100vh-80px)]">
-                            <div className="p-4 space-y-2">
-                                {Object.entries(tableConfigurations).map(([moduleKey, module]) => {
-                                    const ModuleIcon = (module as ModuleConfig).icon
-                                    const isOpen = openModules.includes(moduleKey)
-                                    const isActive = activeModule === moduleKey
-                                    const tables = Object.entries((module as ModuleConfig).tables)
-                                    const hasSingleTable = tables.length === 1
+                <div className="flex items-center gap-2">
+                    <ThemeToggle />
+                    <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                        <SheetTrigger asChild>
+                            <Button variant="outline" size="icon">
+                                <Menu className="h-5 w-5" />
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent side="left" className="w-[280px] p-0">
+                            <SheetHeader className="p-4 border-b">
+                                <div className="flex items-center justify-between">
+                                    <SheetTitle className="flex items-center gap-2">
+                                        <Database className="h-5 w-5" />
+                                        Admin Staff Panel
+                                    </SheetTitle>
+                                </div>
+                            </SheetHeader>
+                            <ScrollArea className="h-[calc(100vh-80px)]">
+                                <div className="p-4 space-y-2">
+                                    {Object.entries(tableConfigurations).map(([moduleKey, module]) => {
+                                        const ModuleIcon = (module as ModuleConfig).icon
+                                        const isOpen = openModules.includes(moduleKey)
+                                        const isActive = activeModule === moduleKey
+                                        const tables = Object.entries((module as ModuleConfig).tables)
+                                        const hasSingleTable = tables.length === 1
 
-                                    // Jika hanya punya 1 submenu, render tanpa dropdown
-                                    if (hasSingleTable) {
-                                        const [tableKey] = tables[0]
-                                        return (
-                                            <Button
-                                                key={moduleKey}
-                                                variant={isActive ? "secondary" : "ghost"}
-                                                className="w-full justify-start gap-3 h-11"
-                                                onClick={() => {
-                                                    setActiveModule(moduleKey)
-                                                    setActiveTable(tableKey)
-                                                    setMobileMenuOpen(false)
-                                                }}
-                                            >
-                                                <ModuleIcon className={`h-4 w-4 ${(module as ModuleConfig).color}`} />
-                                                {(module as ModuleConfig).label}
-                                            </Button>
-                                        )
-                                    }
-
-                                    // Render dengan dropdown untuk modul dengan multiple tables
-                                    return (
-                                        <Collapsible
-                                            key={moduleKey}
-                                            open={isOpen}
-                                        >
-                                            <div className="flex items-center w-full">
+                                        // Jika hanya punya 1 submenu, render tanpa dropdown
+                                        if (hasSingleTable) {
+                                            const [tableKey] = tables[0]
+                                            return (
                                                 <Button
+                                                    key={moduleKey}
                                                     variant={isActive ? "secondary" : "ghost"}
-                                                    className="flex-1 justify-start gap-3 h-11"
+                                                    className="w-full justify-start gap-3 h-11"
                                                     onClick={() => {
                                                         setActiveModule(moduleKey)
-                                                        if (!isOpen) toggleModule(moduleKey)
+                                                        setActiveTable(tableKey)
+                                                        setMobileMenuOpen(false)
                                                     }}
                                                 >
                                                     <ModuleIcon className={`h-4 w-4 ${(module as ModuleConfig).color}`} />
                                                     {(module as ModuleConfig).label}
                                                 </Button>
-                                                <CollapsibleTrigger asChild>
+                                            )
+                                        }
+
+                                        // Render dengan dropdown untuk modul dengan multiple tables
+                                        return (
+                                            <Collapsible
+                                                key={moduleKey}
+                                                open={isOpen}
+                                            >
+                                                <div className="flex items-center w-full">
                                                     <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        className="h-9 w-9 shrink-0"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation()
-                                                            toggleModule(moduleKey)
-                                                        }}
-                                                    >
-                                                        <ChevronDown
-                                                            className={`h-4 w-4 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
-                                                        />
-                                                    </Button>
-                                                </CollapsibleTrigger>
-                                            </div>
-                                            <CollapsibleContent className="pl-6 pt-1 space-y-1">
-                                                {tables.map(([tableKey, table]) => (
-                                                    <Button
-                                                        key={tableKey}
-                                                        variant={activeTable === tableKey && isActive ? "secondary" : "ghost"}
-                                                        className="w-full justify-start text-sm h-10 px-4"
+                                                        variant={isActive ? "secondary" : "ghost"}
+                                                        className="flex-1 justify-start gap-3 h-11"
                                                         onClick={() => {
                                                             setActiveModule(moduleKey)
-                                                            setActiveTable(tableKey)
-                                                            setMobileMenuOpen(false)
+                                                            if (!isOpen) toggleModule(moduleKey)
                                                         }}
                                                     >
-                                                        {(table as TableConfig).label}
+                                                        <ModuleIcon className={`h-4 w-4 ${(module as ModuleConfig).color}`} />
+                                                        {(module as ModuleConfig).label}
                                                     </Button>
-                                                ))}
-                                            </CollapsibleContent>
-                                        </Collapsible>
-                                    )
-                                })}
-                            </div>
-                        </ScrollArea>
-                    </SheetContent>
-                </Sheet>
+                                                    <CollapsibleTrigger asChild>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-9 w-9 shrink-0"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
+                                                                toggleModule(moduleKey)
+                                                            }}
+                                                        >
+                                                            <ChevronDown
+                                                                className={`h-4 w-4 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+                                                            />
+                                                        </Button>
+                                                    </CollapsibleTrigger>
+                                                </div>
+                                                <CollapsibleContent className="pl-6 pt-1 space-y-1">
+                                                    {tables.map(([tableKey, table]) => (
+                                                        <Button
+                                                            key={tableKey}
+                                                            variant={activeTable === tableKey && isActive ? "secondary" : "ghost"}
+                                                            className="w-full justify-start text-sm h-10 px-4"
+                                                            onClick={() => {
+                                                                setActiveModule(moduleKey)
+                                                                setActiveTable(tableKey)
+                                                                setMobileMenuOpen(false)
+                                                            }}
+                                                        >
+                                                            {(table as TableConfig).label}
+                                                        </Button>
+                                                    ))}
+                                                </CollapsibleContent>
+                                            </Collapsible>
+                                        )
+                                    })}
+                                </div>
+                            </ScrollArea>
+                        </SheetContent>
+                    </Sheet>
+                </div>
             </div>
 
             {/* Desktop Sidebar - Hidden on mobile */}
             <aside className="hidden lg:block w-72 shrink-0">
                 <Card className="sticky top-4">
-                    <CardHeader className="pb-3 px-4">
+                    <CardHeader className="pb-4 px-5">
                         <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <Database className="h-5 w-5 text-blue-500" />
-                                <CardTitle className="text-lg">Admin Staff</CardTitle>
+                            <div className="flex items-center gap-3">
+                                {profile?.logo ? (
+                                    <div className="w-14 h-14 flex items-center justify-center overflow-hidden rounded-xl bg-white/5 p-2 border border-white/10 group-hover:scale-105 transition-transform duration-300 shadow-sm">
+                                        <img src={profile.logo} alt="Logo" className="w-full h-full object-contain" />
+                                    </div>
+                                ) : (
+                                    <div className="w-14 h-14 flex items-center justify-center rounded-xl bg-blue-500/10 border border-blue-500/20 group-hover:scale-105 transition-transform duration-300 shadow-sm">
+                                        <Database className="h-7 w-7 text-blue-500" />
+                                    </div>
+                                )}
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-500 leading-none mb-1">Admin Staff</span>
+                                    <CardTitle className="text-lg font-bold truncate max-w-[150px]">{profile?.shortName || profile?.name || "Rianpedia"}</CardTitle>
+                                </div>
                             </div>
                             <ThemeToggle />
                         </div>
@@ -1623,11 +1672,8 @@ export default function AdminStaffDashboardPage() {
                                         <div className="flex items-center justify-between mb-4 sm:mb-6">
                                             <div className="flex items-center gap-2 text-[11px] font-black text-muted-foreground uppercase tracking-[0.3em]">
                                                 <Megaphone className="h-4 w-4 text-blue-500" />
-                                                Interaksi Chatbot Terbaru
+                                                Interaksi pengujung dengan Chatbot AI Terbaru
                                             </div>
-                                            <Badge variant="outline" className="text-[9px] bg-blue-500/5 text-blue-500 border-blue-500/20 hidden sm:flex">
-                                                Live Updates
-                                            </Badge>
                                         </div>
 
                                         <div className="rounded-lg lg:rounded-xl border bg-background/40 backdrop-blur-sm overflow-hidden shadow-2xl shadow-black/20">
@@ -1636,6 +1682,7 @@ export default function AdminStaffDashboardPage() {
                                                 tableConfig={{
                                                     label: "Pertanyaan Chatbot",
                                                     description: "Daftar semua pertanyaan yang diajukan ke chatbot",
+                                                    mobileViewMode: "table",
                                                     fields: [
                                                         { key: "content", label: "Pertanyaan", type: "text", required: true },
                                                         { key: "answer", label: "Jawaban", type: "text", required: false },

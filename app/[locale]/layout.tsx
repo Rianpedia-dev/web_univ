@@ -62,10 +62,10 @@ export default async function LocaleLayout({
 
   return (
     <div
-      className="flex flex-col min-h-screen"
+      className="flex flex-col min-h-screen relative"
     >
       <Navbar locale={locale} profile={profile} />
-      <main className="flex-grow pt-16">
+      <main className="flex-grow pt-16 relative z-10">
         {children}
       </main>
       <Footer locale={locale} />

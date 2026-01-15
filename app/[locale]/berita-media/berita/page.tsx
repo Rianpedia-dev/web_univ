@@ -16,12 +16,6 @@ export default async function BeritaPage({ params }: { params: Promise<{ locale:
 
   return (
     <div className="min-h-screen bg-background overflow-hidden relative">
-      {/* Animated background grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,240,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(0,240,255,0.1)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]" />
-
-      {/* Gradient orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyber-blue/10 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-electric-purple/10 rounded-full blur-3xl animate-pulse delay-1000" />
 
       {/* Full width background image section for header */}
       <div
@@ -38,13 +32,13 @@ export default async function BeritaPage({ params }: { params: Promise<{ locale:
               transition={{ duration: 0.6 }}
             >
               <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight transform transition-all duration-300 hover:scale-105" style={{
-                  background: 'linear-gradient(to right, #fefce8, #ecd735ff, #f9cd5eff)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  WebkitTextStroke: '1px #fcffa5ff',
-                  textShadow: '0 2px 2px rgba(0,0,0,0.5)'
-                }}>
+                background: 'linear-gradient(to right, #fefce8, #ecd735ff, #f9cd5eff)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                WebkitTextStroke: '1px #fcffa5ff',
+                textShadow: '0 2px 2px rgba(0,0,0,0.5)'
+              }}>
                 BERITA & MEDIA
               </h1>
             </MotionDiv>

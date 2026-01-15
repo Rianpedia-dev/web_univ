@@ -68,8 +68,6 @@ export default function JurnalPage() {
 
     return (
         <div className="min-h-screen bg-background overflow-hidden relative pb-20">
-            {/* Background grid */}
-            <div className="absolute inset-0 bg-[linear-gradient(rgba(0,240,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,240,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)] z-0" />
 
             {/* Header Section */}
             <div className="relative bg-[url('/images/research-bg.png')] bg-cover bg-center bg-no-repeat -mx-4 sm:-mx-6 lg:-mx-8 xl:-mx-0 border-2 border-cyber-blue/50 rounded-3xl overflow-hidden mb-16">

@@ -4,6 +4,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { AppThemeProvider } from "@/components/app-theme-provider";
 import { BackToTopWrapper } from "@/components/back-to-top-wrapper";
+import { ThemeBackground } from "@/components/theme-background";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,6 +40,7 @@ export default function RootLayout({
       >
         <AppThemeProvider>
           <BackToTopWrapper>
+            <ThemeBackground />
             {children}
           </BackToTopWrapper>
         </AppThemeProvider>

@@ -119,13 +119,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   ];
 
   return (
-    <div className="min-h-screen bg-background overflow-hidden relative">
-      {/* Background grid dengan opacity minimal */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,240,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,240,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)] z-0" />
-
-      {/* Gradient orbs dengan opacity minimal */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-cyber-blue/2 rounded-full blur-3xl animate-pulse z-0" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-electric-purple/2 rounded-full blur-3xl animate-pulse delay-1000 z-0" />
+    <div className="min-h-screen bg-transparent overflow-hidden relative">
 
       <div className="container mx-auto px-4 pt-4 pb-8 relative z-10">
         {/* Hero Section */}

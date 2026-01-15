@@ -3,16 +3,16 @@ import { siteAnalytics, visitorStats } from "@/db/schema";
 import { eq, sql, and } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
     try {
-        // Calculate total by summing all visitor_stats records for consistency with trends
-        const results = await db.select({
-            total: sql<number>`sum(${visitorStats.count})`
-        })
-            .from(visitorStats);
+        const results = await db.select()
+            .from(siteAnalytics)
+            .where(eq(siteAnalytics.metricName, "total_visitors"))
+            .limit(1);
 
-        const totalCount = Number(results[0]?.total || 0);
-
+        const totalCount = results[0]?.metricValue || 0;
         return NextResponse.json({ count: totalCount });
     } catch (error) {
         console.error("Error fetching visitor count:", error);
@@ -26,7 +26,7 @@ export async function POST() {
         const currentMonth = now.getMonth() + 1; // 1-12
         const currentYear = now.getFullYear();
 
-        // 1. Increment total visitors
+        // 1. Increment total visitors (Source of truth for "Total")
         await db.insert(siteAnalytics)
             .values({
                 metricName: "total_visitors",
@@ -40,7 +40,7 @@ export async function POST() {
                 },
             });
 
-        // 2. Increment monthly visitors
+        // 2. Increment monthly visitors (Source of truth for "Trends")
         await db.insert(visitorStats)
             .values({
                 month: currentMonth,
@@ -56,6 +56,7 @@ export async function POST() {
                 },
             });
 
+        // Get the latest absolute total
         const results = await db.select()
             .from(siteAnalytics)
             .where(eq(siteAnalytics.metricName, "total_visitors"))

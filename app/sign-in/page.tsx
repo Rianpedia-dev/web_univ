@@ -1,141 +1,32 @@
-"use client";
+import { getPublishedUniversityProfile } from "@/lib/db";
+import SignInForm from "./sign-in-form";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { signIn, authClient } from "@/lib/auth-client";
-import { Loader2, GraduationCap, ShieldCheck } from "lucide-react";
+export const metadata = {
+    title: "Sign In - Administration Portal",
+    description: "Login page for university administration staff",
+};
 
-export default function SignInPage() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState("");
-    const router = useRouter();
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setIsLoading(true);
-        setError("");
-
-        try {
-            const result = await signIn.email({
-                email,
-                password,
-            });
-
-            if (result.error) {
-                console.error("Sign in result error details:", result.error);
-                setError(result.error.message || "Sign in failed");
-            } else {
-                // Gunakan authClient secara langsung untuk mendapatkan session terbaru
-                const { data: sessionData, error: sessionError } = await authClient.getSession();
-
-                if (sessionError) {
-                    console.error("Get session error:", sessionError);
-                    setError("Failed to get session after login. Please refresh.");
-                    return;
-                }
-
-                // Redirect berdasarkan role
-                const user = sessionData?.user as any;
-                if (user?.role === "adminstaff") {
-                    router.push("/dashboardAdminStaff");
-                } else if (user?.role === "admin") {
-                    router.push("/dashboardAdmin");
-                } else {
-                    // Fallback jika role tidak dikenal atau session null
-                    router.push("/");
-                }
-            }
-        } catch (err: any) {
-            console.error("Sign in catch error:", err);
-            setError(err?.message || "An unexpected error occurred during sign in");
-        } finally {
-            setIsLoading(false);
-        }
-    };
+export default async function SignInPage() {
+    const profileData = await getPublishedUniversityProfile();
+    const universityProfile = profileData && profileData.length > 0 ? profileData[0] : null;
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4">
-            <Card className="w-full max-w-md shadow-xl border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
-                <CardHeader className="text-center space-y-4">
-                    <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
-                        <GraduationCap className="w-10 h-10 text-white" />
-                    </div>
-                    <div>
-                        <CardTitle className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">Admin Login</CardTitle>
-                        <CardDescription className="mt-2">
-                            Masukkan kredensial admin untuk mengakses dashboard
-                        </CardDescription>
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit} className="space-y-4">
-                        {error && (
-                            <Alert variant="destructive">
-                                <AlertDescription>{error}</AlertDescription>
-                            </Alert>
-                        )}
-                        <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="Masukkan email admin"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                                disabled={isLoading}
-                                className="border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
-                            <Input
-                                id="password"
-                                type="password"
-                                placeholder="Masukkan password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                                disabled={isLoading}
-                                className="border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-                        <Button
-                            type="submit"
-                            className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
-                            disabled={isLoading}
-                        >
-                            {isLoading ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Signing in...
-                                </>
-                            ) : (
-                                <>
-                                    <ShieldCheck className="mr-2 h-4 w-4" />
-                                    Sign In
-                                </>
-                            )}
-                        </Button>
-                    </form>
+        <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden bg-transparent">
+            {/* Background elements for premium feel */}
 
-                    <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-                        <p className="text-sm text-center text-muted-foreground">
-                            Halaman ini khusus untuk administrator.
-                        </p>
-                        <p className="text-xs text-center text-muted-foreground mt-2">
-                            Hubungi IT Support jika Anda memerlukan bantuan.
-                        </p>
-                    </div>
-                </CardContent>
-            </Card>
+            <div className="relative z-10 w-full flex justify-center">
+                <SignInForm
+                    universityName={universityProfile?.name}
+                    universityLogo={universityProfile?.logo || undefined}
+                />
+            </div>
+
+            {/* Footer decoration */}
+            <div className="absolute bottom-6 left-0 right-0 z-10 text-center">
+                <p className="text-[10px] text-gray-400 dark:text-gray-500 font-medium tracking-[0.2em] uppercase">
+                    &copy; {new Date().getFullYear()} {universityProfile?.shortName || "UR"} Powered by {universityProfile?.name?.replace("Universitas ", "") || "Rianpedia"}
+                </p>
+            </div>
         </div>
     );
 }
