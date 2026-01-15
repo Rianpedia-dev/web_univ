@@ -3,9 +3,8 @@ import { createAuthClient } from "better-auth/react";
 // Gunakan URL relatif untuk menghindari masalah CORS
 // Ini akan selalu mengarah ke origin yang sama dengan aplikasi
 export const authClient = createAuthClient({
-    baseURL: typeof window !== 'undefined'
-        ? window.location.origin
-        : (process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3000"),
+    baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL ||
+        (typeof window !== 'undefined' ? window.location.origin : "http://localhost:3000"),
     fetchOptions: {
         onError: async (context) => {
             // Log error untuk debugging
