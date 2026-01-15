@@ -29,10 +29,17 @@ export default function SignInPage() {
             });
 
             if (result.error) {
+                console.error("Sign in result error details:", result.error);
                 setError(result.error.message || "Sign in failed");
             } else {
                 // Gunakan authClient secara langsung untuk mendapatkan session terbaru
-                const { data: sessionData } = await authClient.getSession();
+                const { data: sessionData, error: sessionError } = await authClient.getSession();
+
+                if (sessionError) {
+                    console.error("Get session error:", sessionError);
+                    setError("Failed to get session after login. Please refresh.");
+                    return;
+                }
 
                 // Redirect berdasarkan role
                 const user = sessionData?.user as any;
@@ -45,8 +52,9 @@ export default function SignInPage() {
                     router.push("/");
                 }
             }
-        } catch (err) {
-            setError("An unexpected error occurred");
+        } catch (err: any) {
+            console.error("Sign in catch error:", err);
+            setError(err?.message || "An unexpected error occurred during sign in");
         } finally {
             setIsLoading(false);
         }
