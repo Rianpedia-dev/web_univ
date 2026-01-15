@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { signIn } from "@/lib/auth-client";
+import { signIn, authClient } from "@/lib/auth-client";
 import { Loader2, GraduationCap, ShieldCheck } from "lucide-react";
 
 export default function SignInPage() {
@@ -31,15 +31,18 @@ export default function SignInPage() {
             if (result.error) {
                 setError(result.error.message || "Sign in failed");
             } else {
-                // Fetch session untuk mendapatkan role user
-                const sessionResponse = await fetch('/api/auth/get-session');
-                const sessionData = await sessionResponse.json();
+                // Gunakan authClient secara langsung untuk mendapatkan session terbaru
+                const { data: sessionData } = await authClient.getSession();
 
                 // Redirect berdasarkan role
-                if (sessionData?.user?.role === "adminstaff") {
+                const user = sessionData?.user as any;
+                if (user?.role === "adminstaff") {
                     router.push("/dashboardAdminStaff");
-                } else {
+                } else if (user?.role === "admin") {
                     router.push("/dashboardAdmin");
+                } else {
+                    // Fallback jika role tidak dikenal atau session null
+                    router.push("/");
                 }
             }
         } catch (err) {
