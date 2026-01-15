@@ -197,9 +197,10 @@ export default async function PendaftaranPMBPage({ params }: { params: Promise<{
                 variant="default"
                 className="rounded-full h-11 px-8 font-bold shadow-lg hover:scale-105 transition-all duration-300 group/btn"
               >
-                <Link href="https://forms.google.com" target="_blank">
+                <Link href={gelombangAktif.registrationLink || "https://forms.google.com"} target="_blank">
                   Daftar Sekarang <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover/btn:translate-x-1" />
                 </Link>
+
               </Button>
             </div>
           </MotionDiv>

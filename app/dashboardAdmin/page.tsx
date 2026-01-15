@@ -306,7 +306,9 @@ const tableConfigurations = {
           { key: "startDate", label: "Tanggal Mulai", type: "datetime", required: true },
           { key: "endDate", label: "Tanggal Berakhir", type: "datetime", required: true },
           { key: "notes", label: "Catatan Khusus", type: "textarea" },
+          { key: "registrationLink", label: "Link Pendaftaran", type: "text" },
           { key: "isPublished", label: "Dipublikasikan", type: "boolean" },
+
         ],
       },
       admissionRequirements: {

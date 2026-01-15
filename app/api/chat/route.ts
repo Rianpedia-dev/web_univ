@@ -18,6 +18,8 @@ import {
     campusFacilities,
     chatFrequentQuestions,
     chatFeedback,
+    chatConversations,
+    chatMessages,
     admissionWaves,
     academicCalendar,
     studentOrganizations,
@@ -1044,6 +1046,45 @@ export async function POST(req: Request) {
         const universityName = profiles.length > 0 ? profiles[0].name : 'Universitas';
         console.log('DEBUG: Using university name:', universityName);
 
+        // Ensure conversation exists
+        let conversationUUID: string;
+        if (sessionId) {
+            const existingConversation = await db
+                .select()
+                .from(chatConversations)
+                .where(eq(chatConversations.sessionId, sessionId))
+                .limit(1);
+
+            if (existingConversation.length > 0) {
+                conversationUUID = existingConversation[0].id;
+            } else {
+                const newConv = await db.insert(chatConversations).values({ sessionId }).returning();
+                conversationUUID = newConv[0].id;
+            }
+        }
+
+        // Save USER message to chatMessages
+        if (conversationUUID! && messages.length > 0) {
+            const lastUserMsg = messages[messages.length - 1];
+            if (lastUserMsg.role === 'user') {
+                let contentStr = '';
+                // Normalize content to string
+                if (typeof lastUserMsg.content === 'string') {
+                    contentStr = lastUserMsg.content;
+                } else if (Array.isArray(lastUserMsg.content)) {
+                    contentStr = JSON.stringify(lastUserMsg.content); // Or extract text
+                }
+
+                if (contentStr) {
+                    await db.insert(chatMessages).values({
+                        conversationId: conversationUUID,
+                        role: 'user',
+                        content: contentStr
+                    });
+                }
+            }
+        }
+
         // Stream response dari AI
         const result = streamText({
             model: openrouter('google/gemini-2.0-flash-001'),
@@ -1051,6 +1092,20 @@ export async function POST(req: Request) {
             messages,
             tools: botTools,
             stopWhen: stepCountIs(10), // Memberikan lebih banyak langkah untuk tool calls yang kompleks
+            onFinish: async ({ text, toolCalls, toolResults, finishReason, usage }) => {
+                // Save ASSISTANT message to chatMessages
+                if (conversationUUID) {
+                    try {
+                        await db.insert(chatMessages).values({
+                            conversationId: conversationUUID,
+                            role: 'assistant',
+                            content: text || '' // Save generated text
+                        });
+                    } catch (err) {
+                        console.error("Error saving assistant message:", err);
+                    }
+                }
+            },
         });
 
         // Simpan pertanyaan terakhir user untuk analisis (async, tidak blocking)
@@ -1153,13 +1208,19 @@ function detectQuestionCategory(question: string): string {
 // Fungsi untuk menyimpan pertanyaan untuk analisis
 async function saveQuestionForAnalysis(question: string) {
     try {
-        const category = detectQuestionCategory(question);
+        // Normalisasi pertanyaan: trim dan hapus spasi ganda
+        // Batasi panjang pertanyaan max 500 karakter untuk db
+        const cleanQuestion = question.trim().replace(/\s+/g, ' ').substring(0, 500);
 
-        // Cek apakah pertanyaan sudah ada
+        if (!cleanQuestion) return;
+
+        const category = detectQuestionCategory(cleanQuestion);
+
+        // Cek apakah pertanyaan sudah ada (case-insensitive)
         const existing = await db
             .select()
             .from(chatFrequentQuestions)
-            .where(eq(chatFrequentQuestions.question, question))
+            .where(sql`LOWER(${chatFrequentQuestions.question}) = ${cleanQuestion.toLowerCase()}`)
             .limit(1);
 
         if (existing.length > 0) {
@@ -1169,19 +1230,19 @@ async function saveQuestionForAnalysis(question: string) {
                 .set({
                     count: sql`${chatFrequentQuestions.count} + 1`,
                     lastAskedAt: new Date(),
-                    category: category, // Update kategori jika berubah
+                    // Optional: update kategori jika yang baru lebih spesifik, tapi biarkan dulu
                 })
                 .where(eq(chatFrequentQuestions.id, existing[0].id));
         } else {
             // Insert pertanyaan baru dengan kategori
             await db.insert(chatFrequentQuestions).values({
-                question,
+                question: cleanQuestion, // Simpan format asli (casing asli) dari user pertama
                 category,
                 count: 1,
                 lastAskedAt: new Date(),
             });
         }
-        console.log(`Question saved with category: ${category}`);
+        console.log(`Question saved: "${cleanQuestion}" [${category}]`);
     } catch (error) {
         console.error('Error saving question:', error);
     }

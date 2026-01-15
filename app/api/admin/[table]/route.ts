@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import * as schema from '@/db/schema';
-import { eq, getTableColumns } from 'drizzle-orm';
+import { eq, getTableColumns, desc } from 'drizzle-orm';
 
 // Mapping table names to schema objects
 const tableMap: Record<string, any> = {
@@ -75,6 +75,10 @@ const tableMap: Record<string, any> = {
     universityAwards: schema.universityAwards,
     campusAccessibilities: schema.campusAccessibilities,
     socialMediaLinks: schema.socialMediaLinks,
+
+    // Chatbot
+    chatFrequentQuestions: schema.chatFrequentQuestions,
+    chatMessages: schema.chatMessages,
 };
 
 // GET - Fetch all records from a table
@@ -93,7 +97,46 @@ export async function GET(
             );
         }
 
-        const data = await db.select().from(tableSchema);
+        let query = db.select().from(tableSchema);
+
+        // Special handling for chatMessages: Filter by 'user' role and pair with 'assistant' answer
+        if (table === 'chatMessages') {
+            // @ts-ignore
+            const allMessages = await db.select().from(tableSchema).orderBy(desc(tableSchema.createdAt));
+
+            const userMessages = allMessages.filter((m: any) => m.role === 'user');
+            const assistantMessages = allMessages.filter((m: any) => m.role === 'assistant');
+
+            const data = userMessages.map((userMsg: any) => {
+                // Find all assistant messages in the same conversation that were created AT or AFTER this user message
+                const candidateResponses = assistantMessages.filter((m: any) =>
+                    m.conversationId === userMsg.conversationId &&
+                    new Date(m.createdAt) >= new Date(userMsg.createdAt)
+                );
+
+                // Sort by createdAt ascending to find the one that happened immediately after
+                let assistantMsg = null;
+                if (candidateResponses.length > 0) {
+                    assistantMsg = candidateResponses.sort((a: any, b: any) =>
+                        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+                    )[0];
+                }
+
+                return {
+                    ...userMsg,
+                    answer: assistantMsg?.content || "Belum ada jawaban"
+                };
+            });
+
+            return NextResponse.json({ data, count: data.length });
+        }
+        // Default sorting for other tables if they have createdAt
+        else if ('createdAt' in tableSchema) {
+            // @ts-ignore
+            query = query.orderBy(desc(tableSchema.createdAt));
+        }
+
+        const data = await query;
         return NextResponse.json({ data, count: data.length });
     } catch (error) {
         console.error('Error fetching data:', error);

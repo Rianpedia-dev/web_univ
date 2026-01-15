@@ -31,7 +31,16 @@ export default function SignInPage() {
             if (result.error) {
                 setError(result.error.message || "Sign in failed");
             } else {
-                router.push("/dashboardAdmin");
+                // Fetch session untuk mendapatkan role user
+                const sessionResponse = await fetch('/api/auth/get-session');
+                const sessionData = await sessionResponse.json();
+
+                // Redirect berdasarkan role
+                if (sessionData?.user?.role === "adminstaff") {
+                    router.push("/dashboardAdminStaff");
+                } else {
+                    router.push("/dashboardAdmin");
+                }
             }
         } catch (err) {
             setError("An unexpected error occurred");

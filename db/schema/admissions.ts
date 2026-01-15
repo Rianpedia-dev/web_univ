@@ -83,7 +83,9 @@ export const admissionWaves = pgTable("admission_waves", {
     startDate: timestamp("start_date").notNull(), // tanggal mulai
     endDate: timestamp("end_date").notNull(), // tanggal berakhir
     notes: text("notes"), // catatan khusus (e.g. "Termasuk seleksi beasiswa")
+    registrationLink: text("registration_link"), // link pendaftaran (e.g. Google Form)
     isPublished: boolean("is_published").default(false).notNull(),
+
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
