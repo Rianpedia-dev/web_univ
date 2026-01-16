@@ -5,6 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
+import { useChatVisibility } from './ChatVisibilityProvider';
+import Image from "next/image";
 import { Menu, X, GraduationCap, BookOpen, Users, Newspaper, Award, Handshake } from "lucide-react";
 
 // Main Navbar component for the application
@@ -12,6 +15,7 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const { isChatVisible, setIsChatVisible, isChatOpen, setIsChatOpen } = useChatVisibility();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -32,7 +36,7 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
     },
     {
       title: locale === 'id' ? "Profil" : "Profile",
-      href: `/${locale}/profil/profil`, // Redirect to main profil page
+      href: `/${locale}/profil/profil`,
       icon: Award,
       submenu: [
         { title: locale === 'id' ? "Tentang Kami" : "About Us", href: `/${locale}/profil/profil` },
@@ -43,7 +47,7 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
     },
     {
       title: locale === 'id' ? "Akademik" : "Academic",
-      href: `/${locale}/akademik/program-studi`, // Redirect to first submenu
+      href: `/${locale}/akademik/program-studi`,
       icon: BookOpen,
       submenu: [
         { title: locale === 'id' ? "Program Studi" : "Study Programs", href: `/${locale}/akademik/program-studi` },
@@ -54,7 +58,7 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
     },
     {
       title: locale === 'id' ? "Penerimaan" : "Admission",
-      href: `/${locale}/penerimaan/pendaftaran-pmb`, // Redirect to first submenu
+      href: `/${locale}/penerimaan/pendaftaran-pmb`,
       icon: Users,
       submenu: [
         { title: locale === 'id' ? "Pendaftaran PMB" : "Registration", href: `/${locale}/penerimaan/pendaftaran-pmb` },
@@ -64,7 +68,7 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
     },
     {
       title: locale === 'id' ? "Berita & Media" : "News & Media",
-      href: `/${locale}/berita-media/berita`, // Redirect to first submenu
+      href: `/${locale}/berita-media/berita`,
       icon: Newspaper,
       submenu: [
         { title: locale === 'id' ? "Berita" : "News", href: `/${locale}/berita-media/berita` },
@@ -74,7 +78,7 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
     },
     {
       title: locale === 'id' ? "Kemahasiswaan" : "Student Affairs",
-      href: `/${locale}/kemahasiswaan/prestasi-mahasiswa`, // Redirect to first submenu
+      href: `/${locale}/kemahasiswaan/prestasi-mahasiswa`,
       icon: Users,
       submenu: [
         { title: locale === 'id' ? "Prestasi Mahasiswa" : "Student Achievements", href: `/${locale}/kemahasiswaan/prestasi-mahasiswa` },
@@ -84,7 +88,7 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
     },
     {
       title: locale === 'id' ? "Riset & Kerjasama" : "Riset & Kerjasama",
-      href: `/${locale}/kerjasama/kerjasama`, // Redirect to first submenu
+      href: `/${locale}/kerjasama/kerjasama`,
       icon: Handshake,
       submenu: [
         { title: locale === 'id' ? "Kerjasama" : "Kerjasama", href: `/${locale}/kerjasama/kerjasama` },
@@ -102,7 +106,6 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
         }`}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
-          {/* Logo */}
           <Link href={`/${locale}`} className="flex items-center gap-3 group">
             <div className="w-12 h-12 lg:w-14 lg:h-14 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
               {profile?.logo ? (
@@ -129,7 +132,6 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
             </span>
           </Link>
 
-          {/* Desktop Menu */}
           <nav className="hidden md:flex items-center gap-2" suppressHydrationWarning>
             {navItems.map((item) => (
               <div key={item.href} className="relative group" suppressHydrationWarning>
@@ -145,7 +147,6 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
                   <span className="text-sm lg:text-base font-medium" suppressHydrationWarning>{item.title}</span>
                 </Link>
 
-                {/* Submenu */}
                 {item.submenu.length > 0 && (
                   <div className="absolute top-full left-0 mt-1 w-56 bg-gradient-to-b from-white/90 to-gray-100/90 dark:from-gray-800/90 dark:to-gray-900/90 backdrop-blur-xl rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 border border-gray-200/50 dark:border-gray-700/50 transform group-hover:translate-y-1">
                     <div className="py-2">
@@ -170,15 +171,69 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
             ))}
           </nav>
 
-          {/* Right side controls */}
           <div className="flex items-center gap-3">
-            {/* Desktop controls */}
             <div className="hidden sm:flex items-center gap-2">
+              <AnimatePresence>
+                {!isChatVisible && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                  >
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="relative w-9 h-9 p-0.5 hover:bg-amber-500/10 group transition-all duration-300"
+                      onClick={() => {
+                        setIsChatVisible(true);
+                        setIsChatOpen(true);
+                      }}
+                      title="Aktifkan AI"
+                    >
+                      <div className="relative w-7 h-7 group-hover:scale-110 transition-transform duration-200">
+                        <Image
+                          src="/images/robot.png"
+                          alt="Aktifkan AI"
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                    </Button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
               <ThemeToggle />
             </div>
 
-            {/* Mobile controls - including Theme and Language toggles alongside menu button */}
             <div className="flex items-center gap-2 md:hidden">
+              <AnimatePresence>
+                {!isChatVisible && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                  >
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="relative w-9 h-9 p-0.5"
+                      onClick={() => {
+                        setIsChatVisible(true);
+                        setIsChatOpen(true);
+                      }}
+                    >
+                      <div className="relative w-7 h-7">
+                        <Image
+                          src="/images/robot.png"
+                          alt="Aktifkan AI"
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                    </Button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
               <ThemeToggle />
               <Button
                 variant="ghost"
@@ -192,10 +247,16 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Mobile Menu */}
+      <AnimatePresence>
         {isMenuOpen && (
-          <div className="md:hidden mt-2 py-2 rounded-2xl bg-background/95 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-xl max-h-[85vh] overflow-y-auto ring-1 ring-black/5 animate-in slide-in-from-top-2 duration-200">
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden mt-2 py-2 rounded-2xl bg-card border border-white/20 dark:border-white/10 shadow-xl max-h-[85vh] overflow-y-auto ring-1 ring-black/5"
+          >
             <nav className="flex flex-col p-2 space-y-0.5">
               {navItems.map((item) => (
                 <div key={item.href} className="overflow-hidden">
@@ -216,7 +277,6 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
                     <span className="text-sm">{item.title}</span>
                   </Link>
 
-                  {/* Mobile Submenu */}
                   {item.submenu.length > 0 && (
                     <div className="ml-9 mt-0.5 mb-1 space-y-0.5 border-l-2 border-dashed border-black/10 dark:border-white/10 pl-2">
                       {item.submenu.map((subItem) => (
@@ -237,9 +297,9 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
                 </div>
               ))}
             </nav>
-          </div>
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
     </header>
   );
 }

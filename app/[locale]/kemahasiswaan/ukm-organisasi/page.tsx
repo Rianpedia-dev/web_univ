@@ -37,7 +37,7 @@ export default async function UKMOrganisasiPage() {
       <div className="relative z-10">
         {/* Full width background image section for header */}
         <div
-          className="relative bg-[url('/images/layanan_mahasiswa.png')] bg-cover bg-center bg-no-repeat border-2 border-cyber-blue/50 rounded-3xl overflow-hidden mb-16"
+          className="relative bg-[url('/0')] bg-cover bg-center bg-no-repeat border-2 border-cyber-blue/50 rounded-3xl overflow-hidden mb-16"
         >
           <div className="absolute inset-0 bg-black/30"></div>
           <div className="relative z-10 py-44 px-4 sm:px-6">

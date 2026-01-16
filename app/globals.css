@@ -127,7 +127,7 @@
 .dark {
   --background: transparent;
   --foreground: #f8fafc;
-  --card: #020617;
+  --card: #000000;
   --card-foreground: #f8fafc;
   --popover: #020617;
   --popover-foreground: #f8fafc;

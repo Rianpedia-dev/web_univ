@@ -69,7 +69,7 @@ export async function Footer({ locale = 'id' }: { locale?: string }) {
   ];
 
   return (
-    <footer className="bg-background border-t border-foreground/10">
+    <footer className="bg-card border-t border-foreground/10">
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo dan Deskripsi */}

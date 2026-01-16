@@ -70,7 +70,7 @@ export default function JurnalPage() {
         <div className="min-h-screen bg-background overflow-hidden relative pb-20">
 
             {/* Header Section */}
-            <div className="relative bg-[url('/images/research-bg.png')] bg-cover bg-center bg-no-repeat -mx-4 sm:-mx-6 lg:-mx-8 xl:-mx-0 border-2 border-cyber-blue/50 rounded-3xl overflow-hidden mb-16">
+            <div className="relative bg-[url('/0')] bg-cover bg-center bg-no-repeat -mx-4 sm:-mx-6 lg:-mx-8 xl:-mx-0 border-2 border-cyber-blue/50 rounded-3xl overflow-hidden mb-16">
                 <div className="absolute inset-0 bg-black/30"></div>
                 <div className="relative z-10 py-44 px-4 sm:px-6">
                     <div className="container mx-auto max-w-6xl">

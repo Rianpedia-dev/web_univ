@@ -12,6 +12,7 @@ import {
   Target,
   ExternalLink
 } from "lucide-react";
+import Image from "next/image";
 import { MotionDiv } from "@/components/motion-wrapper";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -26,8 +27,10 @@ import { getPublishedFacultiesSync, getPublishedStudyPrograms } from '@/lib/db';
 export default async function FakultasPage({ params }: { params: Promise<{ locale: string }> }) {
   await params;
   // Ambil data dari database
-  const facultiesData = await getPublishedFacultiesSync();
-  const studyProgramsData = await getPublishedStudyPrograms();
+  const [facultiesData, studyProgramsData] = await Promise.all([
+    getPublishedFacultiesSync(),
+    getPublishedStudyPrograms()
+  ]);
 
   // Kelompokkan prodi berdasarkan fakultas
   const fakultasWithProdi = facultiesData.map(faculty => ({
@@ -40,7 +43,7 @@ export default async function FakultasPage({ params }: { params: Promise<{ local
 
       {/* Full width background image section for header */}
       <div
-        className="relative bg-[url('/images/backround_akademik.png')] bg-cover bg-center bg-no-repeat -mx-4 sm:-mx-6 lg:-mx-8 xl:-mx-0 border-2 border-cyber-blue/50 rounded-3xl overflow-hidden mb-16"
+        className="relative bg-[url('/0')] bg-cover bg-center bg-no-repeat -mx-4 sm:-mx-6 lg:-mx-8 xl:-mx-0 border-2 border-cyber-blue/50 rounded-3xl overflow-hidden mb-16"
       >
         <div className="absolute inset-0 bg-black/30"></div>
         <div className="relative z-10 py-44 px-4 sm:px-6">
@@ -94,8 +97,14 @@ export default async function FakultasPage({ params }: { params: Promise<{ local
                           {fakultas.logo ? (
                             <Dialog>
                               <DialogTrigger asChild>
-                                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-foreground/5 border border-foreground/10 p-2 flex items-center justify-center overflow-hidden shrink-0 group-hover:border-cyber-blue/50 transition-colors cursor-pointer hover:bg-white/10">
-                                  <img src={fakultas.logo} alt={fakultas.name} className="w-full h-full object-contain transform transition-transform duration-300 hover:scale-110" />
+                                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-foreground/5 border border-foreground/10 p-2 flex items-center justify-center overflow-hidden shrink-0 group-hover:border-cyber-blue/50 transition-colors cursor-pointer hover:bg-white/10 relative">
+                                  <Image
+                                    src={fakultas.logo}
+                                    alt={fakultas.name}
+                                    fill
+                                    sizes="(max-width: 640px) 48px, 56px"
+                                    className="object-contain transform transition-transform duration-300 hover:scale-110"
+                                  />
                                 </div>
                               </DialogTrigger>
                               <DialogContent className="sm:max-w-lg bg-transparent border-none shadow-none p-0 flex flex-col items-center justify-center">
@@ -103,9 +112,11 @@ export default async function FakultasPage({ params }: { params: Promise<{ local
                                 <DialogDescription className="sr-only">Tampilan penuh logo fakultas {fakultas.name}</DialogDescription>
                                 <div className="relative p-8 rounded-3xl bg-gradient-to-br from-slate-900/90 to-slate-800/90 backdrop-blur-xl border border-white/10 shadow-2xl flex items-center justify-center">
                                   <div className="absolute inset-0 bg-gradient-cyber opacity-10 rounded-3xl animate-pulse"></div>
-                                  <img
+                                  <Image
                                     src={fakultas.logo}
                                     alt={fakultas.name}
+                                    width={400}
+                                    height={400}
                                     className="max-w-[280px] max-h-[280px] sm:max-w-[400px] sm:max-h-[400px] object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] relative z-10"
                                   />
                                 </div>

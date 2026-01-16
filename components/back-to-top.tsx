@@ -42,7 +42,7 @@ export function BackToTop() {
           variant="outline"
           size="icon"
           suppressHydrationWarning
-          className="fixed bottom-6 right-6 z-50 rounded-full shadow-lg text-cyber-blue border-cyber-blue hover:bg-cyber-blue/10 hover:text-cyber-blue dark:text-electric-purple dark:border-electric-purple dark:hover:bg-electric-purple/10 dark:hover:text-electric-purple"
+          className="fixed bottom-6 right-6 z-40 rounded-full shadow-lg text-cyber-blue border-cyber-blue hover:bg-cyber-blue/10 hover:text-cyber-blue dark:text-electric-purple dark:border-electric-purple dark:hover:bg-electric-purple/10 dark:hover:text-electric-purple"
         >
           <ArrowUpToLine className="h-5 w-5" suppressHydrationWarning />
         </Button>

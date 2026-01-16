@@ -18,11 +18,17 @@ import {
 import ReactMarkdown from 'react-markdown';
 import { cn } from '@/lib/utils';
 import { ChatFloatingButton } from './ChatFloatingButton';
+import { useChatVisibility } from './ChatVisibilityProvider';
 
 // Generate unique session ID
 function generateSessionId() {
     return `session_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
 }
+
+// ... inside the file, I'll replace the imports and the start of the function
+// wait, I should do it in chunks or properly.
+
+// Let's replace from line 20 down to the start of the function.
 
 // Komponen untuk menampilkan pesan
 function ChatMessage({
@@ -160,11 +166,16 @@ const WELCOME_MESSAGE = {
 
 // Komponen utama UnpalAI
 export function UnpalAI() {
-    const [isOpen, setIsOpen] = useState(false);
+    const { isChatVisible, setIsChatVisible, isChatOpen, setIsChatOpen } = useChatVisibility();
+    const [mounted, setMounted] = useState(false);
     const [sessionId] = useState(() => generateSessionId());
     const [input, setInput] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLTextAreaElement>(null);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const { messages, sendMessage, status, error: chatError } = useChat({
         transport: new DefaultChatTransport({
@@ -182,6 +193,7 @@ export function UnpalAI() {
     // Determine loading state
     const isLoading = status === 'submitted' || status === 'streaming';
 
+
     // Scroll to bottom saat ada pesan baru
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -189,10 +201,10 @@ export function UnpalAI() {
 
     // Focus input saat panel dibuka
     useEffect(() => {
-        if (isOpen) {
+        if (isChatOpen) {
             setTimeout(() => inputRef.current?.focus(), 100);
         }
-    }, [isOpen]);
+    }, [isChatOpen]);
 
     // Handle feedback
     const handleFeedback = useCallback(async (messageId: string, rating: number) => {
@@ -260,25 +272,31 @@ export function UnpalAI() {
         { label: 'Pendaftaran', query: 'Bagaimana cara mendaftar sebagai mahasiswa baru?' },
     ];
 
+    if (!mounted || !isChatVisible) return null;
+
     return (
         <>
             {/* Floating Button */}
-            <ChatFloatingButton onClick={() => setIsOpen(true)} isOpen={isOpen} />
+            <ChatFloatingButton
+                onClick={() => setIsChatOpen(true)}
+                isOpen={isChatOpen}
+                onDismiss={() => setIsChatVisible(false)}
+            />
 
             {/* Chat Panel */}
             <AnimatePresence>
-                {isOpen && (
+                {isChatOpen && (
                     <motion.div
                         initial={{ opacity: 0, y: 20, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 20, scale: 0.95 }}
                         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
                         className={cn(
-                            "fixed z-50",
+                            "fixed z-40",
                             "bottom-6 right-6",
                             "w-[380px] max-w-[calc(100vw-48px)]",
                             "h-[600px] max-h-[calc(100vh-100px)]",
-                            "bg-background/95 backdrop-blur-xl",
+                            "bg-card",
                             "border border-border/50 rounded-2xl",
                             "shadow-2xl shadow-black/20",
                             "flex flex-col overflow-hidden"
@@ -296,7 +314,7 @@ export function UnpalAI() {
                                 </div>
                             </div>
                             <button
-                                onClick={() => setIsOpen(false)}
+                                onClick={() => setIsChatOpen(false)}
                                 className="p-2 rounded-full hover:bg-white/20 transition-colors"
                                 aria-label="Tutup chat"
                             >

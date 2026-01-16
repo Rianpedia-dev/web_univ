@@ -33,7 +33,8 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { uploadFile, getPublicUrl } from "@/lib/storage"
+import { uploadFile, getPublicUrl, deleteFile, getPathFromUrl } from "@/lib/storage"
+import { LoadingSpinner } from "@/components/ui/loading-spinner"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -1087,6 +1088,29 @@ function DataTableView({
   const handleEdit = async () => {
     setSaving(true)
     try {
+      // Check for file replacements
+      if (selectedItem) {
+        tableConfig.fields.forEach(async (field) => {
+          if ((field.type === "image" || field.type === "file") &&
+            formData[field.key] &&
+            selectedItem[field.key] &&
+            formData[field.key] !== selectedItem[field.key]) {
+            // New file uploaded, delete old one
+            const bucket = field.bucket || (field.type === "image" ? "images" : "documents");
+            const oldPath = getPathFromUrl(selectedItem[field.key], bucket);
+
+            if (oldPath) {
+              try {
+                await deleteFile(bucket, oldPath);
+                console.log(`Deleted replaced file: ${oldPath}`);
+              } catch (err) {
+                console.error(`Failed to delete replaced file ${oldPath}:`, err);
+              }
+            }
+          }
+        });
+      }
+
       const response = await fetch(`/api/admin/${tableName}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -1112,12 +1136,34 @@ function DataTableView({
 
   const handleDelete = async (id: string) => {
     try {
+      // 1. Get the item data first to find any files to delete
+      const itemToDelete = data.find(item => item.id === id);
+
       const response = await fetch(`/api/admin/${tableName}?id=${id}`, {
         method: "DELETE",
       })
 
       if (response.ok) {
         toast.success("Data berhasil dihapus")
+
+        // 2. Delete associated files from storage
+        if (itemToDelete) {
+          tableConfig.fields.forEach(async (field) => {
+            if ((field.type === "image" || field.type === "file") && itemToDelete[field.key]) {
+              const bucket = field.bucket || (field.type === "image" ? "images" : "documents");
+              const path = getPathFromUrl(itemToDelete[field.key], bucket);
+              if (path) {
+                try {
+                  await deleteFile(bucket, path);
+                  console.log(`Deleted file: ${path}`);
+                } catch (err) {
+                  console.error(`Failed to delete file ${path}:`, err);
+                }
+              }
+            }
+          });
+        }
+
         fetchData()
       } else {
         const error = await response.json()
@@ -1168,16 +1214,8 @@ function DataTableView({
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        <div className="flex justify-between">
-          <Skeleton className="h-10 w-64" />
-          <Skeleton className="h-10 w-32" />
-        </div>
-        <div className="space-y-2">
-          {[...Array(5)].map((_, i) => (
-            <Skeleton key={i} className="h-12 w-full" />
-          ))}
-        </div>
+      <div className="flex h-[300px] items-center justify-center">
+        <LoadingSpinner text="Memuat data..." size={32} />
       </div>
     )
   }

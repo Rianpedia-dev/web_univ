@@ -44,47 +44,62 @@ import {
   admissionBrochures
 } from '@/db/schema';
 import { eq, and, or, sql } from 'drizzle-orm';
+import { unstable_cache } from 'next/cache';
 
 
 
 /**
  * Fungsi untuk mengambil beasiswa yang dipublikasikan
  */
-export async function getPublishedScholarships() {
-  try {
-    const result = await db
-      .select()
-      .from(scholarships)
-      .where(eq(scholarships.isPublished, true))
-      .orderBy(sql`${scholarships.name} ASC`);
+/**
+ * Fungsi untuk mengambil beasiswa yang dipublikasikan
+ */
+export const getPublishedScholarships = unstable_cache(
+  async () => {
+    try {
+      const result = await db
+        .select()
+        .from(scholarships)
+        .where(eq(scholarships.isPublished, true))
+        .orderBy(sql`${scholarships.name} ASC`);
 
-    return result;
-  } catch (error) {
-    console.error('Error fetching published scholarships:', error);
-    throw new Error('Failed to fetch scholarships');
-  }
-}
+      return result;
+    } catch (error) {
+      console.error('Error fetching published scholarships:', error);
+      throw new Error('Failed to fetch scholarships');
+    }
+  },
+  ['published-scholarships'],
+  { revalidate: 3600, tags: ['scholarships'] }
+);
 
 
 
 /**
  * Fungsi untuk mengambil berita yang dipublikasikan
  */
-export async function getPublishedNews(limit: number = 10) {
-  try {
-    const result = await db
-      .select()
-      .from(news)
-      .where(eq(news.isPublished, true))
-      .orderBy(sql`${news.publishedAt} DESC`)
-      .limit(limit);
+/**
+ * Fungsi untuk mengambil berita yang dipublikasikan
+ */
+export const getPublishedNews = unstable_cache(
+  async (limit: number = 10) => {
+    try {
+      const result = await db
+        .select()
+        .from(news)
+        .where(eq(news.isPublished, true))
+        .orderBy(sql`${news.publishedAt} DESC`)
+        .limit(limit);
 
-    return result;
-  } catch (error) {
-    console.error('Error fetching published news:', error);
-    throw new Error('Failed to fetch news');
-  }
-}
+      return result;
+    } catch (error) {
+      console.error('Error fetching published news:', error);
+      throw new Error('Failed to fetch news');
+    }
+  },
+  ['published-news'],
+  { revalidate: 3600, tags: ['news'] }
+);
 
 /**
  * Fungsi untuk mengambil berita berdasarkan kategori
@@ -117,26 +132,33 @@ export async function getPublishedNewsByCategory(categorySlug: string, limit: nu
 /**
  * Fungsi untuk mengambil events yang dipublikasikan
  */
-export async function getPublishedEvents(limit: number = 10) {
-  try {
-    const result = await db
-      .select()
-      .from(events)
-      .where(
-        and(
-          eq(events.isPublished, true),
-          eq(events.status, 'upcoming')
+/**
+ * Fungsi untuk mengambil events yang dipublikasikan
+ */
+export const getPublishedEvents = unstable_cache(
+  async (limit: number = 10) => {
+    try {
+      const result = await db
+        .select()
+        .from(events)
+        .where(
+          and(
+            eq(events.isPublished, true),
+            eq(events.status, 'upcoming')
+          )
         )
-      )
-      .orderBy(sql`${events.startDate} ASC`)
-      .limit(limit);
+        .orderBy(sql`${events.startDate} ASC`)
+        .limit(limit);
 
-    return result;
-  } catch (error) {
-    console.error('Error fetching published events:', error);
-    throw new Error('Failed to fetch events');
-  }
-}
+      return result;
+    } catch (error) {
+      console.error('Error fetching published events:', error);
+      throw new Error('Failed to fetch events');
+    }
+  },
+  ['published-events'],
+  { revalidate: 3600, tags: ['events'] }
+);
 
 /**
  * Fungsi untuk mengambil events berdasarkan kategori
@@ -170,83 +192,101 @@ export async function getPublishedEventsByCategory(categorySlug: string, limit: 
 /**
  * Fungsi untuk mengambil fakultas yang dipublikasikan
  */
-export async function getPublishedFacultiesSync() {
-  try {
-    const result = await db
-      .select({
-        id: faculties.id,
-        name: faculties.name,
-        slug: faculties.slug,
-        description: faculties.description,
-        dean: faculties.dean,
-        contactEmail: faculties.contactEmail,
-        contactPhone: faculties.contactPhone,
-        address: faculties.address,
-        websiteUrl: faculties.websiteUrl,
-        logo: faculties.logo,
-        isPublished: faculties.isPublished,
-        createdAt: faculties.createdAt,
-        updatedAt: faculties.updatedAt,
-      })
-      .from(faculties)
-      .where(eq(faculties.isPublished, true));
+/**
+ * Fungsi untuk mengambil fakultas yang dipublikasikan
+ */
+export const getPublishedFacultiesSync = unstable_cache(
+  async () => {
+    try {
+      const result = await db
+        .select({
+          id: faculties.id,
+          name: faculties.name,
+          slug: faculties.slug,
+          description: faculties.description,
+          dean: faculties.dean,
+          contactEmail: faculties.contactEmail,
+          contactPhone: faculties.contactPhone,
+          address: faculties.address,
+          websiteUrl: faculties.websiteUrl,
+          logo: faculties.logo,
+          isPublished: faculties.isPublished,
+          createdAt: faculties.createdAt,
+          updatedAt: faculties.updatedAt,
+        })
+        .from(faculties)
+        .where(eq(faculties.isPublished, true));
 
-    return result;
-  } catch (error) {
-    console.error('Error fetching published faculties:', error);
-    throw new Error('Failed to fetch faculties');
-  }
-}
+      return result;
+    } catch (error) {
+      console.error('Error fetching published faculties:', error);
+      throw new Error('Failed to fetch faculties');
+    }
+  },
+  ['published-faculties'],
+  { revalidate: 3600, tags: ['faculties'] }
+);
 
 /**
  * Fungsi untuk mengambil program studi yang dipublikasikan
  */
-export async function getPublishedStudyPrograms() {
-  try {
-    const result = await db
-      .select({
-        id: studyPrograms.id,
-        name: studyPrograms.name,
-        slug: studyPrograms.slug,
-        description: studyPrograms.description,
-        level: studyPrograms.level,
-        accreditation: studyPrograms.accreditation,
-        headOfProgram: studyPrograms.headOfProgram,
-        contactEmail: studyPrograms.contactEmail,
-        contactPhone: studyPrograms.contactPhone,
-        totalStudents: studyPrograms.totalStudents,
-        logo: studyPrograms.logo,
-        facultyId: studyPrograms.facultyId,
-        facultyName: faculties.name,
-        isPublished: studyPrograms.isPublished
-      })
-      .from(studyPrograms)
-      .leftJoin(faculties, eq(studyPrograms.facultyId, faculties.id))
-      .where(eq(studyPrograms.isPublished, true));
+export const getPublishedStudyPrograms = unstable_cache(
+  async () => {
+    try {
+      const result = await db
+        .select({
+          id: studyPrograms.id,
+          name: studyPrograms.name,
+          slug: studyPrograms.slug,
+          description: studyPrograms.description,
+          level: studyPrograms.level,
+          accreditation: studyPrograms.accreditation,
+          headOfProgram: studyPrograms.headOfProgram,
+          contactEmail: studyPrograms.contactEmail,
+          contactPhone: studyPrograms.contactPhone,
+          totalStudents: studyPrograms.totalStudents,
+          logo: studyPrograms.logo,
+          facultyId: studyPrograms.facultyId,
+          facultyName: faculties.name,
+          isPublished: studyPrograms.isPublished
+        })
+        .from(studyPrograms)
+        .leftJoin(faculties, eq(studyPrograms.facultyId, faculties.id))
+        .where(eq(studyPrograms.isPublished, true));
 
-    return result;
-  } catch (error) {
-    console.error('Error fetching published study programs:', error);
-    throw new Error('Failed to fetch study programs');
-  }
-}
+      return result;
+    } catch (error) {
+      console.error('Error fetching published study programs:', error);
+      throw new Error('Failed to fetch study programs');
+    }
+  },
+  ['published-study-programs'],
+  { revalidate: 3600, tags: ['study-programs'] }
+);
 
 /**
  * Fungsi untuk mengambil organisasi mahasiswa yang dipublikasikan
  */
-export async function getPublishedStudentOrganizations() {
-  try {
-    const result = await db
-      .select()
-      .from(studentOrganizations)
-      .where(eq(studentOrganizations.isPublished, true));
+/**
+ * Fungsi untuk mengambil organisasi mahasiswa yang dipublikasikan
+ */
+export const getPublishedStudentOrganizations = unstable_cache(
+  async () => {
+    try {
+      const result = await db
+        .select()
+        .from(studentOrganizations)
+        .where(eq(studentOrganizations.isPublished, true));
 
-    return result;
-  } catch (error) {
-    console.error('Error fetching published student organizations:', error);
-    throw new Error('Failed to fetch student organizations');
-  }
-}
+      return result;
+    } catch (error) {
+      console.error('Error fetching published student organizations:', error);
+      throw new Error('Failed to fetch student organizations');
+    }
+  },
+  ['published-student-organizations'],
+  { revalidate: 3600, tags: ['student-organizations'] }
+);
 
 /**
  * Fungsi untuk mengambil prestasi mahasiswa yang dipublikasikan

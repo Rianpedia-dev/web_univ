@@ -35,7 +35,7 @@ import {
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
-import { uploadFile, getPublicUrl } from "@/lib/storage"
+import { uploadFile, getPublicUrl, deleteFile, getPathFromUrl } from "@/lib/storage"
 import { ThemeToggle } from "@/components/theme-toggle"
 
 import { Button } from "@/components/ui/button"
@@ -752,8 +752,29 @@ const DataTableView = ({
     const handleDelete = async () => {
         if (!deleteId) return
         try {
+            // 1. Get the item data first
+            const itemToDelete = data.find(item => item.id === deleteId);
+
             const res = await fetch(`/api/admin/${tableName}?id=${deleteId}`, { method: "DELETE" })
             if (res.ok) {
+                // 2. Delete associated files from storage
+                if (itemToDelete) {
+                    tableConfig.fields.forEach(async (field) => {
+                        if ((field.type === "image" || field.type === "file") && itemToDelete[field.key]) {
+                            const bucket = field.bucket || (field.type === "image" ? "images" : "documents");
+                            const path = getPathFromUrl(itemToDelete[field.key], bucket);
+                            if (path) {
+                                try {
+                                    await deleteFile(bucket, path);
+                                    console.log(`Deleted file: ${path}`);
+                                } catch (err) {
+                                    console.error(`Failed to delete file ${path}:`, err);
+                                }
+                            }
+                        }
+                    });
+                }
+
                 fetchData()
                 onRefresh()
             } else {
@@ -769,6 +790,30 @@ const DataTableView = ({
     const handleSave = async () => {
         setSubmitting(true)
         try {
+            // Check for file replacements if editing
+            if (editingItem) {
+                tableConfig.fields.forEach(async (field) => {
+                    if ((field.type === "image" || field.type === "file") &&
+                        formData[field.key] &&
+                        editingItem[field.key] &&
+                        formData[field.key] !== editingItem[field.key]) {
+
+                        // New file uploaded, delete old one
+                        const bucket = field.bucket || (field.type === "image" ? "images" : "documents");
+                        const oldPath = getPathFromUrl(editingItem[field.key], bucket);
+
+                        if (oldPath) {
+                            try {
+                                await deleteFile(bucket, oldPath);
+                                console.log(`Deleted replaced file: ${oldPath}`);
+                            } catch (err) {
+                                console.error(`Failed to delete replaced file ${oldPath}:`, err);
+                            }
+                        }
+                    }
+                });
+            }
+
             const url = `/api/admin/${tableName}`
             const method = editingItem ? "PUT" : "POST"
             const body = editingItem ? { ...formData, id: editingItem.id } : formData
