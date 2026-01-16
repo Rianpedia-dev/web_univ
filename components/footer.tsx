@@ -173,6 +173,11 @@ export async function Footer({ locale = 'id' }: { locale?: string }) {
                   Layanan Mahasiswa
                 </Link>
               </li>
+              <li>
+                <Link href="/sign-in" className="block text-foreground/70 hover:text-foreground transition-colors">
+                  Sign-in
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
