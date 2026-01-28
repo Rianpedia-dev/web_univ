@@ -183,14 +183,14 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="relative w-9 h-9 p-0.5 hover:bg-amber-500/10 group transition-all duration-300"
+                      className="relative w-12 h-12 p-0.5 hover:bg-amber-500/10 group transition-all duration-300"
                       onClick={() => {
                         setIsChatVisible(true);
                         setIsChatOpen(true);
                       }}
                       title="Aktifkan AI"
                     >
-                      <div className="relative w-7 h-7 group-hover:scale-110 transition-transform duration-200">
+                      <div className="relative w-10 h-10 group-hover:scale-110 transition-transform duration-200">
                         <Image
                           src="/images/robot.png"
                           alt="Aktifkan AI"
@@ -216,13 +216,13 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="relative w-9 h-9 p-0.5"
+                      className="relative w-12 h-12 p-0.5"
                       onClick={() => {
                         setIsChatVisible(true);
                         setIsChatOpen(true);
                       }}
                     >
-                      <div className="relative w-7 h-7">
+                      <div className="relative w-10 h-10">
                         <Image
                           src="/images/robot.png"
                           alt="Aktifkan AI"

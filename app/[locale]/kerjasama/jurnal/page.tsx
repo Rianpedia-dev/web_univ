@@ -117,7 +117,7 @@ export default function JurnalPage() {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {journalsData
-                            .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+                            .slice(0, currentPage * itemsPerPage)
                             .map((journal, index) => (
                                 <MotionDiv
                                     key={journal.id}
@@ -227,29 +227,20 @@ export default function JurnalPage() {
                     </div>
                 )}
 
-                {/* Pagination Section */}
-                {journalsData.length > itemsPerPage && (
+                {/* Load More Button */}
+                {journalsData.length > currentPage * itemsPerPage && (
                     <MotionDiv
-                        className="mt-16 flex justify-center gap-4"
+                        className="mt-16 flex justify-center"
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true }}
                     >
                         <Button
-                            variant="outline"
-                            className="rounded-full px-8 h-11 font-bold shadow-md hover:scale-105 transition-all duration-300"
-                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                            disabled={currentPage === 1}
+                            className="rounded-full px-12 h-12 font-bold shadow-xl hover:scale-105 transition-all duration-300"
+                            onClick={() => setCurrentPage(prev => prev + 1)}
                         >
-                            Sebelumnya
-                        </Button>
-                        <Button
-                            variant="outline"
-                            className="rounded-full px-8 h-11 font-bold shadow-md hover:scale-105 transition-all duration-300 border-foreground/30"
-                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(journalsData.length / itemsPerPage)))}
-                            disabled={currentPage >= Math.ceil(journalsData.length / itemsPerPage)}
-                        >
-                            Berikutnya
+                            <Filter className="w-5 h-5 mr-3" />
+                            <span className="text-base tracking-tight">Lihat Lainnya</span>
                         </Button>
                     </MotionDiv>
                 )}

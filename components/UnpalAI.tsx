@@ -15,6 +15,7 @@ import {
     Loader2,
     Sparkles
 } from 'lucide-react';
+import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import { cn } from '@/lib/utils';
 import { ChatFloatingButton } from './ChatFloatingButton';
@@ -65,107 +66,161 @@ function ChatMessage({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className={cn(
-                "flex gap-3 p-3 rounded-lg",
-                isUser
-                    ? "bg-primary/10 ml-8"
-                    : "bg-muted/50 mr-8"
+                "flex gap-2 px-1 w-full",
+                isUser ? "flex-row-reverse" : "flex-row"
             )}
         >
             {/* Avatar */}
             <div className={cn(
-                "flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center",
-                isUser
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-gradient-to-br from-amber-400 to-orange-500 text-white"
+                "flex-shrink-0 w-10 h-10 flex items-center justify-center overflow-hidden relative",
+                "rounded-full"
             )}>
-                {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
-            </div>
-
-            {/* Content */}
-            <div className="flex-1 min-w-0">
-                <div className="text-xs font-medium mb-1 text-muted-foreground">
-                    {isUser ? 'Anda' : 'Pal'}
-                </div>
-                <div className="prose prose-sm dark:prose-invert max-w-none break-words">
-                    {isUser ? (
-                        <p className="whitespace-pre-wrap">{content}</p>
-                    ) : (
-                        <ReactMarkdown
-                            components={{
-                                ul: ({ children }) => (
-                                    <ul className="list-disc pl-4 space-y-1">{children}</ul>
-                                ),
-                                ol: ({ children }) => (
-                                    <ol className="list-decimal pl-4 space-y-1">{children}</ol>
-                                ),
-                                li: ({ children }) => (
-                                    <li className="text-sm">{children}</li>
-                                ),
-                                p: ({ children }) => (
-                                    <p className="mb-2 last:mb-0">{children}</p>
-                                ),
-                                strong: ({ children }) => (
-                                    <strong className="font-semibold text-foreground">{children}</strong>
-                                ),
-                                a: ({ href, children }) => (
-                                    <a href={href} className="text-primary underline hover:no-underline" target="_blank" rel="noopener noreferrer">
-                                        {children}
-                                    </a>
-                                ),
-                            }}
-                        >
-                            {content}
-                        </ReactMarkdown>
-                    )}
-                </div>
-
-                {/* Feedback buttons for assistant messages */}
-                {!isUser && (
-                    <div className="flex items-center gap-2 mt-2 pt-2 border-t border-border/50">
-                        <span className="text-xs text-muted-foreground">Apakah jawaban ini membantu?</span>
-                        <button
-                            onClick={() => handleFeedback(2)}
-                            disabled={feedbackGiven !== null}
-                            className={cn(
-                                "p-1 rounded hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors",
-                                feedbackGiven === 2 && "bg-green-100 dark:bg-green-900/30 text-green-600"
-                            )}
-                            title="Membantu"
-                        >
-                            <ThumbsUp className="w-3 h-3" />
-                        </button>
-                        <button
-                            onClick={() => handleFeedback(1)}
-                            disabled={feedbackGiven !== null}
-                            className={cn(
-                                "p-1 rounded hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors",
-                                feedbackGiven === 1 && "bg-red-100 dark:bg-red-900/30 text-red-600"
-                            )}
-                            title="Tidak membantu"
-                        >
-                            <ThumbsDown className="w-3 h-3" />
-                        </button>
-                    </div>
+                {isUser ? (
+                    <Image
+                        src="/images/orng1.png"
+                        alt="User"
+                        fill
+                        className="object-cover"
+                    />
+                ) : (
+                    <Image
+                        src="/images/robot.png"
+                        alt="AI Robot"
+                        fill
+                        className="object-contain"
+                    />
                 )}
             </div>
-        </motion.div>
+
+            {/* Bubble Container */}
+            <div className={cn(
+                "flex flex-col max-w-[85%] min-w-0",
+                isUser ? "items-end" : "items-start"
+            )}>
+                {/* Name Label */}
+                <span className="text-[10px] font-semibold mb-1 text-muted-foreground px-1 uppercase tracking-wider">
+                    {isUser ? 'Anda' : 'Campus Assistant'}
+                </span>
+
+                {/* Message Bubble */}
+                <div className={cn(
+                    "relative p-3 rounded-2xl text-sm shadow-sm w-full outline-none",
+                    isUser
+                        ? "bg-[#008080] text-white rounded-tr-none"
+                        : "bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-foreground rounded-tl-none"
+                )}>
+                    {/* Tail SVG */}
+                    <div className={cn(
+                        "absolute top-0 w-2 h-2",
+                        isUser
+                            ? "right-[-8px] text-[#008080]"
+                            : "left-[-8px] text-white dark:text-slate-900"
+                    )}>
+                        <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor">
+                            {isUser ? (
+                                <path d="M0 0 L8 0 L0 8 Z" />
+                            ) : (
+                                <path d="M8 0 L0 0 L8 8 Z" />
+                            )}
+                        </svg>
+                        {!isUser && (
+                            <div className="absolute top-[-1px] left-[-0.5px] w-[9px] h-[1px] bg-slate-100 dark:border-slate-800 -rotate-45 origin-top-left opacity-50" />
+                        )}
+                    </div>
+
+                    <div className="prose prose-sm dark:prose-invert max-w-none break-words leading-relaxed overflow-wrap-anywhere">
+                        {isUser ? (
+                            <p className="whitespace-pre-wrap text-white">{content}</p>
+                        ) : (
+                            <ReactMarkdown
+                                components={{
+                                    ul: ({ children }) => (
+                                        <ul className="list-disc pl-4 space-y-1">{children}</ul>
+                                    ),
+                                    ol: ({ children }) => (
+                                        <ol className="list-decimal pl-4 space-y-1">{children}</ol>
+                                    ),
+                                    li: ({ children }) => (
+                                        <li className="text-sm">{children}</li>
+                                    ),
+                                    p: ({ children }) => (
+                                        <p className="mb-2 last:mb-0">{children}</p>
+                                    ),
+                                    strong: ({ children }) => (
+                                        <strong className="font-semibold text-foreground">{children}</strong>
+                                    ),
+                                    a: ({ href, children }) => {
+                                        const isWhatsApp = href?.includes('wa.me');
+                                        if (isWhatsApp) {
+                                            return (
+                                                <a
+                                                    href={href}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl transition-all text-xs font-bold no-underline my-2 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+                                                >
+                                                    <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current">
+                                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                                                    </svg>
+                                                    {children}
+                                                </a>
+                                            );
+                                        }
+                                        return (
+                                            <a href={href} className="text-primary underline hover:no-underline" target="_blank" rel="noopener noreferrer">
+                                                {children}
+                                            </a>
+                                        );
+                                    },
+                                }}
+                            >
+                                {content}
+                            </ReactMarkdown>
+                        )}
+                    </div>
+
+                    {/* Feedback buttons for assistant messages */}
+                    {!isUser && (
+                        <div className="flex items-center gap-2 mt-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+                            <span className="text-[10px] text-muted-foreground italic">Bermanfaat?</span>
+                            <div className="flex items-center gap-1">
+                                <button
+                                    onClick={() => handleFeedback(2)}
+                                    disabled={feedbackGiven !== null}
+                                    className={cn(
+                                        "p-1 rounded-md transition-all",
+                                        feedbackGiven === 2
+                                            ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30"
+                                            : "hover:bg-slate-100 dark:hover:bg-slate-800 text-muted-foreground"
+                                    )}
+                                >
+                                    <ThumbsUp className="w-3 h-3" />
+                                </button>
+                                <button
+                                    onClick={() => handleFeedback(1)}
+                                    disabled={feedbackGiven !== null}
+                                    className={cn(
+                                        "p-1 rounded-md transition-all",
+                                        feedbackGiven === 1
+                                            ? "bg-red-100 text-red-600 dark:bg-red-900/30"
+                                            : "hover:bg-slate-100 dark:hover:bg-slate-800 text-muted-foreground"
+                                    )}
+                                >
+                                    <ThumbsDown className="w-3 h-3" />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </motion.div >
     );
 }
 
-// Initial welcome message
-const WELCOME_MESSAGE = {
-    id: 'welcome',
-    role: 'assistant' as const,
-    parts: [
-        {
-            type: 'text' as const,
-            text: 'Halo! 👋 Saya **Pal**, asisten virtual kampus. Saya siap membantu Anda dengan informasi seputar:\n\n- 📚 Program studi & fakultas\n- 📝 Pendaftaran mahasiswa baru\n- 💰 Biaya pendidikan & beasiswa\n- 📅 Event & kegiatan kampus\n- 🏢 Fasilitas kampus\n\nAda yang bisa saya bantu hari ini?',
-        },
-    ],
-};
+
 
 // Komponen utama UnpalAI
-export function UnpalAI() {
+export function UnpalAI({ contactPhone, campusName = "Kampus" }: { contactPhone?: string; campusName?: string }) {
     const { isChatVisible, setIsChatVisible, isChatOpen, setIsChatOpen } = useChatVisibility();
     const [mounted, setMounted] = useState(false);
     const [sessionId] = useState(() => generateSessionId());
@@ -187,8 +242,20 @@ export function UnpalAI() {
         },
     });
 
+    // Initial welcome message dynamic
+    const dynamicWelcomeMessage = {
+        id: 'welcome',
+        role: 'assistant' as const,
+        parts: [
+            {
+                type: 'text' as const,
+                text: `Selamat datang di **${campusName}**! 👋\n\nSaya asisten virtual yang siap membantu Anda memberikan informasi mengenai **${campusName}**, pendaftaran mahasiswa baru, Fakultas, Program Studi,fasilitas kampus,dll secara cepat.\n\nSilakan langsung ketik pertanyaan Anda di bawah ini untuk mulai berdiskusi.`,
+            },
+        ],
+    };
+
     // Add welcome message to display
-    const displayMessages = [WELCOME_MESSAGE, ...messages];
+    const displayMessages = [dynamicWelcomeMessage, ...messages];
 
     // Determine loading state
     const isLoading = status === 'submitted' || status === 'streaming';
@@ -264,14 +331,6 @@ export function UnpalAI() {
         }
     };
 
-    // Quick action buttons
-    const quickActions = [
-        { label: 'Program Studi', query: 'Apa saja program studi yang tersedia?' },
-        { label: 'Biaya Kuliah', query: 'Berapa biaya kuliah di kampus ini?' },
-        { label: 'Beasiswa', query: 'Apa saja beasiswa yang tersedia?' },
-        { label: 'Pendaftaran', query: 'Bagaimana cara mendaftar sebagai mahasiswa baru?' },
-    ];
-
     if (!mounted || !isChatVisible) return null;
 
     return (
@@ -296,34 +355,67 @@ export function UnpalAI() {
                             "bottom-6 right-6",
                             "w-[380px] max-w-[calc(100vw-48px)]",
                             "h-[600px] max-h-[calc(100vh-100px)]",
-                            "bg-card",
-                            "border border-border/50 rounded-2xl",
-                            "shadow-2xl shadow-black/20",
-                            "flex flex-col overflow-hidden"
+                            "bg-background/95 backdrop-blur-xl",
+                            "border border-white/20 shadow-2xl shadow-indigo-500/10",
+                            "rounded-2xl flex flex-col overflow-hidden",
+                            "dark:shadow-black/50"
                         )}
                     >
-                        {/* Header */}
-                        <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 text-white">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur flex items-center justify-center">
-                                    <Bot className="w-5 h-5" />
+                        {/* Header Professional */}
+                        <div className="flex items-center justify-between px-5 py-2 bg-gradient-to-r from-slate-900 via-indigo-900 to-slate-900 text-white border-b border-white/10 relative overflow-hidden">
+
+                            {/* Decorative background elements */}
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-2xl -translate-y-10 translate-x-10"></div>
+                            <div className="absolute bottom-0 left-0 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl translate-y-10 -translate-x-10"></div>
+
+                            <div className="flex items-center gap-3 relative z-10">
+                                <div className="w-14 h-14 flex items-center justify-center relative">
+                                    <Image
+                                        src="/images/robot.png"
+                                        alt="AI Robot"
+                                        fill
+                                        className="object-contain"
+                                    />
                                 </div>
                                 <div>
-                                    <h3 className="font-semibold text-sm">Pal - UnpalAI</h3>
-                                    <p className="text-xs text-white/80">Asisten Virtual Kampus</p>
+                                    <h3 className="font-bold text-base tracking-tight text-white">AI Campus</h3>
+                                    <div className="flex items-center gap-1.5">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                        <p className="text-[10px] font-medium text-indigo-200 uppercase tracking-wider">Online Assistant</p>
+                                    </div>
                                 </div>
                             </div>
-                            <button
-                                onClick={() => setIsChatOpen(false)}
-                                className="p-2 rounded-full hover:bg-white/20 transition-colors"
-                                aria-label="Tutup chat"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
+                            <div className="flex items-center gap-2 relative z-10">
+                                {contactPhone && (
+                                    <a
+                                        href={`https://wa.me/${contactPhone.replace(/\D/g, '')}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex flex-col items-center gap-0.5 group/wa transition-transform hover:scale-105"
+                                        aria-label="Hubungi WhatsApp"
+                                        title="Hubungi Staf via WhatsApp"
+                                    >
+                                        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-500 border border-emerald-400 text-white shadow-lg group-hover/wa:bg-white/10 group-hover/wa:border-white/20 transition-all">
+                                            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
+                                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                                            </svg>
+                                        </div>
+                                        <span className="text-[9px] font-bold uppercase tracking-tight text-white/80 group-hover/wa:text-white transition-colors">Staff</span>
+                                    </a>
+                                )}
+                                <div className="w-[1px] h-5 bg-white/10 mx-0.5" />
+                                <button
+                                    onClick={() => setIsChatOpen(false)}
+                                    className="p-2 rounded-full hover:bg-white/10 transition-colors text-white/70 hover:text-white"
+                                    aria-label="Tutup chat"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
                         </div>
 
                         {/* Messages */}
-                        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-4">
                             {displayMessages.map((message) => (
                                 <ChatMessage
                                     key={message.id}
@@ -339,11 +431,16 @@ export function UnpalAI() {
                                     animate={{ opacity: 1 }}
                                     className="flex gap-3 p-3 rounded-lg bg-muted/50 mr-8"
                                 >
-                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-                                        <Loader2 className="w-4 h-4 text-white animate-spin" />
+                                    <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden relative">
+                                        <Image
+                                            src="/images/robot.png"
+                                            alt="AI Robot"
+                                            fill
+                                            className="object-contain"
+                                        />
                                     </div>
                                     <div className="flex items-center">
-                                        <span className="text-sm text-muted-foreground">Pal sedang mengetik...</span>
+                                        <span className="text-sm text-muted-foreground italic">Sedang mengetik...</span>
                                     </div>
                                 </motion.div>
                             )}
@@ -364,26 +461,6 @@ export function UnpalAI() {
                             )}
                         </div>
 
-                        {/* Quick Actions (show only for initial state) */}
-                        {messages.length === 0 && (
-                            <div className="px-4 pb-2">
-                                <div className="flex flex-wrap gap-2">
-                                    {quickActions.map((action) => (
-                                        <button
-                                            key={action.label}
-                                            onClick={() => {
-                                                setInput(action.query);
-                                                setTimeout(() => inputRef.current?.focus(), 0);
-                                            }}
-                                            className="text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-                                        >
-                                            {action.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
                         {/* Input Form */}
                         <form onSubmit={handleSubmit} className="p-4 border-t border-border/50">
                             <div className="flex gap-2">
@@ -397,12 +474,13 @@ export function UnpalAI() {
                                     disabled={status === 'streaming' || status === 'submitted'}
                                     className={cn(
                                         "flex-1 resize-none",
-                                        "px-4 py-2.5 rounded-xl",
-                                        "bg-muted/50 border border-border/50",
-                                        "text-sm placeholder:text-muted-foreground",
-                                        "focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary",
+                                        "px-4 py-3 rounded-2xl",
+                                        "bg-white/50 dark:bg-slate-900/50",
+                                        "border border-indigo-200/50 dark:border-indigo-800/30",
+                                        "text-sm placeholder:text-muted-foreground/60",
+                                        "focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500",
                                         "disabled:opacity-50 disabled:cursor-not-allowed",
-                                        "transition-all"
+                                        "transition-all duration-200 shadow-inner"
                                     )}
                                     style={{
                                         minHeight: '44px',

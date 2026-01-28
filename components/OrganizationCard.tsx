@@ -120,20 +120,16 @@ export function OrganizationCard({ employee, size }: OrganizationCardProps) {
 
             {/* Full Image Dialog */}
             <Dialog open={isImageDialogOpen} onOpenChange={setIsImageDialogOpen}>
-                <DialogContent className="max-w-3xl p-2 bg-background/95 backdrop-blur-xl border-white/20">
+                <DialogContent className="max-w-3xl p-0 bg-transparent border-none shadow-none flex items-center justify-center">
                     <DialogTitle className="sr-only">Foto {employee.name}</DialogTitle>
-                    <div className="relative w-full aspect-[3/4] max-h-[85vh] rounded-xl overflow-hidden">
+                    <div className="relative w-full h-auto max-h-[85vh] rounded-xl overflow-hidden flex items-center justify-center">
                         {employee.photo && (
                             <img
                                 src={employee.photo}
                                 alt={employee.name}
-                                className="w-full h-full object-contain"
+                                className="w-auto h-auto max-w-full max-h-[85vh] object-contain rounded-xl"
                             />
                         )}
-                    </div>
-                    <div className="text-center pb-2">
-                        <h3 className="text-lg font-bold text-foreground">{employee.name}</h3>
-                        <p className="text-sm text-muted-foreground">{employee.positionName}</p>
                     </div>
                 </DialogContent>
             </Dialog>

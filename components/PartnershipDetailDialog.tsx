@@ -62,12 +62,12 @@ export function PartnershipDetailDialog({ partner }: PartnershipDetailDialogProp
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="sm:max-w-4xl max-h-[90vh] p-0 gap-0 overflow-hidden rounded-3xl border border-border bg-background/95 dark:bg-black/90 backdrop-blur-3xl shadow-2xl">
+            <DialogContent className="sm:max-w-4xl max-h-[90vh] p-0 gap-0 overflow-hidden rounded-3xl border border-border shadow-2xl">
                 {/* Header Background Gradient */}
                 <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-primary/5 to-transparent dark:from-cyber-blue/20 pointer-events-none" />
 
                 {/* Header Section */}
-                <div className="relative p-6 px-8 border-b border-border dark:border-white/10 flex items-start gap-6">
+                <div className="relative p-6 px-8 border-b border-border flex items-start gap-6">
                     <div className="w-24 h-24 rounded-2xl bg-muted/50 dark:bg-white/5 border border-border dark:border-white/10 flex items-center justify-center overflow-hidden shrink-0 shadow-lg">
                         {partner.partnerLogo ? (
                             <img
@@ -219,7 +219,7 @@ export function PartnershipDetailDialog({ partner }: PartnershipDetailDialogProp
                 </ScrollArea>
 
                 {/* Footer Actions */}
-                <div className="p-6 border-t border-border dark:border-white/10 flex justify-end gap-3 bg-background/80 dark:bg-black/40 backdrop-blur-md">
+                <div className="p-6 border-t border-border flex justify-end gap-3 bg-background/80 backdrop-blur-md">
                     <DialogClose asChild>
                         <Button
                             variant="outline"

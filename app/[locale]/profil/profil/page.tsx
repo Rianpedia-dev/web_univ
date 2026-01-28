@@ -224,48 +224,43 @@ export default async function ProfilBerandaPage({ params }: { params: Promise<{ 
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="relative p-[2px] rounded-[2rem] overflow-hidden group mx-auto"
+            className="glass-card p-8 md:p-12 rounded-[2.5rem] border border-white/10 relative overflow-hidden group mx-auto shadow-[0_0_80px_rgba(16,185,129,0.1)]"
           >
-            {/* High Contrast Gradient Border */}
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-cyan-500 to-blue-500 opacity-100 animate-gradient-xy"></div>
+            {/* Premium Background gradients */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-emerald-500/5 rounded-full blur-[120px] -z-10"></div>
 
-            <div className="relative bg-background/95 dark:bg-black/90 backdrop-blur-xl p-4 md:px-16 md:py-6 rounded-[calc(2rem-2px)] overflow-hidden">
-              {/* Minimal decorative elements */}
-              <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_0%,rgba(16,185,129,0.05),transparent_50%)]"></div>
-
-              <div className="relative z-10 space-y-4 max-w-5xl mx-auto text-center">
-                <div className="flex justify-center">
-                  <div className="relative">
-                    <div className="absolute -inset-4 bg-emerald-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div className="w-12 h-12 bg-white/10 dark:bg-white/5 rounded-xl flex items-center justify-center border border-white/20 backdrop-blur-md shadow-xl transform group-hover:rotate-[360deg] transition-transform duration-1000">
-                      <Quote className="w-6 h-6 text-emerald-400" />
-                    </div>
+            <div className="relative z-10 space-y-4 max-w-5xl mx-auto text-center">
+              <div className="flex justify-center">
+                <div className="relative">
+                  <div className="absolute -inset-4 bg-emerald-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="w-12 h-12 bg-white/10 dark:bg-white/5 rounded-xl flex items-center justify-center border border-white/20 backdrop-blur-md shadow-xl transform group-hover:rotate-[360deg] transition-transform duration-1000">
+                    <Quote className="w-6 h-6 text-emerald-400" />
                   </div>
                 </div>
+              </div>
 
-                <div className="space-y-2">
-                  <h2 className="text-xs md:text-sm font-black text-emerald-500 dark:text-emerald-400 tracking-[0.6em] uppercase flex items-center justify-center gap-4">
-                    <span className="h-px w-8 bg-emerald-500/30 hidden sm:block"></span>
-                    Motto Universitas
-                    <span className="h-px w-8 bg-emerald-500/30 hidden sm:block"></span>
-                  </h2>
-                  <div className="w-32 h-0.5 bg-gradient-to-r from-transparent via-emerald-500 to-transparent mx-auto"></div>
-                </div>
+              <div className="space-y-2">
+                <h2 className="text-xs md:text-sm font-black text-emerald-500 dark:text-emerald-400 tracking-[0.6em] uppercase flex items-center justify-center gap-4">
+                  <span className="h-px w-8 bg-emerald-500/30 hidden sm:block"></span>
+                  Motto Universitas
+                  <span className="h-px w-8 bg-emerald-500/30 hidden sm:block"></span>
+                </h2>
+                <div className="w-32 h-0.5 bg-gradient-to-r from-transparent via-emerald-500 to-transparent mx-auto"></div>
+              </div>
 
-                <div className="relative px-4 md:px-12">
-                  <Quote className="absolute -top-4 -left-2 w-8 h-8 text-emerald-500/10 dark:text-emerald-500/5 rotate-180" />
-                  <p className="text-xl md:text-2xl font-bold leading-tight tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-foreground via-foreground to-emerald-500 dark:from-white dark:via-white dark:to-emerald-400 transition-all duration-300">
-                    {profile.motto}
-                  </p>
-                  <Quote className="absolute -bottom-4 -right-2 w-8 h-8 text-emerald-500/10 dark:text-emerald-500/5" />
-                </div>
+              <div className="relative px-4 md:px-12">
+                <Quote className="absolute -top-4 -left-2 w-8 h-8 text-emerald-500/10 dark:text-emerald-500/5 rotate-180" />
+                <p className="text-xl md:text-2xl font-bold leading-tight tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-foreground via-foreground to-emerald-500 dark:from-white dark:via-white dark:to-emerald-400 transition-all duration-300">
+                  {profile.motto}
+                </p>
+                <Quote className="absolute -bottom-4 -right-2 w-8 h-8 text-emerald-500/10 dark:text-emerald-500/5" />
+              </div>
 
-                {/* Cyberpunk accent lines */}
-                <div className="flex justify-center items-center gap-2 pt-2 opacity-50">
-                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></div>
-                  <div className="w-1 h-1 rounded-full bg-cyan-500"></div>
-                  <div className="w-1 h-1 rounded-full bg-blue-500"></div>
-                </div>
+              {/* Cyberpunk accent lines */}
+              <div className="flex justify-center items-center gap-2 pt-2 opacity-50">
+                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></div>
+                <div className="w-1 h-1 rounded-full bg-cyan-500"></div>
+                <div className="w-1 h-1 rounded-full bg-blue-500"></div>
               </div>
             </div>
           </MotionDiv>

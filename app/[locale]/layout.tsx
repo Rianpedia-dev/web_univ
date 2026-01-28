@@ -3,7 +3,7 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { BackToTop } from "@/components/back-to-top";
 import { UnpalAI } from "@/components/UnpalAI";
-import { getPublishedUniversityProfile } from '@/lib/db';
+import { getPublishedUniversityProfile, getPublishedContactInformation } from '@/lib/db';
 import type { Metadata } from "next";
 import { ChatVisibilityProvider } from '@/components/ChatVisibilityProvider';
 
@@ -40,6 +40,12 @@ export default async function LocaleLayout({
   const profiles = await getPublishedUniversityProfile();
   const profile = profiles.length > 0 ? profiles[0] : null;
 
+  // Ambil data kontak untuk WhatsApp Chatbot
+  const contacts = await getPublishedContactInformation();
+  const mainContact = contacts.find(c => c.type === 'main_campus' || c.type === 'administrative_office') || contacts[0];
+  const contactPhone = mainContact?.phone || "";
+  const campusName = profile?.name || profile?.shortName || "Kampus";
+
   return (
     <ChatVisibilityProvider>
       <div
@@ -50,7 +56,7 @@ export default async function LocaleLayout({
           {children}
         </main>
         <Footer locale={locale} />
-        <UnpalAI />
+        <UnpalAI contactPhone={contactPhone} campusName={campusName} />
         <BackToTop />
       </div>
     </ChatVisibilityProvider>

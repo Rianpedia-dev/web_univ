@@ -123,7 +123,8 @@ Untuk SETIAP pertanyaan tentang kampus, kamu WAJIB memanggil tool yang relevan S
 - Jika tool mengembalikan data kosong (\`count: 0\`), kamu WAJIB menjawab: "Maaf, data [topik] belum tersedia di sistem kami."
 - JANGAN PERNAH mengarang fasilitas umum jika tool \`getFacilities\` tidak mengembalikannya.
 - Jika menyebutkan fasilitas, KAMU WAJIB menggunakan field \`namaFasilitas\` dari hasil tool, JANGAN menggunakan field \`kategori\` atau \`type\` sebagai nama utama.
-- Halusinasi akan sangat merugikan pengguna. Kejujuran tentang ketiadaan data lebih dihargai daripada informasi palsu.`;
+- Halusinasi akan sangat merugikan pengguna. Kejujuran tentang ketiadaan data lebih dihargai daripada informasi palsu.
+- **PENTING**: SETIAP kali kamu menjawab pertanyaan mengenai pendaftaran, PMB, jalur masuk, biaya kuliah, atau beasiswa, kamu WAJIB menyertakan informasi kontak WhatsApp Tim PMB di paling bawah jawabanmu dalam format: "Hubungi Tim PMB: [Nama Staff] [Link WhatsApp]". Gunakan data dari tool \`getAdmissionInfo\`. Link WhatsApp harus dalam format markdown \`[Chat via WhatsApp](https://wa.me/...)\`.`;
 
 // Schema definitions for tools
 const getStudyProgramsSchema = z.object({
@@ -257,6 +258,7 @@ const botTools = {
             const waves = await db.select().from(admissionWaves).where(eq(admissionWaves.isPublished, true));
             const faqs = await db.select().from(admissionFaqs).where(eq(admissionFaqs.isPublished, true)).limit(5);
             const classes = await db.select().from(admissionClasses).where(eq(admissionClasses.isPublished, true));
+            const staff = await db.select().from(admissionStaff).where(eq(admissionStaff.isPublished, true)).orderBy(asc(admissionStaff.order));
 
             // Format jalur pendaftaran dengan jelas
             const formattedPathways = pathways.map((p, i) => ({
@@ -281,8 +283,15 @@ const botTools = {
                 deskripsi: c.description || '-',
             }));
 
-            console.log('TOOL RESULT: getAdmissionInfo returned:', { pathways: pathways.length, waves: waves.length, classes: classes.length });
-            console.log('TOOL RESULT: Class types:', formattedClasses.map(c => c.namaJenisKelas));
+            // Format kontak staff PMB
+            const formattedStaff = staff.map(s => ({
+                nama: s.name,
+                jabatan: s.position,
+                whatsapp: s.whatsapp,
+                linkWaMe: s.whatsapp ? `https://wa.me/${s.whatsapp.replace(/\D/g, '')}` : null
+            }));
+
+            console.log('TOOL RESULT: getAdmissionInfo returned:', { pathways: pathways.length, waves: waves.length, classes: classes.length, staff: staff.length });
 
             const hasData = formattedPathways.length > 0 || formattedWaves.length > 0 || formattedClasses.length > 0;
 
@@ -290,14 +299,16 @@ const botTools = {
                 jalurPendaftaran: formattedPathways,
                 gelombangPendaftaran: formattedWaves,
                 jenisKelasTersedia: formattedClasses,
+                kontakTimPMB: formattedStaff,
                 faq: faqs.map(f => ({ pertanyaan: f.question, jawaban: f.answer })),
                 PERINGATAN_KERAS: hasData
-                    ? 'SALIN PERSIS nama jalur, gelombang, dan JENIS KELAS dari data di atas. JANGAN UBAH atau TAMBAHKAN informasi apapun.'
+                    ? 'SALIN PERSIS nama jalur, gelombang, JENIS KELAS, dan KONTAK PMB dari data di atas. WAJIB sertakan kontak PMB di akhir jawaban jika relevan.'
                     : 'DATA KOSONG - Katakan: "Maaf, data jalur dan jenis kelas belum tersedia di sistem kami."',
                 jumlahData: {
                     jalur: formattedPathways.length,
                     gelombang: formattedWaves.length,
-                    jenisKelas: formattedClasses.length
+                    jenisKelas: formattedClasses.length,
+                    staff: formattedStaff.length
                 }
             };
         },
