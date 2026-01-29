@@ -106,7 +106,7 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
         }`}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
-          <Link href={`/${locale}`} className="flex items-center gap-3 group">
+          <Link href={`/${locale}`} className="flex items-center group gap-3 mr-6 lg:mr-12">
             <div className="w-12 h-12 lg:w-14 lg:h-14 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
               {profile?.logo ? (
                 <img
@@ -132,13 +132,13 @@ export function Navbar({ locale, profile }: { locale: string, profile?: any }) {
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-2" suppressHydrationWarning>
+          <nav className="hidden md:flex items-center gap-1" suppressHydrationWarning>
             {navItems.map((item) => (
               <div key={item.href} className="relative group" suppressHydrationWarning>
                 <Link
                   href={item.href}
                   suppressHydrationWarning
-                  className={`px-4 py-2 rounded-lg transition-all duration-300 flex items-center gap-2 whitespace-nowrap ${pathname === item.href || pathname.startsWith(item.href + "/")
+                  className={`px-3 py-2 rounded-lg transition-all duration-300 flex items-center gap-2 whitespace-nowrap ${pathname === item.href || pathname.startsWith(item.href + "/")
                     ? "bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 text-yellow-700 dark:text-yellow-300 shadow-[0_0_10px_rgba(255,182,193,0.2)]"
                     : "hover:bg-white/10 dark:hover:bg-gray-800/50 hover:text-yellow-600 dark:hover:text-yellow-400"
                     }`}

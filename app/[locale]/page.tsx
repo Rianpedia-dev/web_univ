@@ -138,7 +138,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
               >
 
 
-                <h1 className="text-4xl md:text-7xl font-extrabold text-white mb-8 leading-[1.1] tracking-tight line-clamp-2">
+                <h1 className="text-4xl md:text-7xl font-extrabold text-white mb-8 leading-[1.1] tracking-tight">
                   <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-100 via-yellow-200 to-amber-400 bg-[length:200%_auto] animate-gradient-x drop-shadow-[0_2px_2px_rgba(0,0,0,0.5)] [-webkit-text-stroke:1px_#92400e]">
                     {heroData?.title || "Selamat Datang di Universitas"}
                   </span>
